@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --neon: #00ff00;
+  --neon-dim: #004400;
+  --neon-hover: #ff33cc;
+  --bg-dark: #000000;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #0f0c29, #032B2D, #24243e);
+  background-attachment: fixed;
+  color: #00ff00;
+  font-family: 'Courier New', Courier, monospace;
+  min-height: 100vh;
+}
+
+/* Neon text shadow utility */
+.text-shadow-neon {
+  text-shadow: 0 0 10px #0f0;
+}
+
+.text-shadow-neon-strong {
+  text-shadow: 0 0 15px #0f0;
+}
+
+/* Blinking cursor for typewriter */
+.blinking-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background-color: #0f0;
+  animation: blink 0.8s linear infinite;
+  vertical-align: text-bottom;
+}
+
+@keyframes blink {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: #0f0; }
+}
+
+/* Typewriter cursor border */
+.typewriter-cursor {
+  border-right: 2px solid #0f0;
+  animation: cursor-blink 0.75s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  from, to { border-color: transparent; }
+  50% { border-color: #0f0; }
+}
