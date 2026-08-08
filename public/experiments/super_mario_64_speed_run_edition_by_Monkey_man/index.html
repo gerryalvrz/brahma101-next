@@ -1,0 +1,500 @@
+    <title>Super Mario 64</title>
+    <style>
+        @font-face {
+            font-family: 'Mario64';
+            src: url('/experiments/super_mario_64_speed_run_edition_by_Monkey_man/Mario64.ttf') format('truetype');
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #fff;
+            font-family: 'Mario64', Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #gameContainer {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 960px;  /* Add max-width */
+            max-height: 720px; /* Add max-height */
+            margin: 0 auto;    /* Center container */
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border: none;
+            box-shadow: none;
+            max-width: 960px;  /* Add max-width */
+            max-height: 720px; /* Add max-height */
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading img {
+            width: 300px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 85, 85, 0.5);
+        }
+
+        .loading-text {
+            font-size: 24px;
+            color: #ff5555;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        #infoBar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #closeButton {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 0 5px;
+            font-family: 'Mario64', Arial, sans-serif;
+        }
+
+        #closeButton:hover {
+            color: #ff5555;
+        }
+
+        #mobileControls {
+            position: fixed;
+            bottom: 60px;  /* Increased to prevent overlap */
+            left: 20px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: block;
+            }
+        }
+
+        #dpad {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            touch-action: none;
+        }
+
+        .dpad-stick {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        #actionButtons {
+            position: fixed;
+            bottom: 40px;
+            right: 20px;
+            display: none;
+            gap: 15px;  /* Increased spacing between buttons */
+        }
+
+        @media (max-width: 768px) {
+            #actionButtons {
+                display: flex;
+            }
+        }
+
+        .action-button {
+            width: 65px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            color: white;
+            font-family: 'Mario64', Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: manipulation;
+            font-size: 18px;
+        }
+
+        #buttonA { background: rgba(255, 0, 0, 0.4); }
+        #buttonB { background: rgba(0, 255, 0, 0.4); }
+        #buttonCrouch { background: rgba(255, 255, 0, 0.4); }
+        #buttonStart { background: rgba(128, 128, 128, 0.4); }
+        #buttonStopwatch {
+            background: rgba(0, 128, 255, 0.4);  /* Light blue background */
+            position: fixed;
+            top: 20px;
+            right: 60px;
+            z-index: 1001;
+        }
+
+        .stopwatch-display {
+            position: fixed;
+            top: 20px;
+            right: 140px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: 'Mario64', Arial, sans-serif;
+            z-index: 1001;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="infoBar">
+        Controls: WASD = Camera Controls, Space = Crouch, X = Jump, C = Punch
+        <button id="closeButton">&#xd7;</button>
+    </div>
+    <div id="container">
+        <div id="gameContainer">
+            <canvas id="canvas"></canvas>
+            <div id="loading" class="loading">
+                <img src="https://upload.wikimedia.org/wikipedia/en/6/6a/Super_Mario_64_box_cover.jpg" alt="Super Mario 64 box art, featuring Mario&apos;s face against a blue background">
+                <div class="loading-text">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobileControls">
+        <div id="dpad">
+            <div class="dpad-stick"></div>
+        </div>
+    </div>
+
+    <div id="actionButtons">
+        <button class="action-button" id="buttonA">A</button>
+        <button class="action-button" id="buttonB">B</button>
+        <button class="action-button" id="buttonCrouch">C</button>
+        <button class="action-button" id="buttonStart">Start</button>
+    </div>
+    <button class="action-button" id="buttonStopwatch">&#x23f1;&#xfe0f;</button>
+    <div class="stopwatch-display" id="stopwatchDisplay">00:00:00</div>
+
+    <script>function simulateKeyEvent(key, type) {
+  const event = new KeyboardEvent(type, {
+    key: key,
+    code: key,
+    bubbles: true
+  });
+  window.dispatchEvent(event);
+}
+function transformToFatMario() {
+  if (Module && Module._set_mario_action) {
+    if (Module._set_mario_scale) {
+      Module._set_mario_scale_xyz(1.8, 0.8, 1.8);
+    }
+    if (Module._set_character_tint) {
+      Module._set_character_tint(255, 255, 255);
+    }
+  }
+}
+var Module = {
+  canvas: document.getElementById('canvas'),
+  onRuntimeInitialized: function () {
+    document.getElementById('loading').style.display = 'none';
+    setTimeout(() => {
+      transformToFatMario();
+    }, 1000);
+  },
+  locateFile: function (path) {
+    if (path.endsWith('.wasm')) {
+      return '/experiments/super_mario_64_speed_run_edition_by_Monkey_man/sm64.wasm';
+    }
+    return '/experiments/super_mario_64_speed_run_edition_by_Monkey_man/' + path;
+  }
+};
+const levelLocations = [{
+  x: 0,
+  y: 1200,
+  z: 0
+}, {
+  x: -1850,
+  y: 260,
+  z: -5000
+}, {
+  x: 2500,
+  y: 1200,
+  z: -1850
+}, {
+  x: -6000,
+  y: 1500,
+  z: 3500
+}, {
+  x: 3500,
+  y: 7200,
+  z: -6150
+}, {
+  x: 1000,
+  y: 3200,
+  z: 7000
+}, {
+  x: -4600,
+  y: 4500,
+  z: -2500
+}, {
+  x: 7100,
+  y: 1500,
+  z: 3500
+}, {
+  x: -3600,
+  y: 2000,
+  z: 0
+}, {
+  x: 2428,
+  y: 7647,
+  z: -3889
+}];
+function teleportToRandomLevel() {
+  if (Module && Module._set_mario_position) {
+    const randomLocation = levelLocations[Math.floor(Math.random() * levelLocations.length)];
+    console.log('Teleporting to:', randomLocation);
+    Module._set_mario_position(randomLocation.x, randomLocation.y, randomLocation.z);
+  } else {
+    console.warn('Module or teleport function not ready');
+  }
+}
+function resizeCanvas() {
+  const canvas = document.getElementById('canvas');
+  canvas.width = 960;
+  canvas.height = 720;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+Module.canvas.addEventListener('click', function () {
+  Module.canvas.focus();
+});
+window.addEventListener('focus', function () {
+  Module.canvas.focus();
+});
+document.addEventListener('DOMContentLoaded', function () {
+  setTimeout(() => {
+    Module.canvas.focus();
+  }, 1000);
+});
+const loadingElement = document.getElementById('loading');
+if (loadingElement && Module.calledRun) {}
+document.getElementById('closeButton').addEventListener('click', function () {
+  document.getElementById('infoBar').style.display = 'none';
+});
+const buttonA = document.getElementById('buttonA');
+const buttonB = document.getElementById('buttonB');
+const buttonCrouch = document.getElementById('buttonCrouch');
+const buttonStart = document.getElementById('buttonStart');
+buttonA.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const jumpKeyEvent = new KeyboardEvent('keydown', {
+    code: 'KeyX',
+    key: 'x',
+    bubbles: true
+  });
+  window.dispatchEvent(jumpKeyEvent);
+});
+buttonA.addEventListener('touchend', e => {
+  e.preventDefault();
+  const jumpKeyEvent = new KeyboardEvent('keyup', {
+    code: 'KeyX',
+    key: 'x',
+    bubbles: true
+  });
+  window.dispatchEvent(jumpKeyEvent);
+});
+buttonB.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const punchKeyEvent = new KeyboardEvent('keydown', {
+    code: 'KeyC',
+    key: 'c',
+    bubbles: true
+  });
+  window.dispatchEvent(punchKeyEvent);
+});
+buttonB.addEventListener('touchend', e => {
+  e.preventDefault();
+  const punchKeyEvent = new KeyboardEvent('keyup', {
+    code: 'KeyC',
+    key: 'c',
+    bubbles: true
+  });
+  window.dispatchEvent(punchKeyEvent);
+});
+buttonCrouch.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const crouchKeyEvent = new KeyboardEvent('keydown', {
+    code: 'Space',
+    key: ' ',
+    bubbles: true
+  });
+  window.dispatchEvent(crouchKeyEvent);
+});
+buttonCrouch.addEventListener('touchend', e => {
+  e.preventDefault();
+  const crouchKeyEvent = new KeyboardEvent('keyup', {
+    code: 'Space',
+    key: ' ',
+    bubbles: true
+  });
+  window.dispatchEvent(crouchKeyEvent);
+});
+buttonStart.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const startKeyEvent = new KeyboardEvent('keydown', {
+    code: 'Enter',
+    key: 'Enter',
+    bubbles: true
+  });
+  Module.canvas.dispatchEvent(startKeyEvent);
+});
+buttonStart.addEventListener('touchend', e => {
+  e.preventDefault();
+  const startKeyEvent = new KeyboardEvent('keyup', {
+    code: 'Enter',
+    key: 'Enter',
+    bubbles: true
+  });
+  Module.canvas.dispatchEvent(startKeyEvent);
+});
+const dpad = document.getElementById('dpad');
+const stick = document.createElement('div');
+stick.className = 'dpad-stick';
+dpad.appendChild(stick);
+let isDragging = false;
+let center = {
+  x: 0,
+  y: 0
+};
+const maxDistance = 50;
+dpad.addEventListener('touchstart', handleDpadTouch);
+dpad.addEventListener('touchmove', handleDpadTouch);
+dpad.addEventListener('touchend', () => {
+  isDragging = false;
+  stick.style.left = '50%';
+  stick.style.top = '50%';
+  simulateKeyEvent('ArrowUp', 'keyup');
+  simulateKeyEvent('ArrowDown', 'keyup');
+  simulateKeyEvent('ArrowLeft', 'keyup');
+  simulateKeyEvent('ArrowRight', 'keyup');
+});
+function handleDpadTouch(e) {
+  e.preventDefault();
+  const touch = e.touches[0];
+  const rect = dpad.getBoundingClientRect();
+  if (!isDragging) {
+    isDragging = true;
+    center = {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2
+    };
+  }
+  let deltaX = touch.clientX - center.x;
+  let deltaY = touch.clientY - center.y;
+  const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+  if (distance > maxDistance) {
+    deltaX = deltaX / distance * maxDistance;
+    deltaY = deltaY / distance * maxDistance;
+  }
+  stick.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+  const angle = Math.atan2(deltaY, deltaX);
+  const threshold = maxDistance * 0.3;
+  ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].forEach(key => {
+    simulateKeyEvent(key, 'keyup');
+  });
+  if (distance > threshold) {
+    if (angle > -Math.PI * 3 / 4 && angle < -Math.PI / 4) simulateKeyEvent('ArrowUp', 'keydown');
+    if (angle > Math.PI / 4 && angle < Math.PI * 3 / 4) simulateKeyEvent('ArrowDown', 'keydown');
+    if (angle > Math.PI * 3 / 4 || angle < -Math.PI * 3 / 4) simulateKeyEvent('ArrowLeft', 'keydown');
+    if (angle > -Math.PI / 4 && angle < Math.PI / 4) simulateKeyEvent('ArrowRight', 'keydown');
+  }
+}
+document.querySelectorAll('.dpad-button').forEach(button => button.remove());
+let stopwatchInterval = null;
+let stopwatchStartTime = 0;
+let stopwatchRunning = false;
+const stopwatchDisplay = document.getElementById('stopwatchDisplay');
+const buttonStopwatch = document.getElementById('buttonStopwatch');
+function formatTime(ms) {
+  const hours = Math.floor(ms / 3600000);
+  const minutes = Math.floor(ms % 3600000 / 60000);
+  const seconds = Math.floor(ms % 60000 / 1000);
+  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+}
+function updateStopwatch() {
+  const currentTime = Date.now() - stopwatchStartTime;
+  stopwatchDisplay.textContent = formatTime(currentTime);
+}
+buttonStopwatch.addEventListener('click', () => {
+  if (!stopwatchRunning) {
+    stopwatchDisplay.style.display = 'block';
+    stopwatchStartTime = Date.now();
+    stopwatchInterval = setInterval(updateStopwatch, 1000);
+    stopwatchRunning = true;
+    buttonStopwatch.style.background = 'rgba(255, 0, 0, 0.4)';
+  } else {
+    clearInterval(stopwatchInterval);
+    stopwatchDisplay.style.display = 'none';
+    stopwatchRunning = false;
+    buttonStopwatch.style.background = 'rgba(0, 128, 255, 0.4)';
+  }
+});</script>
+    <script src="/experiments/super_mario_64_speed_run_edition_by_Monkey_man/sm64.js"></script>
+</body></html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Particles Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+        }
+        
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: auto;
+            touch-action: manipulation;
+        }
+        
+        .test-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border: 2px solid #0f0;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        
+        .test-info h2 {
+            margin-top: 0;
+            color: #0f0;
+        }
+        
+        .test-info p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .status.success {
+            background: #0f0;
+            color: #000;
+        }
+        
+        .status.error {
+            background: #f00;
+            color: #fff;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <div class="test-info">
+        <h2>Particles Test</h2>
+        <p><strong>Browser:</strong> <span id="browser-info"></span></p>
+        <p><strong>Mobile:</strong> <span id="mobile-info"></span></p>
+        <p><strong>Touch Support:</strong> <span id="touch-info"></span></p>
+        <p><strong>Particles Status:</strong> <span id="particles-status" class="status">Loading...</span></p>
+        <p><strong>Instructions:</strong></p>
+        <ul>
+            <li>Move mouse to test hover</li>
+            <li>Click to add particles</li>
+            <li>Touch/drag on mobile</li>
+        </ul>
+    </div>
+
+    <script>
+        // Display browser information
+        document.getElementById('browser-info').textContent = navigator.userAgent;
+        document.getElementById('mobile-info').textContent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ? 'Yes' : 'No';
+        document.getElementById('touch-info').textContent = 'ontouchstart' in window ? 'Yes' : 'No';
+        
+        // Initialize particles with test configuration
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof particlesJS === 'undefined') {
+                document.getElementById('particles-status').textContent = 'ERROR: particlesJS not loaded';
+                document.getElementById('particles-status').className = 'status error';
+                return;
+            }
+            
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: isMobile ? 30 : 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#00ff00'
+                    },
+                    shape: {
+                        type: 'circle'
+                    },
+                    opacity: {
+                        value: 0.8,
+                        random: true
+                    },
+                    size: {
+                        value: 4,
+                        random: true
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#00ff00',
+                        opacity: 0.6,
+                        width: 2
+                    },
+                    move: {
+                        enable: true,
+                        speed: isMobile ? 1 : 3,
+                        direction: 'none',
+                        random: false,
+                        straight: false,
+                        out_mode: 'out',
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: !isMobile,
+                            mode: 'repulse'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        ontouchstart: {
+                            enable: isMobile,
+                            mode: 'repulse'
+                        },
+                        ontouchmove: {
+                            enable: isMobile,
+                            mode: 'repulse'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        repulse: {
+                            distance: isMobile ? 50 : 100
+                        },
+                        push: {
+                            particles_nb: isMobile ? 2 : 4
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+            
+            // Check if particles are working
+            setTimeout(function() {
+                const canvas = document.querySelector('#particles-js canvas');
+                if (canvas) {
+                    document.getElementById('particles-status').textContent = 'SUCCESS: Particles loaded';
+                    document.getElementById('particles-status').className = 'status success';
+                } else {
+                    document.getElementById('particles-status').textContent = 'ERROR: Canvas not found';
+                    document.getElementById('particles-status').className = 'status error';
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html> 

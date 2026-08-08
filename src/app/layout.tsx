@@ -5,12 +5,11 @@ import "./globals.css";
 const vt323 = VT323({
   weight: "400",
   subsets: ["latin"],
-  variable: "--font-vt323",
+  variable: "--font-display",
 });
 
+/** Site-wide defaults; route segments under `src/app/(site)/` set title/description via `layout.tsx`. */
 export const metadata: Metadata = {
-  title: "Brahma101.eth",
-  description: "The Art of (r)evolution",
   icons: { icon: "/favicon.png" },
 };
 
@@ -21,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={vt323.variable}>
-      <body className="min-h-screen overflow-y-auto">{children}</body>
+      <body className="min-h-screen overflow-y-auto bg-[var(--color-bg-1)]">
+        {children}
+      </body>
     </html>
   );
 }

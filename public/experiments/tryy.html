@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Art</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: #0f0;
+            font-family: monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #ascii {
+            white-space: pre; /* Preserve spaces and line breaks */
+            font-size: 13px;   /* Adjust size for ASCII effect */
+            line-height: 13px; /* Match font size for uniform grid */
+        }
+    </style>
+</head>
+<body>
+    <div id="ascii"></div>
+
+    <script>
+        const asciiElement = document.getElementById("ascii");
+
+        // ASCII character set based on brightness levels
+        const asciiChars = ['⫛', '#', 'X', 'O', '☥', '*', ':', '.', ' '];
+
+        // ASCII text to display
+        const asciiText = `
+        L O C O G N I T I V E
+        `.trim();
+
+        // ASCII art dimensions
+        const width = 120; // Columns
+        const height = 30; // Rows
+
+        // Generate ASCII art dynamically
+        function generateAsciiArt() {
+            let asciiArt = "";
+
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const charIndex = Math.floor(Math.random() * asciiChars.length);
+                    const char = asciiChars[charIndex];
+                    asciiArt += char;
+                }
+                asciiArt += "\n"; // Add a new line after every row
+            }
+
+            // Overlay the ASCII text in the center
+            const textLines = asciiText.split("\n");
+            const textStartY = Math.floor(height / 2 - textLines.length / 2);
+
+            for (let i = 0; i < textLines.length; i++) {
+                const line = textLines[i].padStart((width + textLines[i].length) / 2, " ").padEnd(width, " ");
+                const rowIndex = textStartY + i;
+
+                const rows = asciiArt.split("\n");
+                if (rows[rowIndex]) {
+                    rows[rowIndex] = line;
+                    asciiArt = rows.join("\n");
+                }
+            }
+
+            asciiElement.textContent = asciiArt;
+        }
+
+        // Update ASCII art periodically to create a dynamic effect
+        setInterval(generateAsciiArt, 200);
+    </script>
+</body>
+</html>

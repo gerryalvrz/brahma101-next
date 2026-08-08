@@ -1,0 +1,365 @@
+<html><head><base href="https://psychedelichelices.com/in%20outer%20space%20a%20giant%20double%20helix%20of%20souls%20with%20outstretched%20arms%20like%20angels%20twists%20and%20swirls%20in%203d%20towards%20a%20black%20hole%20at%20one%20end%20of%20the%20helix%20and%20an%20idyllic%20earth%20at%20the%20other%20end/add%20starfield%20and%20three.js%20orbit%20control/dna%20molecule/angels%20and%20devils/put%20a%20spinning%20earth%20globe%20at%20one%20end%20and%20the%20sun%20at%20the%20other%20end/Psychedelic%20vision%20of%20newly%20departed%20souls%20leaving%20Earth%20with%20outstretched%20linked%20arms%20forming%20an%20animated%20spiral%20heading%20into%20the%20sun.%20Simultaneously%20newly%20created%20souls%20are%20leaving%20the%20Sun%20with%20outstretched%20arms%20linked%20to%20form%20an%20animated%20spiral%20headed%20towards%20the%20earth.%20The%20two%20spirals%20intertwine%20to%20form%20an%20animated%20double%20helix%20cosmic%20DNA%20molecule/three.js%20orbit%20controls/do%20not%20use%20jpeg%20images,%20use%20SVG%20graphics"><title>Cosmic Jazz: The Eternal Cycle of Souls</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <style>
+      body { 
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: black;  
+      }
+      canvas { display: block; }
+      #audioControls {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 100;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+      #visualizer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        z-index: 50;
+      }
+    </style>
+    
+    </head>
+    
+    <body>
+    <div id="audioControls">
+      <button id="playPause">Play</button>
+      <span id="nowPlaying"></span>
+    </div>
+    <canvas id="visualizer"></canvas>
+    
+    <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 1, 100000);
+    camera.position.set(0, 100, 600);
+    
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+    
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.05;
+    
+    const starGeometry = new THREE.BufferGeometry();
+    const stars = [];
+    
+    for (let i = 0; i < 10000; i++) {
+      const x = THREE.MathUtils.randFloatSpread(5000);
+      const y = THREE.MathUtils.randFloatSpread(5000);
+      const z = THREE.MathUtils.randFloatSpread(5000);
+      stars.push(x, y, z);
+    }
+    
+    starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(stars, 3));
+    
+    const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1 });
+    
+    const starField = new THREE.Points(starGeometry, starMaterial);
+    scene.add(starField);
+    
+    const dnaGroup = new THREE.Group();
+    
+    const soulCount = 500;
+    const souls = [];
+    const soulsGeometry = new THREE.PlaneGeometry(8, 14);
+    
+    for (let i = 0; i < soulCount; i++) {
+      const soulMaterial = new THREE.MeshBasicMaterial({ 
+        color: i % 2 === 0 ? 0x7777ff : 0xff7777,
+        side: THREE.DoubleSide,
+        opacity: 0.7,
+        transparent: true
+      });
+      
+      const soul = new THREE.Mesh(soulsGeometry, soulMaterial);
+      soul.position.y = (i - soulCount / 2) * 2;
+      soul.rotation.z = Math.PI / 2;
+      souls.push(soul);
+      dnaGroup.add(soul);
+    }
+    
+    const dnaMaterial = new THREE.LineDashedMaterial({ color: 0xffffff, dashSize: 5, gapSize: 3, linewidth: 2 });
+    
+    const dnaPoints = [];
+    for (let i = 0; i < soulCount; i++) {
+      const a = i * 0.2;
+      const r = 100;
+      const x = Math.sin(a) * r;
+      const y = (i - soulCount / 2) * 2;
+      const z = Math.cos(a) * r;
+      
+      dnaPoints.push(new THREE.Vector3(x, y, z));
+    }
+    dnaPoints.push(dnaPoints[0]);
+    
+    const dnaGeometry = new THREE.BufferGeometry().setFromPoints(dnaPoints);
+    const dna = new THREE.Line(dnaGeometry, dnaMaterial);
+    dnaGroup.add(dna);
+    
+    const dna2Points = dnaPoints.map(p => p.clone().multiplyScalar(-1));
+    const dna2Geometry = new THREE.BufferGeometry().setFromPoints(dna2Points);
+    const dna2 = new THREE.Line(dna2Geometry, dnaMaterial);
+    dnaGroup.add(dna2);
+    
+    scene.add(dnaGroup);
+    
+    const earthGroup = new THREE.Group();
+    
+    const earthGeometry = new THREE.SphereGeometry(120, 32, 32);
+    const earthMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0x2233ee,
+      wireframe: true
+    });
+    const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+    earthGroup.add(earth);
+    
+    const moonGeometry = new THREE.SphereGeometry(30, 32, 32);
+    const moonMaterial = new THREE.MeshBasicMaterial({
+      color: 0xcccccc,
+      wireframe: true
+    });
+    const moon = new THREE.Mesh(moonGeometry, moonMaterial);
+    moon.position.set(200, 0, 0);
+    earthGroup.add(moon);
+    
+    earthGroup.position.set(0, -500, 0);
+    scene.add(earthGroup);
+    
+    const sunGeometry = new THREE.SphereGeometry(300, 32, 32);
+    const sunMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0xeeff77,
+      transparent: true,
+      opacity: 0.8
+    });
+    const sun = new THREE.Mesh(sunGeometry, sunMaterial);
+    sun.position.set(0, 500, 0);
+    scene.add(sun);
+    
+    const sunAtmosphereGeometry = new THREE.SphereGeometry(305, 32, 32);
+    const sunAtmosphereMaterial = new THREE.MeshBasicMaterial({ color: 0xffffaa, opacity: 0.2, transparent: true });
+    const sunAtmosphere = new THREE.Mesh(sunAtmosphereGeometry, sunAtmosphereMaterial);
+    sunAtmosphere.position.set(0, 500, 0);
+    scene.add(sunAtmosphere);
+    
+    const ambientLight = new THREE.AmbientLight(0xffffcc, 0.4);
+    scene.add(ambientLight);
+    
+    const venusGeometry = new THREE.SphereGeometry(80, 32, 32);
+    const venusMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0xffaa66,
+      wireframe: true
+    });
+    const venus = new THREE.Mesh(venusGeometry, venusMaterial);
+    venus.position.set(280, 200, 50);
+    scene.add(venus);
+    
+    const mercuryGeometry = new THREE.SphereGeometry(15, 32, 32);
+    const mercuryMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0xaaaaaa
+    });
+    const mercury = new THREE.Mesh(mercuryGeometry, mercuryMaterial);
+    const mercuryOrbitRadius = 350;
+    const mercuryOrbitAngle = 0;  
+    
+    const mercuryTrail = new THREE.EllipseCurve(
+      0, 0,
+      mercuryOrbitRadius, mercuryOrbitRadius,
+      0, 2 * Math.PI,  
+      false,
+      0
+    );
+    
+    const mercuryTrailPoints = mercuryTrail.getPoints(100);
+    const mercuryTrailGeometry = new THREE.BufferGeometry().setFromPoints(mercuryTrailPoints);
+    
+    const mercuryTrailMaterial = new THREE.LineBasicMaterial({ color: 0x555555, opacity: 0.5, transparent: true });
+    
+    const mercuryTrailLine = new THREE.Line(mercuryTrailGeometry, mercuryTrailMaterial);
+    mercuryTrailLine.rotation.x = - Math.PI / 2;
+    mercuryTrailLine.position.y = sun.position.y;
+    
+    scene.add(mercuryTrailLine);
+    scene.add(mercury);
+    
+    let clock = new THREE.Clock();
+    
+    // Audio setup
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    
+    const audio = new Audio();
+    audio.crossOrigin = "anonymous";
+    audio.src = "https://ice1.somafm.com/deepspaceone-128-mp3";
+    
+    const source = audioContext.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+    
+    const playPauseButton = document.getElementById('playPause');
+    const nowPlayingSpan = document.getElementById('nowPlaying');
+    
+    playPauseButton.addEventListener('click', () => {
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    
+      if (audio.paused) {
+        audio.play();
+        playPauseButton.textContent = 'Pause';
+      } else {
+        audio.pause();
+        playPauseButton.textContent = 'Play';
+      }
+    });
+    
+    // Fetch and display now playing information
+    function updateNowPlaying() {
+      fetch('https://somafm.com/deepspaceone/songxml.xml')
+        .then(response => response.text())
+        .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+        .then(data => {
+          const artist = data.querySelector('artist').textContent;
+          const title = data.querySelector('title').textContent;
+          nowPlayingSpan.textContent = `Now Playing: ${artist} - ${title}`;
+        });
+    }
+    
+    setInterval(updateNowPlaying, 30000);
+    updateNowPlaying();
+    
+    // Visualizer setup
+    const visualizer = document.getElementById('visualizer');
+    const visualizerCtx = visualizer.getContext('2d');
+    
+    function resizeVisualizer() {
+      visualizer.width = window.innerWidth;
+      visualizer.height = 100;
+    }
+    
+    resizeVisualizer();
+    window.addEventListener('resize', resizeVisualizer);
+    
+    const murmurationCenter = new THREE.Vector3();
+    const murmurationBox = new THREE.Box3(new THREE.Vector3(-200, -600, -200), new THREE.Vector3(200, 600, 200));
+    
+    function animate() {
+      let t = clock.getElapsedTime();
+      let dt = clock.getDelta();
+      
+      analyser.getByteFrequencyData(dataArray);
+      
+      let bassValue = dataArray[0] / 255;
+      let midValue = dataArray[bufferLength / 2] / 255;
+      let trebleValue = dataArray[bufferLength - 1] / 255;
+    
+      let sunIntensity = bassValue * 0.5 + 0.5;
+      sun.material.opacity = sunIntensity;
+      
+      murmurationCenter.set(0, 0, 0);
+      souls.forEach(soul => murmurationCenter.add(soul.position));
+      murmurationCenter.divideScalar(souls.length);
+      
+      souls.forEach((soul, index) => {
+        soul.rotation.z += (0.002 + midValue * 0.01) * (index % 2 === 0 ? 1 : -1);
+        soul.position.y = ((index - soulCount / 2) * 2) + Math.sin((t + index * 0.1) * (2 + trebleValue * 5)) * (100 + bassValue * 50);
+        
+        const a = index * 0.2 + (t * (0.5 + midValue * 0.5));
+        const r = 100 + Math.sin((t * 0.2) + (index % 2 === 0 ? 0 : Math.PI)) * (50 + trebleValue * 25);
+        soul.position.x = Math.sin(a) * r;
+        soul.position.z = Math.cos(a) * r;
+        
+        soul.visible = soul.position.y > (index % 2 === 0 ? -400 : 200);
+    
+        const directionToCenter = murmurationCenter.clone().sub(soul.position);
+        const distanceToCenter = directionToCenter.length();
+        
+        if (distanceToCenter > 50) {
+          soul.position.add(directionToCenter.normalize().multiplyScalar(distanceToCenter * (0.01 + bassValue * 0.02)));  
+        }
+        
+        if (!murmurationBox.containsPoint(soul.position)) {
+          soul.position.lerp(murmurationCenter, 0.005 + midValue * 0.01);
+        }
+      });
+    
+      dnaGroup.rotation.y += 0.002 + trebleValue * 0.005;
+      starField.rotation.y += 0.0002 + bassValue * 0.0005;
+    
+      earthGroup.rotation.y += 0.0005 + midValue * 0.001;
+    
+      const moonOrbitSpeed = 0.002 + trebleValue * 0.003;
+      moon.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), moonOrbitSpeed);
+      moon.rotation.y += 0.001 + bassValue * 0.002;
+    
+      venus.rotation.y -= 0.0004 + midValue * 0.001;
+    
+      const mercuryOrbitSpeed = 0.03 + bassValue * 0.05;
+      const mercuryAngleStep = mercuryOrbitSpeed * dt;
+      mercuryTrailLine.rotation.z += mercuryAngleStep;  
+    
+      const mercuryAngle = t * mercuryOrbitSpeed + mercuryOrbitAngle;
+      mercury.position.x = Math.cos(mercuryAngle) * mercuryOrbitRadius;
+      mercury.position.z = Math.sin(mercuryAngle) * mercuryOrbitRadius;
+      mercury.position.y = sun.position.y;
+      mercury.rotation.y += 0.015 + trebleValue * 0.03;
+    
+      // Update visualizer
+      visualizerCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      visualizerCtx.fillRect(0, 0, visualizer.width, visualizer.height);
+    
+      const barWidth = (visualizer.width / bufferLength) * 2.5;
+      let x = 0;
+    
+      for(let i = 0; i < bufferLength; i++) {
+        const barHeight = dataArray[i] / 2;
+        
+        const r = 50 + (i * 2);
+        const g = 50;
+        const b = 150 - (i * 2);
+        
+        visualizerCtx.fillStyle = `rgb(${r},${g},${b})`;
+        visualizerCtx.fillRect(x, visualizer.height - barHeight, barWidth, barHeight);
+    
+        x += barWidth + 1;
+      }
+    
+      controls.update();
+      renderer.render(scene, camera);
+    
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+    
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+    
+    </script>
+    
+    <a href="https://psychedelichelices.com/cosmic-jazz-eternal-cycle-of-souls">Cosmic Jazz: Where celestial harmonies and earthly rhythms intertwine</a>
+    
+    <svg width="100" height="100">
+      <filter id="blurFilter">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+      </filter>
+      
+      <circle cx="50" cy

@@ -3,38 +3,35 @@
 import Link from "next/link";
 import { useState } from "react";
 
-export default function Footer() {
+interface FooterProps {
+  className?: string;
+}
+
+export default function Footer({ className }: FooterProps) {
   const [showModal, setShowModal] = useState(false);
 
   return (
     <>
-      <footer className="text-center mt-8 text-sm text-[#0a0] text-shadow-neon py-4">
+      <footer
+        className={
+          className ??
+          "text-center mt-10 text-sm text-[#0a0] text-shadow-neon py-4"
+        }
+      >
         <p>
-          <span
-            className="text-neon no-underline cursor-pointer hover:text-neon-hover"
-            onClick={() => setShowModal(true)}
-          >
+          <span className="footerLink" onClick={() => setShowModal(true)}>
             Lunarpunk
           </span>{" "}
           ☥ |{" "}
-          <Link
-            href="/music"
-            className="text-neon no-underline hover:text-neon-hover"
-          >
+          <Link href="/music" className="footerLink">
             Dance
           </Link>{" "}
           |{" "}
-          <Link
-            href="/hack"
-            className="text-neon no-underline hover:text-neon-hover"
-          >
+          <Link href="/hack" className="footerLink">
             Hack
           </Link>{" "}
           |{" "}
-          <Link
-            href="/locognitive"
-            className="text-neon no-underline hover:text-neon-hover"
-          >
+          <Link href="/locognitive" className="footerLink">
             Transform
           </Link>
         </p>
@@ -46,14 +43,14 @@ export default function Footer() {
           onClick={() => setShowModal(false)}
         >
           <div
-            className="border-2 border-neon bg-black/90 p-6 rounded-lg shadow-neon text-neon font-mono text-center max-w-sm"
+            className="border-2 border-[#0f0] bg-black/85 p-6 rounded-[5px] shadow-neon text-[#0f0] font-mono text-center max-w-sm"
             onClick={(e) => e.stopPropagation()}
           >
             <p className="text-lg mb-4">
               This is the beginning of the Lunarpunk World!
             </p>
             <button
-              className="px-4 py-2 border-2 border-neon bg-transparent text-neon font-vt323 cursor-pointer hover:bg-neon hover:text-black transition-colors"
+              className="px-4 py-2 rounded-[5px] border-2 border-[#0f0] bg-transparent text-[#0f0] font-vt323 cursor-pointer hover:bg-[#0f0] hover:text-black transition-colors duration-300"
               onClick={() => setShowModal(false)}
             >
               Close

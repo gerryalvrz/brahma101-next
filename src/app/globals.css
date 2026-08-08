@@ -3,56 +3,220 @@
 @tailwind utilities;
 
 :root {
-  --neon: #00ff00;
-  --neon-dim: #004400;
-  --neon-hover: #ff33cc;
+  /* Classic brahma101 Matrix system */
+  --color-bg-1: #0f0c29;
+  --color-bg-2: #032b2d;
+  --color-bg-3: #24243e;
+  --color-primary: #00ff00;
+  --color-primary-rgb: 0, 255, 0;
+  --color-accent: #ff33cc;
+  --color-accent-alt: #9308d4;
+  --color-footer: #00aa00;
+  --color-surface: rgba(0, 0, 0, 0.8);
+  --color-text: #00ff00;
   --bg-dark: #000000;
+  --bg-panel: rgba(0, 0, 0, 0.8);
+  --neon: var(--color-primary);
+  --neon-dim: rgba(0, 255, 0, 0.35);
+  --neon-hover: var(--color-accent);
+  --font-mono: "Courier New", Courier, monospace;
+  --font-body: "Courier New", Courier, monospace;
+  --radius: 5px;
 }
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
+  /* Solid fallback so rubber-band / overscroll never flashes white */
+  background-color: var(--color-bg-1);
+  background-image: linear-gradient(
+    135deg,
+    var(--color-bg-1),
+    var(--color-bg-2),
+    var(--color-bg-3)
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  background: linear-gradient(135deg, #0f0c29, #032B2D, #24243e);
-  background-attachment: fixed;
-  color: #00ff00;
-  font-family: 'Courier New', Courier, monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   min-height: 100vh;
+  /* Same dark gradient as legacy index — keep on body AND html for overscroll */
+  background-color: var(--color-bg-1);
+  background-image: linear-gradient(
+    135deg,
+    var(--color-bg-1),
+    var(--color-bg-2),
+    var(--color-bg-3)
+  );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  overflow-y: auto;
+  overscroll-behavior-y: none;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Neon text shadow utility */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-accent);
+}
+
 .text-shadow-neon {
-  text-shadow: 0 0 10px #0f0;
+  text-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.75);
 }
 
 .text-shadow-neon-strong {
-  text-shadow: 0 0 15px #0f0;
+  text-shadow:
+    0 0 10px rgba(var(--color-primary-rgb), 0.85),
+    0 0 20px rgba(var(--color-primary-rgb), 0.55);
 }
 
-/* Blinking cursor for typewriter */
 .blinking-cursor {
   display: inline-block;
   width: 2px;
   height: 1em;
-  background-color: #0f0;
+  background-color: var(--color-primary);
   animation: blink 0.8s linear infinite;
   vertical-align: text-bottom;
 }
 
 @keyframes blink {
-  0%, 100% { background-color: transparent; }
-  50% { background-color: #0f0; }
+  0%,
+  100% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: var(--color-primary);
+  }
 }
 
-/* Typewriter cursor border */
 .typewriter-cursor {
-  border-right: 2px solid #0f0;
+  border-right: 2px solid var(--color-primary);
   animation: cursor-blink 0.75s step-end infinite;
 }
 
 @keyframes cursor-blink {
-  from, to { border-color: transparent; }
-  50% { border-color: #0f0; }
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: var(--color-primary);
+  }
+}
+
+@keyframes neon-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  2% {
+    opacity: 0.8;
+    filter: brightness(1.2);
+  }
+  4% {
+    opacity: 1;
+    filter: brightness(0.9);
+  }
+  6% {
+    opacity: 0.9;
+    filter: brightness(1.1);
+  }
+  8% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+.neon-flicker {
+  animation: neon-flicker 3.2s linear infinite;
+}
+
+.terminal-text {
+  font-family: var(--font-mono);
+  color: var(--color-primary);
+  text-shadow: 0 0 6px rgba(var(--color-primary-rgb), 0.6);
+}
+
+.display-text {
+  font-family: var(--font-display), monospace;
+  color: var(--color-primary);
+  text-shadow: 0 0 15px rgba(var(--color-primary-rgb), 0.8);
+}
+
+/* Legacy utility compatibility */
+.text-neon {
+  color: var(--neon);
+}
+.text-neon-dim {
+  color: var(--neon-dim);
+}
+.border-neon {
+  border-color: var(--neon);
+}
+.border-neon-dim {
+  border-color: var(--neon-dim);
+}
+.bg-neon {
+  background-color: var(--neon);
+}
+.font-vt323 {
+  font-family: var(--font-display), monospace;
+}
+.shadow-neon {
+  box-shadow: 0 0 15px rgba(var(--color-primary-rgb), 0.5);
+}
+.shadow-neon-strong {
+  box-shadow: 0 0 25px rgba(var(--color-primary-rgb), 0.85);
+}
+.shadow-neon-thin {
+  box-shadow:
+    0 0 3px 1px rgb(2, 87, 2),
+    0 0 6px 2px rgb(45, 169, 45),
+    0 0 10px 3px rgb(18, 226, 18);
+}
+.hover\:text-neon-hover:hover {
+  color: var(--neon-hover);
+}
+.hover\:bg-neon:hover {
+  background-color: var(--neon);
+}
+.hover\:text-black:hover {
+  color: #000;
+}
+.hover\:shadow-neon-strong:hover {
+  box-shadow:
+    0 0 5px 2px #0f0,
+    0 0 10px 3px #0f0,
+    0 0 15px 5px #0f0;
+}
+.hover\:text-shadow-neon:hover {
+  text-shadow: 0 0 10px rgba(var(--color-primary-rgb), 0.75);
+}
+
+.footerLink {
+  color: var(--neon);
+  text-decoration: none;
+  text-shadow: 0 0 5px rgba(var(--color-primary-rgb), 0.55);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.footerLink:hover {
+  color: var(--color-accent-alt);
 }

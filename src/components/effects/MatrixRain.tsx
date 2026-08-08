@@ -1,14 +1,22 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 const MATRIX_CHARS =
   "AB0℥1ℌCD亜愛01安EℌFGHIJ以位因01KℑLMN虚居記O♈︎P01QRわをんS10TUVW1♑︎0XY歌会10時思Z12♅34567水火木891♃0@#$%☿^&*()♆*&^%";
 
 export default function MatrixRain({ opacity = 0.4 }: { opacity?: number }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -49,13 +57,26 @@ export default function MatrixRain({ opacity = 0.4 }: { opacity?: number }) {
       clearInterval(interval);
       window.removeEventListener("resize", resize);
     };
-  }, []);
+  }, [mounted]);
 
-  return (
+  if (!mounted) return null;
+
+  // Above the html/body gradient, below page content (z-index: 1)
+  return createPortal(
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
-      style={{ zIndex: -1, opacity }}
-    />
+      aria-hidden
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        zIndex: 0,
+        opacity,
+        pointerEvents: "none",
+      }}
+    />,
+    document.body
   );
 }

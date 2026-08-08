@@ -1,0 +1,718 @@
+<html><head><base href=".">
+    <meta charset="UTF-8">
+    <title>Matrix ChatGPT Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <canvas class="matrix-rain"></canvas>
+    
+    <style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Courier New', monospace;
+        color: #00ff00;
+    }
+    
+    body {
+        background-color: #000;
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    #bootScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        z-index: 1000;
+        padding: 20px;
+        overflow-y: auto;
+    }
+    
+    .boot-text {
+        color: #00ff00;
+        margin: 5px 0;
+        font-size: 14px;
+    }
+    
+    #mainInterface {
+        display: none;
+        height: 100vh;
+        grid-template-columns: 250px 1fr;
+    }
+    
+    #sidebar {
+        background: rgba(0, 20, 0, 0.9);
+        padding: 20px;
+        border-right: 1px solid #00ff00;
+        overflow-y: auto;
+        transition: transform 0.3s ease;
+    }
+    
+    #sidebar.collapsed {
+        transform: translateX(-250px);
+    }
+    
+    .sidebar-toggle {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        z-index: 1000;
+    }
+    
+    #viewportToggle {
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .mobile-view #mainInterface {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .mobile-view #sidebar {
+        position: fixed;
+        height: 100%;
+        z-index: 999;
+    }
+    
+    @media (max-width: 768px) {
+        #mainInterface {
+            grid-template-columns: 1fr;
+        }
+        
+        #sidebar {
+            position: fixed;
+            height: 100%;
+            z-index: 999;
+        }
+    }
+    
+    .system-info {
+        font-size: 12px;
+        margin: 10px 0;
+        padding: 5px;
+        border: 1px solid #00ff00;
+    }
+    
+    #chatInterface {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+    
+    #chatHistory {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 20px;
+        padding: 10px;
+        border: 1px solid #00ff00;
+    }
+    
+    #inputArea {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    #userInput {
+        flex-grow: 1;
+        background: black;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        padding: 10px;
+    }
+    
+    .control-panel {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 20, 0, 0.9);
+        padding: 10px;
+        border: 1px solid #00ff00;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .button {
+        background: black;
+        border: 1px solid #00ff00;
+        color: #00ff00;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    
+    .button:hover {
+        background: #003300;
+    }
+    
+    .slider {
+        width: 100%;
+        margin: 10px 0;
+    }
+    
+    .message {
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #00ff00;
+        background: rgba(0, 20, 0, 0.3);
+    }
+    
+    .user-message {
+        border-color: #00aa00;
+    }
+    
+    .computer-message {
+        border-color: #008800;
+    }
+    
+    #voiceButton {
+        background: none;
+        border: 2px solid #00ff00;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        position: relative;
+    }
+    
+    #voiceButton::after {
+        content: '🎤';
+        font-size: 20px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    
+    .matrix-rain {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0.4;
+        z-index: 1;
+        filter: blur(0.5px);
+      } 
+    
+    .toggle-button {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #00ff00;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .toggle-button .status {
+        padding: 2px 6px;
+        border-radius: 3px;
+        background: rgba(0, 255, 0, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .toggle-button.active {
+        background: rgba(0, 255, 0, 0.1);
+    }
+    
+    .toggle-button.active .status {
+        background: #00ff00;
+        color: black;
+    }
+    
+    .toggle-button:hover {
+        background: rgba(0, 255, 0, 0.05);
+    }
+    
+    #newConversation {
+        margin-top: 20px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .floppy-save {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      background: #000;
+      border: 2px solid #00ff00;
+      display: none;
+      z-index: 1001;
+      animation: rotate 5s linear;
+    }
+    
+    .floppy-save svg {
+      width: 100%;
+      height: 100%;
+      fill: #00ff00;
+    }
+    
+    @keyframes rotate {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(180deg); }
+    }
+    
+    #roomSelect {
+        background-color: black;
+        color: #00ff00;
+        border: 1px solid #00ff00;
+        padding: 5px;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    #roomSelect option {
+        background-color: black;
+        color: #00ff00;
+    }
+    
+    .room-indicator {
+        color: #00ff00;
+        font-size: 12px;
+        margin-bottom: 10px;
+        padding: 5px;
+        border: 1px solid #00ff00;
+        text-align: center;
+    }
+    </style>
+    </head>
+    <body>
+    <button class="button sidebar-toggle">☰</button>
+    <div id="bootScreen">
+        <button id="skipIntro" class="button" style="position: absolute; top: 10px; right: 10px;">
+            Skip Intro
+        </button>
+        <div class="boot-text">Initializing system...</div>
+        <pre>
+        &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2557;    &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2557;   &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2557;
+        &#x2588;&#x2588;&#x2554;&#x2550;&#x2550;&#x2550;&#x2550;&#x255d;    &#x2588;&#x2588;&#x2554;&#x2550;&#x2550;&#x2588;&#x2588;&#x2551;   &#x2588;&#x2588;&#x2554;&#x2550;&#x2550;&#x2550;&#x2550;&#x255d;  
+        &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2557;    &#x2588;&#x2588;&#x2551;  &#x2588;&#x2588;&#x2551;   &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2557;
+        &#x255a;&#x2550;&#x2550;&#x2550;&#x2550;&#x2588;&#x2588;&#x2551;    &#x2588;&#x2588;&#x2551;  &#x2588;&#x2588;&#x2551;   &#x255a;&#x2550;&#x2550;&#x2550;&#x2550;&#x2588;&#x2588;&#x2551;
+        &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2551;    &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2551;   &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2551;
+        &#x255a;&#x2550;&#x2550;&#x2550;&#x2550;&#x2550;&#x2550;&#x255d;    &#x255a;&#x2550;&#x2550;&#x2550;&#x2550;&#x2550;&#x2550;&#x255d;   &#x255a;&#x2550;&#x2550;&#x2550;&#x2550;&#x2550;&#x2550;&#x255d;
+        </pre>
+    </div>
+    
+    <div id="mainInterface">
+        <div id="sidebar">
+            <h2>System Status</h2>
+            <div class="system-info">Location: ENCRYPTED</div>
+            <div class="system-info">IP: 192.168.*.* (CLOAKED)</div>
+            <div class="system-info">Security Level: MAXIMUM</div>
+            <div class="system-info">Encryption: ACTIVE</div>
+            <h3>Controls</h3>
+            <div class="toggle-button" id="cloakButton">
+              <span class="label">Cloak:</span>
+              <span class="status">OFF</span>
+            </div>
+            <div class="toggle-button" id="proxyButton">
+              <span class="label">Proxy:</span>
+              <span class="status">OFF</span>
+            </div>
+            <div class="toggle-button" id="viewportToggle">
+                <span class="label">View Mode:</span>
+                <span class="status">DESKTOP</span>
+            </div>
+            <div class="button" id="newConversation">New Conversation</div>
+            <div id="serverSection" style="margin-top: 20px; border-top: 1px solid #00ff00; padding-top: 10px;">
+                <div id="peerList"></div>
+                <div id="roomsList" style="margin-top: 10px;">
+                    <div style="color: #00ff00; margin-bottom: 5px;">Chat Rooms:</div>
+                    <select id="roomSelect" class="button" style="width: 100%; background: black; margin-bottom: 5px;">
+                        <option value="main">Main Hall</option>
+                        <option value="matrix">Matrix Hub</option>
+                        <option value="hackers">Hackers Den</option>
+                        <option value="classified">Classified Ops</option>
+                    </select>
+                </div>
+                <button id="joinRoom" class="button" style="width: 100%; margin-top: 10px;">Join Room</button>
+            </div>
+        </div>
+        
+        <div id="chatInterface">
+            <div class="control-panel">
+                <button id="voiceButton"></button>
+            </div>
+            <div id="chatHistory"></div>
+            <div id="inputArea">
+                <input type="text" id="userInput" placeholder="Type your message...">
+                <button onclick="sendMessage()" class="button">Send</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="floppy-save">
+      <svg viewBox="0 0 24 24">
+        <path d="M3 3h18v18H3V3zm16 16V7H5v12h14zM7 15h10v2H7v-2zm0-4h10v2H7v-2z"/>
+      </svg>
+    </div>
+    
+    <canvas class="matrix-rain" id="matrixRain"></canvas>
+    
+    <audio id="backgroundMusic" loop>
+        <source src="https://s3.amazonaws.com/appforest_uf/f1674593640791x883171901605709300/Matrix%20Sound%20Effects.mp3" type="audio/mp3">
+    </audio>
+    
+    <script>let synth = window.speechSynthesis;
+    let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    let isListening = false;
+    let voiceEnabled = false;
+    let messageHistory = [];
+    let originalMessages = new Map();
+    let isProxyActive = false;
+    let currentRoom = null;
+    const HACKER_ASCII = `
+        ⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠛⠛⠛⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠛⠄⠄⠄⠄⠄⠄⠄⠈⠻⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠙⣿⣿⣿
+       ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢹⣿⣿⣿
+       ⣿⣿⣿⣿⣿⣿⣿⣿⠃⠄⠄⠄⣠⣴⣶⣶⣤⡄⠄⠄⠄⠄⠈⢿⣿⣿⣿⣿
+        ⣿⣿⣿⣿⣿⣿⣿⡟⠄⠄⠄⠾⠛⠛⠛⠛⠛⠃⠄⠄⠄⠄⠄⠘⣿⣿⣿⣿
+       ⣿⣿⣿⣿⣿⣿⣿⠃⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⣿⣿⣿⣿
+       ⣿⣿⣿⣿⣿⣿⣿⠃⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄ ⠣⣿⣿⣿⣿
+       ⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
+    `;
+    const bootSequence = [HACKER_ASCII, "Initializing system...", "Loading kernel...", "Checking system integrity...", "Initializing network protocols...", "Loading security modules...", "Establishing secure connection...", "System ready..."];
+    let currentBootStep = 0;
+    const bootScreen = document.getElementById('bootScreen');
+    const mainInterface = document.getElementById('mainInterface');
+    const music = document.getElementById('backgroundMusic');
+    let cloakActive = false;
+    let proxyActive = false;
+    function initMultiplayer() {
+        const createRoom = (roomName) => {
+            if (currentRoom) {
+                currentRoom.close();
+            }
+            
+            currentRoom = new WebsimSocket(roomName);
+            
+            currentRoom.onmessage = event => {
+                const data = event.data;
+                if (data.type === "chat") {
+                    addMessage(data.username, data.message);
+                }
+            };
+    
+            currentRoom.party.subscribe(peers => {
+                const peerList = document.getElementById('peerList');
+                peerList.innerHTML = '<div style="color: #00ff00; margin-bottom: 5px;">Connected Users:</div>';
+                
+                for (const clientId in peers) {
+                    const { username } = peers[clientId];
+                    const div = document.createElement('div');
+                    div.textContent = `> ${username}`;
+                    div.style.color = '#00ff00';
+                    div.style.marginLeft = '10px';
+                    peerList.appendChild(div);
+                }
+            });
+    
+            addMessage('System', `Joined room: ${roomName}`);
+        };
+    
+        document.getElementById('joinRoom').addEventListener('click', () => {
+            const roomSelect = document.getElementById('roomSelect');
+            const selectedRoom = roomSelect.value;
+            createRoom(selectedRoom);
+        });
+    
+        createRoom('main');
+    }
+    async function getAIResponse(message) {
+      try {
+        const response = await fetch('/api/ai_completion', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            prompt: `You are a AI computer assistant in a Matrix-themed interface. 
+                    Respond to: ${message}
+                    
+                    Keep responses concise and slightly cryptic, maintaining the Matrix aesthetic.`,
+            data: message
+          })
+        });
+        const data = await response.json();
+        return data.response;
+      } catch (error) {
+        console.error('Error:', error);
+        return 'Error in matrix connection. Please try again.';
+      }
+    }
+    function typeWriterEffect(text, element, callback) {
+      let i = 0;
+      const speed = 20; // Typing speed in milliseconds
+    
+      function type() {
+        if (i < text.length) {
+          element.textContent += text.charAt(i);
+          i++;
+          setTimeout(type, speed);
+        } else {
+          if (callback) setTimeout(callback, 100);
+        }
+      }
+      
+      element.textContent = '';
+      type();
+    }
+    
+    function nextBootStep() {
+      if (currentBootStep < bootSequence.length) {
+        const div = document.createElement('div');
+        div.className = 'boot-text';
+        bootScreen.appendChild(div);
+        typeWriterEffect(bootSequence[currentBootStep], div, () => {
+          currentBootStep++;
+          nextBootStep();
+        });
+      } else {
+        setTimeout(() => {
+          startInterface();
+        }, 300);
+      }
+    }
+    function startInterface() {
+      bootScreen.style.display = 'none';
+      mainInterface.style.display = 'grid';
+      music.volume = 0.5;
+      music.play().then(() => {
+        document.getElementById('musicToggle').textContent = "⏸️ Music";
+      }).catch(error => {
+        console.error("Music playback failed:", error);
+      });
+    }
+    document.getElementById('skipIntro').addEventListener('click', function () {
+      bootScreen.style.display = 'none';
+      startInterface();
+    });
+    
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('collapsed');
+    }
+    
+    function toggleViewport() {
+        document.body.classList.toggle('mobile-view');
+        const status = document.querySelector('#viewportToggle .status');
+        status.textContent = document.body.classList.contains('mobile-view') ? 'MOBILE' : 'DESKTOP';
+    }
+    
+    document.querySelector('.sidebar-toggle').addEventListener('click', toggleSidebar);
+    document.getElementById('viewportToggle').addEventListener('click', toggleViewport);
+    
+    function cloakConversation() {
+      const messages = document.querySelectorAll('#chatHistory .message');
+      messages.forEach(msg => {
+        if (!originalMessages.has(msg)) {
+          originalMessages.set(msg, msg.textContent);
+          const redactedText = ['[REDACTED]', '[CLASSIFIED]', '[DATA EXPUNGED]', '[RESTRICTED]'][Math.floor(Math.random() * 4)];
+          msg.textContent = redactedText;
+        }
+      });
+    }
+    function restoreMessages() {
+      originalMessages.forEach((text, element) => {
+        if (element.parentNode) {
+          element.textContent = text;
+        }
+      });
+      originalMessages.clear();
+    }
+    function clearHistory() {
+      const chatHistory = document.getElementById('chatHistory');
+      if (chatHistory) {
+        chatHistory.innerHTML = '';
+      }
+    }
+    function clearConversation() {
+      const chatHistory = document.getElementById('chatHistory');
+      messageHistory = Array.from(chatHistory.children);
+      chatHistory.innerHTML = '';
+      addMessage('Computer', 'Conversation encrypted and cleared. Start a new secure conversation.');
+    }
+    function proxyChain() {
+      const chatHistory = document.getElementById('chatHistory');
+      const messages = Array.from(chatHistory.children);
+      const routes = ['Routing through encrypted node...', 'Bouncing through proxy servers...', 'Establishing secure connection...', 'Connection rerouted successfully.'];
+      let i = 0;
+      const routingInterval = setInterval(() => {
+        if (i < routes.length) {
+          const routeMsg = document.createElement('div');
+          routeMsg.className = 'message system-message';
+          routeMsg.textContent = routes[i];
+          chatHistory.appendChild(routeMsg);
+          chatHistory.scrollTop = chatHistory.scrollHeight;
+          i++;
+        } else {
+          clearInterval(routingInterval);
+          chatHistory.innerHTML = '';
+          messages.reverse().forEach(msg => chatHistory.appendChild(msg));
+        }
+      }, 500);
+    }
+    function restoreMessageOrder() {
+      const chatHistory = document.getElementById('chatHistory');
+      const messages = Array.from(chatHistory.children);
+      chatHistory.innerHTML = '';
+      messages.reverse().forEach(msg => chatHistory.appendChild(msg));
+    }
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    
+    recognition.onresult = (event) => {
+      const input = document.getElementById('userInput');
+      const lastResult = event.results[event.results.length - 1];
+      input.value = lastResult[0].transcript;
+    };
+    
+    recognition.onend = () => {
+      if (isListening) {
+        recognition.start();
+      }
+    };
+    document.getElementById('voiceButton').addEventListener('click', function() {
+      if (!isListening) {
+        recognition.start();
+        this.style.borderColor = '#ff0000';
+        isListening = true;
+      } else {
+        recognition.stop();
+        this.style.borderColor = '#00ff00';
+        isListening = false;
+      }
+    });
+    function speak(text) {
+      if (synth) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        synth.speak(utterance);
+      }
+    }
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      
+      if (message) {
+        addMessage('User', message);
+        input.value = '';
+        
+        if (currentRoom) {
+          currentRoom.send({
+            type: "chat",
+            message: message,
+            username: 'User'
+          });
+        }
+        
+        const response = await getAIResponse(message);
+        addMessage('Computer', response);
+        if (voiceEnabled) {
+          speak(response);
+        }
+      }
+    }
+    function addMessage(sender, text) {
+      const chatHistory = document.getElementById('chatHistory');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${sender.toLowerCase()}-message`;
+      let displayText = sender === 'Computer' ? text : `${sender}: ${text}`;
+      if (cloakActive) {
+        originalMessages.set(messageDiv, displayText);
+        displayText = '[REDACTED]';
+      }
+      messageDiv.textContent = displayText;
+      if (isProxyActive) {
+        chatHistory.insertBefore(messageDiv, chatHistory.firstChild);
+      } else {
+        chatHistory.appendChild(messageDiv);
+      }
+      chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+    document.getElementById('userInput').addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+    function initializeMatrix() {
+      const canvas = document.getElementById('matrixRain');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+      const fontSize = 14;
+      const columns = canvas.width / fontSize;
+      const drops = new Array(Math.floor(columns)).fill(1);
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0F0';
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++) {
+          const text = characters.charAt(Math.floor(Math.random() * characters.length));
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+      setInterval(draw, 33);
+    }
+    document.getElementById('cloakButton').addEventListener('click', function () {
+      cloakActive = !cloakActive;
+      this.classList.toggle('active');
+      this.querySelector('.status').textContent = cloakActive ? 'ON' : 'OFF';
+      if (cloakActive) {
+        cloakConversation();
+      } else {
+        restoreMessages();
+      }
+    });
+    document.getElementById('proxyButton').addEventListener('click', function () {
+      isProxyActive = !isProxyActive;
+      this.classList.toggle('active');
+      this.querySelector('.status').textContent = isProxyActive ? 'ON' : 'OFF';
+      if (isProxyActive) {
+        proxyChain();
+      } else {
+        restoreMessageOrder();
+      }
+    });
+    document.getElementById('newConversation').addEventListener('click', function () {
+      const floppy = document.querySelector('.floppy-save');
+      floppy.style.display = 'block';
+      const chatHistory = document.getElementById('chatHistory');
+      const savedConversation = chatHistory.innerHTML;
+      messageHistory.push(savedConversation);
+      setTimeout(() => {
+        floppy.style.display = 'none';
+        clearHistory();
+        addMessage('Computer', 'New secure connection established. How may I assist you?');
+      }, 5000);
+    });
+    window.addEventListener('resize', function () {
+      const canvas = document.getElementById('matrixRain');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+    nextBootStep();
+    initMultiplayer();
+    initializeMatrix();
+    </script>
+    </body></html>

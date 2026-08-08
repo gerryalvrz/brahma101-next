@@ -11,7 +11,17 @@ const MESSAGES = [
   "The Universe is Mental.",
 ];
 
-export default function TerminalTyper() {
+interface TerminalTyperProps {
+  className: string;
+  scanLineClassName: string;
+  textClassName?: string;
+}
+
+export default function TerminalTyper({
+  className,
+  scanLineClassName,
+  textClassName = "neon-flicker",
+}: TerminalTyperProps) {
   const [display, setDisplay] = useState("");
   const msgIdx = useRef(0);
   const charIdx = useRef(0);
@@ -39,8 +49,9 @@ export default function TerminalTyper() {
   }, []);
 
   return (
-    <div className="w-4/5 max-w-[800px] mx-auto my-12 p-5 text-center border-2 border-neon bg-black/80 text-neon font-mono text-lg leading-relaxed shadow-neon">
-      <p>
+    <div className={className}>
+      <span className={scanLineClassName} aria-hidden />
+      <p className={textClassName}>
         {display}
         <span className="blinking-cursor" />
       </p>

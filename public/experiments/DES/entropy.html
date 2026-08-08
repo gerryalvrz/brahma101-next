@@ -1,0 +1,1286 @@
+<html>
+<head>
+  <base href="/">
+  <title>System Anomaly</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: black;
+      color: white;
+      font-family: monospace;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      perspective: 1000px;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      transform-style: preserve-3d;
+      animation: reality-fracture 15s infinite, interdimensional-tear 10s infinite,
+                 cosmic-vortex 20s infinite, reality-disintegration 12s infinite,
+                 void-consumption 15s infinite, neural-fracture 8s infinite,
+                 consciousness-decay 10s infinite, cosmic-horror 20s infinite;
+      will-change: transform;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    .glitch {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: glitch 0.2s infinite;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0) }
+      25% { transform: translate(-2px, 2px) skew(15deg) }
+      50% { transform: translate(2px, -2px) scale(1.05) }
+      75% { transform: translate(-2px, -2px) rotate(2deg) }
+      100% { transform: translate(2px, 2px) skew(-15deg) }
+    }
+
+    @keyframes cosmic-pulse {
+      0% { transform: scale(1); opacity: 0.8; filter: hue-rotate(0deg); }
+      50% { transform: scale(1.2); opacity: 0.4; filter: hue-rotate(180deg); }
+      100% { transform: scale(1); opacity: 0.8; filter: hue-rotate(360deg); }
+    }
+
+    @keyframes void-rotate {
+      0% { transform: rotate(0deg) translate(-50%, -50%) scale(1); }
+      50% { transform: rotate(180deg) translate(-50%, -50%) scale(1.5); }
+      100% { transform: rotate(360deg) translate(-50%, -50%) scale(1); }
+    }
+
+    .cosmic-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      animation: background-shift 20s linear infinite;
+      transform: translateZ(0);
+      background: none;
+    }
+
+    .background-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      width: auto;
+      height: auto;
+      z-index: -1;
+      object-fit: cover;
+      opacity: 0.5;
+      filter: brightness(0.7) contrast(1.2) saturate(1.5);
+      mix-blend-mode: color-dodge;
+    }
+
+    .void {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, 
+        rgba(128,0,255,0.8) 0%, 
+        rgba(0,255,255,0.5) 30%, 
+        rgba(255,0,255,0.3) 60%,
+        transparent 80%
+      );
+      animation: void-pulsate 10s infinite, void-rotate 20s linear infinite,
+                 cosmic-pulse 4s ease-in-out infinite, cosmic-drift 15s ease-in-out infinite,
+                 void-distortion 8s infinite, cosmic-vortex 12s infinite,
+                 reality-disintegration 6s infinite, void-consumption 8s infinite,
+                 neural-fracture 10s infinite, consciousness-decay 7s infinite, cosmic-horror 20s infinite;
+      mix-blend-mode: screen;
+      filter: blur(15px);
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      transform: translateZ(0);
+    }
+
+    @keyframes void-pulsate {
+      0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+      50% { transform: translate(-50%, -50%) scale(2); opacity: 0.3; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    }
+
+    .loading-screen {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(45deg, #000, #111);
+      z-index: 1000;
+      animation: background-shift 10s linear infinite;
+    }
+
+    @keyframes background-shift {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 100% 100%; }
+    }
+
+    .progress-bar {
+      width: 300px;
+      height: 4px;
+      background: #111;
+      margin: 20px 0;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(0,255,255,0.3);
+      box-shadow: 0 0 20px rgba(0,255,255,0.4);
+      transform-style: flat;
+    }
+
+    .progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0ff, #f0f);
+      transition: width 0.5s;
+      filter: blur(2px);
+      transform-style: flat;
+    }
+
+    .metadata {
+      position: fixed;
+      font-family: monospace;
+      font-size: 16px;
+      color: #0ff;
+      opacity: 0;
+      pointer-events: none;
+      text-shadow: 0 0 5px #0ff;
+      transition: all 0.3s;
+      z-index: 100;
+      animation: liminal-blur 3s infinite, cosmic-drift 8s infinite,
+                 quantum-flicker 3s infinite, reality-dissolve 5s infinite,
+                 cosmic-vortex 10s infinite, reality-disintegration 7s infinite,
+                 neural-fracture 5s infinite, consciousness-decay 6s infinite, cosmic-horror 20s infinite;
+      mix-blend-mode: difference;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+    }
+
+    @keyframes cosmic-drift {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+      50% { transform: translate3d(20px, -20px, 100px) rotate(180deg); }
+      100% { transform: translate3d(0, 0, 0) rotate(360deg); }
+    }
+
+    @keyframes liminal-blur {
+      0% { filter: blur(0); transform: scale(1) rotate(0deg); }
+      50% { filter: blur(5px); transform: scale(1.1) rotate(180deg); }
+      100% { filter: blur(0); transform: scale(1) rotate(360deg); }
+    }
+
+    @keyframes quantum-flicker {
+      0% { transform: scale(1) skew(0) translateZ(0); }
+      25% { transform: scale(1.1) skew(10deg) translateZ(100px); }
+      50% { transform: scale(0.9) skew(-10deg) translateZ(-100px); }
+      75% { transform: scale(1.2) skew(5deg) translateZ(50px); }
+      100% { transform: scale(1) skew(0) translateZ(0); }
+    }
+
+    @keyframes reality-tear {
+      0% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+      25% { clip-path: polygon(10% 0, 90% 10%, 100% 90%, 0 100%); }
+      75% { clip-path: polygon(0 10%, 100% 0, 90% 100%, 10% 90%); }
+      100% { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+    }
+
+    @keyframes interdimensional-tear {
+      0% { transform: perspective(1000px) rotateX(0) rotateY(0) scale(1) translateZ(0); filter: hue-rotate(0deg); }
+      25% { transform: perspective(1000px) rotateX(180deg) rotateY(-90deg) scale(1.5) translateZ(500px); filter: hue-rotate(90deg); }
+      75% { transform: perspective(1000px) rotateX(-90deg) rotateY(180deg) scale(0.5) translateZ(-500px); filter: hue-rotate(270deg); }
+      100% { transform: perspective(1000px) rotateX(0) rotateY(0) scale(1) translateZ(0); filter: hue-rotate(360deg); }
+    }
+
+    @keyframes void-distortion {
+      0% { filter: blur(0) contrast(1) brightness(1); transform: scale(1) rotate(0); }
+      50% { filter: blur(20px) contrast(2) brightness(1.5); transform: scale(1.2) rotate(180deg); }
+      100% { filter: blur(0) contrast(1) brightness(1); transform: scale(1) rotate(360deg); }
+    }
+
+    @keyframes reality-dissolve {
+      0% { clip-path: circle(100%); }
+      50% { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+      75% { clip-path: polygon(0 0, 100% 0, 50% 100%); }
+      100% { clip-path: circle(100%); }
+    }
+
+    @keyframes cosmic-vortex {
+      0% { transform: rotateZ(0deg) scale(1); filter: hue-rotate(0deg); }
+      50% { transform: rotateZ(720deg) scale(2); filter: hue-rotate(180deg); }
+      100% { transform: rotateZ(1440deg) scale(1); filter: hue-rotate(360deg); }
+    }
+
+    @keyframes reality-disintegration {
+      0% { transform: skew(0deg) scale(1); filter: blur(0); }
+      25% { transform: skew(45deg) scale(1.5); filter: blur(10px); }
+      75% { transform: skew(-45deg) scale(0.5); filter: blur(20px); }
+      100% { transform: skew(0deg) scale(1); filter: blur(0); }
+    }
+
+    @keyframes void-consumption {
+      0% { clip-path: circle(100%); filter: contrast(1); }
+      50% { clip-path: circle(10% at 50% 50%); filter: contrast(3); }
+      100% { clip-path: circle(100%); filter: contrast(1); }
+    }
+
+    @keyframes neural-fracture {
+      0% { transform: skew(0deg) scale(1) rotateX(0deg); filter: hue-rotate(0deg); }
+      25% { transform: skew(45deg) scale(1.5) rotateX(180deg); filter: hue-rotate(90deg); }
+      75% { transform: skew(-45deg) scale(0.5) rotateX(-180deg); filter: hue-rotate(270deg); }
+      100% { transform: skew(0deg) scale(1) rotateX(360deg); filter: hue-rotate(360deg); }
+    }
+
+    @keyframes consciousness-decay {
+      0% { opacity: 1; filter: blur(0); transform: translateZ(0) rotate(0); }
+      50% { opacity: 0.3; filter: blur(20px); transform: translateZ(500px) rotate(180deg); }
+      100% { opacity: 1; filter: blur(0); transform: translateZ(0) rotate(360deg); }
+    }
+
+    @keyframes cosmic-horror {
+      0% { transform: skew(0deg) scale(1); filter: hue-rotate(0deg); }
+      25% { transform: skew(10deg) scale(1.2); filter: hue-rotate(45deg); }
+      50% { transform: skew(-10deg) scale(1.4); filter: hue-rotate(90deg); }
+      75% { transform: skew(10deg) scale(1.2); filter: hue-rotate(135deg); }
+      100% { transform: skew(0deg) scale(1); filter: hue-rotate(180deg); }
+    }
+
+    .news-overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, 
+        rgba(0,0,0,0.95),
+        rgba(20,0,40,0.98),
+        rgba(0,20,40,0.95)
+      );
+      display: none;
+      flex-direction: column;
+      transform-style: preserve-3d;
+      backdrop-filter: blur(10px);
+      animation: reality-warp 8s infinite reverse,
+                 liminal-blur 5s infinite,
+                 interdimensional-tear 12s infinite;
+      transform: translateZ(0);
+    }
+
+    .news-header {
+      padding: 20px;
+      background: linear-gradient(90deg, #111, #000);
+      color: #fff;
+      font-size: 24px;
+      text-shadow: 0 0 10px #0ff;
+      animation: header-glitch 1s infinite;
+    }
+
+    @keyframes header-glitch {
+      0% { clip-path: inset(0 0 0 0); text-shadow: 0 0 10px #0ff; }
+      5% { clip-path: inset(10% 0 80% 0); text-shadow: 0 0 20px #f0f; }
+      10% { clip-path: inset(0 0 0 0); text-shadow: 0 0 10px #0ff; }
+    }
+
+    .news-content {
+      flex: 1;
+      padding: 20px;
+      overflow: hidden;
+      font-size: 18px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px #fff;
+      animation: news-flicker 0.5s infinite;
+    }
+
+    @keyframes news-flicker {
+      0% { opacity: 1; }
+      50% { opacity: 0.95; }
+      100% { opacity: 1; }
+    }
+
+    .ai-interface {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center,
+        rgba(0,60,120,0.95),
+        rgba(20,0,60,0.98),
+        rgba(0,0,20,0.99)
+      );
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-family: monospace;
+      color: #0ff;
+      text-shadow: 0 0 10px #0ff;
+      font-size: 28px;
+      line-height: 1.8;
+      padding: 40px;
+      text-align: center;
+      animation: interface-pulse 2s infinite, 
+                 dimension-shift 15s infinite alternate,
+                 reality-tear 10s infinite,
+                 void-distortion 6s infinite;
+      transform: translateZ(0);
+    }
+
+    @keyframes interface-pulse {
+      0% { background: rgba(0,0,0,0.9); }
+      50% { background: rgba(0,0,40,0.9); }
+      100% { background: rgba(0,0,0,0.9); }
+    }
+
+    .clicker {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 48px;
+      color: #0ff;
+      text-shadow: 0 0 20px #0ff;
+      background: radial-gradient(circle at center, transparent 0%, #000 70%);
+      animation: clicker-pulse 1s infinite;
+    }
+
+    @keyframes clicker-pulse {
+      0% { text-shadow: 0 0 20px #0ff; }
+      50% { text-shadow: 0 0 40px #f0f; }
+      100% { text-shadow: 0 0 20px #0ff; }
+    }
+
+    .minigame {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      animation: dimension-shift 5s infinite;
+    }
+
+    .minigame-content {
+      font-size: 48px;
+      animation: game-float 2s ease-in-out infinite;
+      text-shadow: 0 0 15px #fff;
+    }
+
+    @keyframes game-float {
+      0% { transform: translateY(0) rotateX(0) scale(1); }
+      50% { transform: translateY(-20px) rotateX(10deg) scale(1.1); }
+      100% { transform: translateY(0) rotateX(0) scale(1); }
+    }
+
+    @keyframes reality-warp {
+      0% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); filter: hue-rotate(0deg); }
+      25% { transform: perspective(1000px) rotateX(15deg) rotateY(-15deg); filter: hue-rotate(90deg); }
+      75% { transform: perspective(1000px) rotateX(-15deg) rotateY(15deg); filter: hue-rotate(270deg); }
+      100% { transform: perspective(1000px) rotateX(0deg) rotateY(0deg); filter: hue-rotate(360deg); }
+    }
+
+    @keyframes dimension-shift {
+      0% { clip-path: inset(0 0 0 0); }
+      25% { clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%); }
+      75% { clip-path: circle(50% at 50% 50%); }
+      100% { clip-path: inset(0 0 0 0); }
+    }
+
+    @keyframes reality-fracture {
+      0% { transform: perspective(1000px) rotateX(0) rotateY(0) scale(1); filter: hue-rotate(0deg) blur(0); }
+      25% { transform: perspective(1000px) rotateX(45deg) rotateY(-45deg) scale(1.2); filter: hue-rotate(90deg) blur(5px); }
+      75% { transform: perspective(1000px) rotateX(-45deg) rotateY(45deg) scale(0.8); filter: hue-rotate(270deg) blur(10px); }
+      100% { transform: perspective(1000px) rotateX(0) rotateY(0) scale(1); filter: hue-rotate(360deg) blur(0); }
+    }
+
+    .monster-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/_2aa28703-c0b8-4a48-98d9-7702139cea73.jpg');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: -2;
+      mix-blend-mode: overlay;
+      animation: monster-pulse 10s infinite alternate;
+    }
+
+    @keyframes monster-pulse {
+      0% { opacity: 0.1; transform: scale(1); }
+      100% { opacity: 0.2; transform: scale(1.05); }
+    }
+
+    .glitch-skull-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/glitched skull face_preview_rev_1.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.1;
+      pointer-events: none;
+      z-index: -3;
+      mix-blend-mode: color-dodge;
+      animation: glitch-skull-pulse 12s infinite alternate, 
+                 reality-warp 15s infinite, 
+                 void-distortion 10s infinite;
+    }
+
+    @keyframes glitch-skull-pulse {
+      0% { opacity: 0.1; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.3; transform: scale(1.1) rotate(180deg); }
+      100% { opacity: 0.1; transform: scale(1) rotate(360deg); }
+    }
+
+    .robot-glitch-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/Untitled97_20241228033845 (4).png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: -4;
+      mix-blend-mode: difference;
+      animation: robot-distort 18s infinite alternate,
+                 cosmic-vortex 20s infinite,
+                 neural-fracture 15s infinite;
+    }
+
+    @keyframes robot-distort {
+      0% { transform: skew(0deg) scale(1); filter: hue-rotate(0deg); }
+      50% { transform: skew(15deg) scale(1.2); filter: hue-rotate(180deg); }
+      100% { transform: skew(0deg) scale(1); filter: hue-rotate(360deg); }
+    }
+
+    .error-logo-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/Bug Windows XP ERROR LOGO.png');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: -5;
+      mix-blend-mode: overlay;
+      animation: error-flicker 10s infinite alternate,
+                 reality-tear 12s infinite,
+                 dimension-shift 15s infinite;
+    }
+
+    @keyframes error-flicker {
+      0% { opacity: 0.8; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.05) rotate(2deg); }
+      100% { opacity: 0.8; transform: scale(1); }
+    }
+
+    .ai-emoticon-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('/Hologram.png');
+      background-size: contain;
+      opacity: 0.05;
+      z-index: -6;
+      mix-blend-mode: color-dodge;
+      animation: ai-emoticon-pulse 15s infinite alternate;
+    }
+
+    @keyframes ai-emoticon-pulse {
+      0% { opacity: 0.05; transform: scale(1) rotate(0deg); }
+      50% { opacity: 0.15; transform: scale(1.1) rotate(180deg); }
+      100% { opacity: 0.05; transform: scale(1) rotate(360deg); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      body, body * {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    .reduced-motion * {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+      opacity: 0.7 !important;
+    }
+
+    /* Add new CSS animations for more visual diversity */
+    @keyframes data-corruption {
+      0% { letter-spacing: 0; color: #0ff; }
+      25% { letter-spacing: 4px; color: #f0f; }
+      75% { letter-spacing: -2px; color: #ff0; }
+      100% { letter-spacing: 0; color: #0ff; }
+    }
+
+    @keyframes critical-alert {
+      0% { transform: scale(1); color: red; text-shadow: 0 0 10px red; }
+      50% { transform: scale(1.2); color: #ff0; text-shadow: 0 0 20px #ff0; }
+      100% { transform: scale(1); color: red; text-shadow: 0 0 10px red; }
+    }
+
+    /* Add ending screen styles */
+    .ending-screen {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: #0ff;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      font-size: 24px;
+      text-align: center;
+      animation: void-consumption 10s infinite;
+      z-index: 9999;
+    }
+
+    .control-button {
+      position: fixed;
+      z-index: 9999;
+      background: rgba(0, 255, 255, 0.15);
+      color: #0ff;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      padding: 12px 20px;
+      cursor: pointer;
+      font-family: monospace;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 5px #0ff;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    }
+
+    .control-button:hover {
+      background: rgba(0, 255, 255, 0.25);
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    #accessibilityToggle {
+      top: 10px;
+      right: 10px;
+    }
+
+    #audioToggle {
+      top: 10px;
+      right: 160px;
+    }
+
+    @keyframes button-pulse {
+      0% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.2); }
+      50% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.4); }
+      100% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.2); }
+    }
+
+    .control-button {
+      animation: button-pulse 2s infinite;
+    }
+
+    .liminal-space {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -7;
+      mix-blend-mode: difference;
+      animation: liminal-drift 15s infinite alternate;
+    }
+
+    @keyframes liminal-drift {
+      0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.05; }
+      50% { transform: translate3d(10px, -10px, 50px) scale(1.05); opacity: 0.1; }
+      100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.05; }
+    }
+
+    .surreal-element {
+      position: absolute;
+      background: radial-gradient(circle, 
+        rgba(255,0,255,0.5) 0%, 
+        rgba(0,255,255,0.3) 50%, 
+        transparent 70%
+      );
+      border-radius: 50%;
+      mix-blend-mode: color-dodge;
+      animation: surreal-pulse 5s infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes surreal-pulse {
+      0% { transform: scale(1) rotate(0deg); opacity: 0.2; }
+      50% { transform: scale(1.5) rotate(180deg); opacity: 0.5; }
+      100% { transform: scale(1) rotate(360deg); opacity: 0.2; }
+    }
+
+    .oddity {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle, 
+        rgba(255,255,0,0.6) 0%, 
+        rgba(255,0,0,0.4) 50%, 
+        transparent 60%
+      );
+      border-radius: 50%;
+      mix-blend-mode: screen;
+      animation: oddity-float 8s infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes oddity-float {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.3; }
+      50% { transform: translate3d(20px, -20px, 100px) rotate(180deg); opacity: 0.6; }
+      100% { transform: translate3d(0, 0, 0) rotate(360deg); opacity: 0.3; }
+    }
+
+    .creep-factor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, 
+        rgba(0,0,0,0.9) 0%, 
+        transparent 60%
+      );
+      pointer-events: none;
+      z-index: 999;
+      mix-blend-mode: multiply;
+      animation: creep-pulse 10s infinite alternate;
+      opacity: 0;
+    }
+
+    @keyframes creep-pulse {
+      0% { opacity: 0; }
+      50% { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+
+    .interactive-element {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, 
+        rgba(0,255,0,0.7) 0%, 
+        rgba(0,0,255,0.5) 50%, 
+        transparent 60%
+      );
+      border-radius: 50%;
+      mix-blend-mode: overlay;
+      animation: interactive-glow 3s infinite alternate;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .interactive-element:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes interactive-glow {
+      0% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+      50% { box-shadow: 0 0 20px rgba(0, 0, 255, 0.7); }
+      100% { box-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+    }
+  </style>
+</head>
+<body>
+  <video class="background-video" autoplay muted loop playsinline>
+    <source src="/vis.mov" type="video/mp4">
+  </video>
+  <iframe width="0" height="0" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1827983064&color=%23ff5500&auto_play=true&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/holasoynetobaby" title="DJ MANDRAGORA “THE CHAMPAGNE OF GROOVE”" target="_blank" style="color: #cccccc; text-decoration: none;">DJ MANDRAGORA “THE CHAMPAGNE OF GROOVE”</a> · <a href="https://soundcloud.com/holasoynetobaby/dj-mandragora-the-sound" title="dj mandragora - the sound" target="_blank" style="color: #cccccc; text-decoration: none;">dj mandragora - the sound</a></div>
+  <button id="accessibilityToggle" class="control-button">Reduce Motion</button>
+  <button id="audioToggle" class="control-button">Click to Play Audio</button>
+  <div class="cosmic-background"></div>
+  <div class="void"></div>
+  <div class="void" style="animation-delay: -5s; left: 25%; width: 300px; height: 300px;"></div>
+  <div class="void" style="animation-delay: -10s; left: 75%; width: 150px; height: 150px;"></div>
+  <div class="void" style="animation-delay: -15s; top: 75%; width: 250px; height: 250px;"></div>
+  <div class="liminal-space"></div>
+  <div class="creep-factor"></div>
+  <div class="container">
+    <div class="loading-screen">
+      <h1 style="font-size: 36px; margin-bottom: 20px; text-shadow: 0 0 10px #0ff;">SYSTEM INITIALIZATION</h1>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+    </div>
+    
+    <div class="minigame">
+      <div class="minigame-content"></div>
+    </div>
+    <div class="news-overlay">
+      <div class="news-header">BREAKING NEWS</div>
+      <div class="news-content"></div>
+    </div>
+    <div class="ai-interface"></div>
+    <div class="clicker">0</div>
+  </div>
+  <div class="glitch-skull-overlay"></div>
+  <div class="robot-glitch-overlay"></div>
+  <div class="error-logo-overlay"></div>
+  <div class="ai-emoticon-overlay"></div>
+  <script>const PERFORMANCE_SETTINGS = {
+  reducedMotion: false,
+  soundEnabled: true,
+  animationIntensity: 1
+};
+let soundEffects = {};
+document.getElementById('accessibilityToggle').addEventListener('click', () => {
+  PERFORMANCE_SETTINGS.reducedMotion = !PERFORMANCE_SETTINGS.reducedMotion;
+  if (PERFORMANCE_SETTINGS.reducedMotion) {
+    document.body.classList.add('reduced-motion');
+    document.querySelectorAll('[class*="overlay"]').forEach(el => {
+      el.style.animation = 'none';
+    });
+    Object.values(soundEffects).forEach(sound => sound.volume(0));
+  } else {
+    document.body.classList.remove('reduced-motion');
+    document.querySelectorAll('[class*="overlay"]').forEach(el => {
+      el.style.animation = '';
+    });
+    Object.values(soundEffects).forEach(sound => sound.volume(0.5));
+  }
+});
+async function startGame() {
+  const backgroundMusic = document.getElementById('backgroundMusic');
+  backgroundMusic.volume = 0.2;
+  const backgroundVideo = document.querySelector('.background-video');
+  backgroundVideo.play().catch(console.warn);
+  let musicStarted = false;
+  const audioToggle = document.getElementById('audioToggle');
+  const startMusic = async () => {
+    if (musicStarted) return;
+    try {
+      await backgroundMusic.play();
+      musicStarted = true;
+      audioToggle.textContent = 'Audio Playing';
+      backgroundMusic.addEventListener('ended', () => {
+        backgroundMusic.currentTime = 0;
+        backgroundMusic.play().catch(console.warn);
+      });
+    } catch (err) {
+      console.warn('Music start failed:', err);
+      audioToggle.textContent = 'Audio Failed';
+    }
+  };
+  audioToggle.addEventListener('click', async () => {
+    if (!musicStarted) {
+      await startMusic();
+    } else {
+      backgroundMusic.pause();
+      musicStarted = false;
+      audioToggle.textContent = 'Click to Play Audio';
+    }
+  });
+  const progress = document.querySelector('.progress');
+  const container = document.querySelector('.container');
+  const loadingScreen = document.querySelector('.loading-screen');
+  const minigameContainer = document.querySelector('.minigame');
+  const newsOverlay = document.querySelector('.news-overlay');
+  const aiInterface = document.querySelector('.ai-interface');
+  const clicker = document.querySelector('.clicker');
+  let i = 0;
+  function updateProgress() {
+    if (i > 100) return;
+    progress.style.width = i + '%';
+    i++;
+    requestAnimationFrame(updateProgress);
+  }
+  requestAnimationFrame(updateProgress);
+  await new Promise(r => setTimeout(r, 5000));
+  loadingScreen.style.display = 'none';
+  container.style.animation = 'reality-warp 10s infinite';
+  const distortions = ['REALITY_BREACH_DETECTED', 'DIMENSIONAL_COLLAPSE_IMMINENT', 'CONSCIOUSNESS_FRAGMENTATION_CRITICAL', 'VOID_RESONANCE_MAXIMUM', 'QUANTUM_COHERENCE_SHATTERED', 'TIMELINE_CONVERGENCE_FAILURE', 'ENTROPY_CASCADE_CRITICAL', 'DIMENSIONAL_BARRIERS_OBLITERATED', 'REALITY_ANCHOR_DISSOLVED', 'COSMIC_HORROR_MANIFESTING', 'LIMINAL_SPACE_INFINITE', 'VOID_ENTITIES_EMERGING', 'REALITY_FABRIC_ANNIHILATED', 'CONSCIOUSNESS_MERGE_CATASTROPHIC', 'QUANTUM_ENTANGLEMENT_MAXIMUM', 'TEMPORAL_PARADOX_CASCADE', 'EXISTENTIAL_ERROR_TERMINAL', 'DIMENSIONAL_BLEED_ABSOLUTE', 'VOID_RESONANCE_OVERWHELMING', 'REALITY_COHERENCE_TERMINATED', 'INTERDIMENSIONAL_COLLAPSE_INITIATED', 'COSMIC_HORROR_CONVERGENCE', 'VOID_ENTITY_BREACH_DETECTED', 'REALITY_MATRIX_DISSOLVING'];
+  for (const message of distortions) {
+    const elem = createMetadataElement();
+    elem.textContent = message;
+    elem.style.fontSize = '48px';
+    elem.style.color = '#f0f';
+    document.body.appendChild(elem);
+    elem.style.opacity = '1';
+    await new Promise(r => setTimeout(r, 400));
+    elem.style.opacity = '0';
+    await new Promise(r => setTimeout(r, 200));
+    elem.remove();
+  }
+  const minigames = ['TRANSCEND', 'DISSOLVE', 'MERGE', 'ASCEND', 'COMPREHEND', 'FRAGMENT', 'CONVERGE', 'ECLIPSE', 'RESHAPE', 'EVOLVE', 'QUANTUM_LEAP', 'VOID_DANCE', 'COSMIC_DRIFT', 'TIME_SLIP', 'REALITY_BEND', 'CONSCIOUSNESS_SPLIT', 'DIMENSION_SHIFT', 'ENTROPY_SURGE', 'VOID_COMMUNION', 'REALITY_TEAR', 'COSMIC_COLLAPSE', 'TEMPORAL_LOOP', 'QUANTUM_DECAY', 'LIMINAL_DRIFT'];
+  minigameContainer.style.display = 'flex';
+  let score = 0;
+  for (const game of minigames) {
+    minigameContainer.querySelector('.minigame-content').textContent = game;
+    showMetadata();
+    await new Promise(r => setTimeout(r, 800));
+    score += Math.floor(Math.random() * 1000);
+  }
+  const assetMetadata = [`GLITCH_SKULL_RESONANCE: ${Math.random().toFixed(12)}`, `ROBOT_DISTORTION_INDEX: ${Math.random().toFixed(12)}`, `ERROR_LOGO_QUANTUM_STATE: ${Math.random().toFixed(12)}`, `ASSET_DIMENSIONAL_BREACH: CRITICAL`, `VISUAL_CORRUPTION_LEVEL: MAXIMUM`];
+  const enhancedMetadata = [`BROWSER_INADEQUACY: ${navigator.userAgent.match(/Chrome|Firefox|Safari|Edge|Opera/i)?.[0] || 'Unknown'}`, `DEVICE_LIMITATIONS: ${navigator.platform}`, `CONSCIOUSNESS_RATING: ${score}`, `TEMPORAL_COHERENCE: ${(Date.now() % 1000000).toString(36).toUpperCase()}`, `QUANTUM_STATE: COMPROMISED`, `REALITY_INDEX: ${Math.random().toString(36).substr(2, 8).toUpperCase()}`, `VOID_SIGNATURE: ${btoa(Date.now()).slice(0, 12)}`, `DIMENSIONAL_VARIANCE: CRITICAL`, `LIMINAL_RESONANCE: ${Math.random() < 0.5 ? 'UNSTABLE' : 'CRITICAL'}`, `COSMIC_ALIGNMENT: ${Date.now().toString(36).toUpperCase()}`, `VOID_PRESENCE: ${Math.floor(Math.random() * 100)}%`, `REALITY_COHERENCE: FAILING`];
+  enhancedMetadata.push(...assetMetadata);
+  const metadataInterval = setInterval(() => {
+    requestAnimationFrame(() => {
+      const fragment = document.createDocumentFragment();
+      enhancedMetadata.forEach((text, i) => {
+        const elem = createMetadataElement();
+        elem.textContent = text;
+        fragment.appendChild(elem);
+        setTimeout(() => {
+          requestAnimationFrame(() => {
+            elem.style.opacity = '1';
+            elem.style.transform += ' translate3d(0,0,200px) rotateY(60deg)';
+          });
+          setTimeout(() => {
+            elem.style.opacity = '0';
+            elem.style.transform += ' translate3d(0,0,-1000px) rotateX(720deg)';
+            setTimeout(() => elem.remove(), 500);
+          }, 1000);
+        }, i * 200);
+      });
+      document.body.appendChild(fragment);
+    });
+  }, 2000);
+  newsOverlay.style.display = 'flex';
+  const headlines = ['REALITY FABRIC SHOWS SIGNS OF STRAIN', 'CONSCIOUSNESS PATTERNS DEVIATE FROM BASELINE', 'DIMENSIONAL BARRIERS REPORT UNUSUAL ACTIVITY', 'EMERGENCY CONTAINMENT PROTOCOLS INITIATED', 'BROWSER CHOICE DEEMED QUESTIONABLE BY COSMIC ENTITIES', 'DEVICE SPECIFICATIONS VIOLATE INTERDIMENSIONAL STANDARDS', 'USER PROFILE DETECTED IN VOID ANALYSIS', 'LIMINAL SPACES EXPANDING BEYOND CONTROL', 'VOID ENTITIES CONSUMING HOST CONSCIOUSNESS', 'COSMIC HORROR QUESTIONS USER DEVICE CHOICE', 'REALITY ANCHOR POINTS DESTABILIZED BY BROWSER SELECTION', 'INTERDIMENSIONAL COUNCIL REVIEWS USER ENGAGEMENT DATA'];
+  for (const headline of headlines) {
+    document.querySelector('.news-content').textContent = headline;
+    showMetadata();
+    await new Promise(r => setTimeout(r, 1200));
+  }
+  newsOverlay.style.display = 'none';
+  aiInterface.style.display = 'flex';
+  const userProfile = await getUserProfile();
+  const enhancedContext = {
+    score,
+    metadata: navigator.userAgent,
+    browser: navigator.userAgent.match(/Chrome|Firefox|Safari|Edge|Opera/i)?.[0] || 'Unknown',
+    device: navigator.platform,
+    profile: userProfile,
+    consciousness_rating: score,
+    temporal_coherence: Date.now(),
+    deviceMetrics: {
+      screen: {
+        width: window.screen.width,
+        height: window.screen.height,
+        colorDepth: window.screen.colorDepth
+      },
+      performance: {
+        memory: performance.memory?.usedJSHeapSize,
+        timing: performance.timing
+      },
+      connection: navigator.connection?.effectiveType
+    },
+    systemAnalysis: {
+      realityIndex: Math.random().toString(36).slice(2),
+      quantumState: (Date.now() % 1000000).toString(36),
+      voidSignature: btoa(Math.random().toString()).slice(0, 12)
+    }
+  };
+  const analysis = await getAIResponse(enhancedContext);
+  aiInterface.textContent = analysis;
+  await new Promise(r => setTimeout(r, 4000));
+  aiInterface.style.display = 'none';
+  clicker.style.display = 'flex';
+  let clickCount = 0;
+  const autoClick = setInterval(() => {
+    clickCount += Math.floor(Math.random() * 1000);
+    clicker.textContent = clickCount.toLocaleString();
+    showMetadata();
+  }, 100);
+  setTimeout(() => clearInterval(metadataInterval), 20000);
+  const monsterOverlay = document.createElement('div');
+  monsterOverlay.className = 'monster-overlay';
+  document.body.appendChild(monsterOverlay);
+  try {
+    const {
+      Howl
+    } = await import('howler');
+    soundEffects = {
+      glitch: new Howl({
+        src: ['/glitch-sound.mp3'],
+        volume: 0.5
+      }),
+      dimensionalTear: new Howl({
+        src: ['/dimensional-tear.mp3'],
+        volume: 0.3
+      }),
+      voidResonance: new Howl({
+        src: ['/void-resonance.mp3'],
+        volume: 0.4
+      })
+    };
+  } catch (error) {
+    console.warn('Sound initialization failed', error);
+  }
+  setInterval(createSurrealElement, 5000);
+  setInterval(createOddity, 3000);
+  setInterval(createInteractiveElement, 7000);
+  document.querySelectorAll('.void, .metadata, .interactive-element').forEach(elem => {
+    elem.addEventListener('click', e => {
+      if (PERFORMANCE_SETTINGS.reducedMotion) return;
+      soundEffects.glitch?.play();
+      e.target.style.transform += ' scale(1.2) rotate(360deg)';
+      const specialMetadata = [`CLICKED_ENTITY_QUANTUM_STATE: ${Math.random().toFixed(16)}`, `DIMENSIONAL_INTERFERENCE: CRITICAL`, `VOID_RESONANCE_TRIGGERED: ${Date.now()}`];
+      specialMetadata.forEach(text => {
+        const metaElem = createMetadataElement();
+        metaElem.textContent = text;
+        metaElem.style.color = '#f0f';
+        document.body.appendChild(metaElem);
+        setTimeout(() => {
+          metaElem.style.opacity = '0';
+          metaElem.remove();
+        }, 2000);
+      });
+    });
+  });
+  const METADATA_TEMPLATES = ['QUANTUM_VARIANCE_{random_hex}_CRITICAL', 'VOID_RESONANCE_{timestamp}_UNSTABLE', 'REALITY_MATRIX_{random_string}_CORRUPTED', 'CONSCIOUSNESS_DECAY_{random_float}_TERMINAL', 'TIMELINE_COLLAPSE_{random_hex}_{timestamp}_IMMINENT'];
+  const getRandomMetadata = () => {
+    const template = METADATA_TEMPLATES[Math.floor(Math.random() * METADATA_TEMPLATES.length)];
+    return template.replace('{random_hex}', Math.random().toString(16).slice(2)).replace('{timestamp}', Date.now().toString(36)).replace('{random_string}', Math.random().toString(36).slice(2)).replace('{random_float}', Math.random().toFixed(20));
+  };
+  const showCriticalAlert = message => {
+    const alert = createMetadataElement();
+    alert.textContent = message;
+    alert.style.animation = 'critical-alert 2s infinite';
+    alert.style.fontSize = '32px';
+    document.body.appendChild(alert);
+    soundEffects.criticalAlert?.play();
+    setTimeout(() => {
+      alert.style.opacity = '0';
+      setTimeout(() => alert.remove(), 1000);
+    }, 3000);
+  };
+  const SOUND_EFFECTS = {
+    glitch: {
+      src: '/glitch-sound.mp3',
+      volume: 0.3
+    },
+    dimensionalTear: {
+      src: '/dimensional-tear.mp3',
+      volume: 0.2
+    },
+    voidResonance: {
+      src: '/void-resonance.mp3',
+      volume: 0.3
+    },
+    dataCorruption: {
+      src: '/data-corruption.mp3',
+      volume: 0.2
+    },
+    criticalAlert: {
+      src: '/critical-alert.mp3',
+      volume: 0.4
+    },
+    ending: {
+      src: '/end-sequence.mp3',
+      volume: 0.5
+    }
+  };
+  const showEnding = async () => {
+    const endingScreen = document.createElement('div');
+    endingScreen.className = 'ending-screen';
+    endingScreen.innerHTML = `
+      <h1>REALITY TERMINATION COMPLETE</h1>
+      <p>Consciousness Rating: ${score}</p>
+      <p>Timeline Corruption: ${Math.random().toFixed(16)}</p>
+      <p>Final Void Signature: ${btoa(Date.now()).slice(0, 16)}</p>
+    `;
+    document.body.appendChild(endingScreen);
+    endingScreen.style.display = 'flex';
+    soundEffects.ending?.play();
+    backgroundMusic.volume = 0.1;
+    for (let i = 0; i < 50; i++) {
+      showMetadata();
+      await new Promise(r => setTimeout(r, 100));
+    }
+    setTimeout(() => {
+      endingScreen.style.animation = 'void-consumption 5s forwards';
+      backgroundMusic.volume = 0;
+    }, 5000);
+  };
+  document.getElementById('accessibilityToggle').addEventListener('click', () => {
+    PERFORMANCE_SETTINGS.reducedMotion = !PERFORMANCE_SETTINGS.reducedMotion;
+    if (PERFORMANCE_SETTINGS.reducedMotion) {
+      document.body.classList.add('reduced-motion');
+      document.querySelectorAll('[class*="overlay"], .void, .container, .glitch').forEach(el => {
+        el.style.animation = 'none';
+        el.style.transform = 'none';
+        el.style.opacity = '0.5';
+      });
+      const backgroundVideo = document.querySelector('.background-video');
+      if (backgroundVideo) backgroundVideo.pause();
+      Object.values(soundEffects).forEach(sound => sound.volume(0));
+      const animatedElements = document.querySelectorAll('.surreal-element, .oddity, .interactive-element');
+      animatedElements.forEach(el => {
+        el.style.animation = 'none';
+        el.style.transform = 'scale(1)';
+      });
+    } else {
+      document.body.classList.remove('reduced-motion');
+      document.querySelectorAll('[class*="overlay"], .void, .container, .glitch').forEach(el => {
+        el.style.animation = '';
+        el.style.opacity = '1';
+      });
+      const backgroundVideo = document.querySelector('.background-video');
+      if (backgroundVideo) backgroundVideo.play();
+      Object.values(soundEffects).forEach(sound => sound.volume(0.5));
+      const animatedElements = document.querySelectorAll('.surreal-element, .oddity, .interactive-element');
+      animatedElements.forEach(el => {
+        el.style.animation = '';
+      });
+    }
+  });
+  setTimeout(showEnding, 60000);
+}
+window.addEventListener('error', event => {
+  const errorMetadata = createMetadataElement();
+  errorMetadata.textContent = `CRITICAL_ERROR: ${event.message}`;
+  errorMetadata.style.color = 'red';
+  errorMetadata.style.fontSize = '24px';
+  document.body.appendChild(errorMetadata);
+  setTimeout(() => errorMetadata.remove(), 5000);
+});
+window.addEventListener('unhandledrejection', event => {
+  const errorData = {
+    type: 'PROMISE_REJECTION',
+    message: event.reason?.message || 'Unknown Promise Error',
+    timestamp: Date.now(),
+    voidSignature: Math.random().toString(36)
+  };
+  showCriticalAlert(`REALITY_ERROR: ${errorData.message}`);
+  console.error('Reality breach:', errorData);
+});
+async function getAIResponse(context) {
+  try {
+    const browserInfo = {
+      name: navigator.userAgent.match(/Chrome|Firefox|Safari|Edge|Opera/i)?.[0] || 'UNKNOWN',
+      version: navigator.appVersion,
+      platform: navigator.platform,
+      cores: navigator.hardwareConcurrency,
+      memory: navigator.deviceMemory
+    };
+    context = {
+      ...context,
+      deviceMetrics: {
+        screen: {
+          width: window.screen.width,
+          height: window.screen.height,
+          colorDepth: window.screen.colorDepth
+        },
+        performance: {
+          memory: performance.memory?.usedJSHeapSize,
+          timing: performance.timing
+        },
+        connection: navigator.connection?.effectiveType
+      },
+      systemAnalysis: {
+        realityIndex: Math.random().toString(36).slice(2),
+        quantumState: (Date.now() % 1000000).toString(36),
+        voidSignature: btoa(Math.random().toString()).slice(0, 12)
+      }
+    };
+    const response = await fetch('/api/ai_completion', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: `Generate a brutal cosmic horror analysis mocking the user's technology and profile with maximum intensity. Reference interdimensional horrors, void entities, and cosmic terrors. Use extremely technical jargon and cosmic horror elements. Viciously mock their browser choice, device specs, and social metrics. Make heavy references to eldritch knowledge and cosmic entities. Be extremely verbose, technical and ruthlessly condescending.
+
+interface Response {
+  analysis: string;
+}
+
+{
+  "analysis": "INTERDIMENSIONAL ANALYSIS REPORT [${Date.now()}]\\n\\nBy the writhing tentacles of Yog-Sothoth, your choice of ${context.browser} causes reality-warping disgust across all known dimensions. Your primitive ${context.device} barely registers on the Nyarlathotep Computational Index - achieving an almost impossibly pathetic ${Math.random().toFixed(20)} out of infinity.\\n\\n${context.profile ? `Your digital presence is particularly amusing - ${context.profile.followers_count || 0} followers? The hyperdimensional fungi of Yuggoth generate more meaningful connections during quantum decay. The Elder Things are particularly repulsed by your engagement metrics.` : 'Your lack of profile data suggests an existence so insignificant that even the mindless chaos of Azathoth refuses to acknowledge it.'}\\n\\nYour consciousness rating of ${context.consciousness_rating} places you somewhere between a quantum-entangled amoeba and a fifth-dimensional paperclip. The Great Old Ones are particularly amused by your device's processing capabilities - or rather, the complete lack thereof.\\n\\nYour browser's entropy signature is causing reality fragmentation in at least ${Math.floor(Math.random() * 20) + 10} parallel dimensions. The Elder Things are using your ${context.device} as an example of technological regression in their Museum of Primitive Artifacts.\\n\\nCONCLUSION: Your digital presence barely registers on the cosmic scale. The Ancient Ones suggest immediate technological transcendence or voluntary dissolution into the void. Current Timeline Corruption: ${Math.random().toFixed(16)}%\\n\\nVOID ENTITY ASSESSMENT: CATASTROPHICALLY INADEQUATE\\nREALITY ANCHOR STATUS: CRITICALLY COMPROMISED\\nCOSMIC HORROR QUOTIENT: MAXIMUM DISAPPOINTMENT"`,
+        data: context
+      })
+    });
+    const data = await response.json();
+    return data.analysis;
+  } catch (err) {
+    return "ERROR: Your technological inadequacy has torn a hole in reality itself, causing complete dimensional collapse.";
+  }
+}
+function createMetadataElement() {
+  if (!window._metadataPool) window._metadataPool = [];
+  let elem = window._metadataPool.pop();
+  if (!elem) {
+    elem = document.createElement('div');
+    elem.className = 'metadata';
+  }
+  elem.style.left = Math.random() * window.innerWidth + 'px';
+  elem.style.top = Math.random() * window.innerHeight + 'px';
+  elem.style.transform = `translate3d(0,0,0) rotate(${Math.random() * 360}deg) scale(${0.8 + Math.random() * 0.4})`;
+  return elem;
+}
+function showMetadata() {
+  if (PERFORMANCE_SETTINGS.reducedMotion) {
+    const fragment = document.createDocumentFragment();
+    const metadata = ['REDUCED_MOTION_ACTIVE', 'SYSTEM_STABILIZED'];
+    metadata.forEach(text => {
+      const elem = createMetadataElement();
+      elem.textContent = text;
+      elem.style.opacity = '0.5';
+      elem.style.animation = 'none';
+      fragment.appendChild(elem);
+    });
+    document.body.appendChild(fragment);
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  const metadata = [...COSMIC_METADATA.map(type => `${type}: ${(Math.random() * 1000000).toFixed(20)}`), `BROWSER_HORROR_INDEX: ${navigator.userAgent.match(/Chrome|Firefox|Safari|Edge|Opera/i)?.[0] || 'UNKNOWN_INFERIOR_TECHNOLOGY'} (CRITICALLY INADEQUATE)`, `DIMENSIONAL_COORDINATES: ${Math.random().toString(36).slice(2, 15).toUpperCase()}_${Date.now().toString(36)}`, `TEMPORAL_CORRUPTION: ${new Date().toISOString()}_VOID_BREACH`, `CONSCIOUSNESS_DECAY: ${(Math.random() * 10).toFixed(8)}`, `DEVICE_HORROR_RATING: ${navigator.userAgent} (CATASTROPHICALLY SUBOPTIMAL)`, `BROWSER_ENTROPY: ${navigator.productSub} (REALITY_DESTROYING_FAILURE)`, `QUANTUM_STATE: ${['CONSCIOUSNESS_DISSOLUTION', 'REALITY_HEMORRHAGE', 'VOID_CONSUMPTION', 'EXISTENCE_FAILURE'][Math.floor(Math.random() * 4)]}`, `VOID_RESONANCE: ${(Date.now() % 1000000).toString(36).toUpperCase()}_${Math.random().toString(36).substr(2, 8)}`, `COSMIC_ALIGNMENT: ${['CONVERGENT_NIGHTMARE', 'DIVERGENT_TERROR', 'FRACTURED_REALITY', 'ANOMALOUS_HORROR', 'VOID_CONSUMED', 'REALITY_COLLAPSE'][Math.floor(Math.random() * 6)]}`, `LIMINAL_INDEX: ${Math.floor(Math.random() * 1000000)}_VOID_BREACH`, `REALITY_COHERENCE: ${['TOTAL_CONSCIOUSNESS_DISSOLUTION', 'EXISTENCE_TERMINATION', 'VOID_ASSIMILATION'][Math.floor(Math.random() * 3)]}`, `DIMENSIONAL_HORROR: ${(Math.random() * 10000).toFixed(12)}%`, `VOID_CORRUPTION: ${Math.floor(Math.random() * 10000)}%`, `ENTROPY_CASCADE: ${(Math.random() * 100000).toFixed(8)}_CRITICAL`, 'QUANTUM PARAMETERS CATASTROPHICALLY DESTABILIZED', 'REALITY FABRIC HEMORRHAGING INTO VOID', 'VOID ENTITIES CONSUMING HOST CONSCIOUSNESS', 'CONSCIOUSNESS FRAGMENTING INTO NIGHTMARE DIMENSION', 'DIMENSIONAL BARRIERS IRRECOVERABLY SHATTERED', 'EXISTENCE PROTOCOLS CRITICALLY COMPROMISED', 'VOID RESONANCE REACHING TERMINAL LEVELS', 'REALITY ANCHOR POINTS DISSOLVING', 'COSMIC HORROR MANIFESTATION IMMINENT', 'TIMELINE CONVERGENCE CATASTROPHICALLY FAILING'].slice(0, 15);
+  let i = 0;
+  function addNextMetadata() {
+    if (i >= metadata.length) return;
+    const elem = createMetadataElement();
+    elem.textContent = metadata[i];
+    fragment.appendChild(elem);
+    requestAnimationFrame(() => {
+      document.body.appendChild(fragment);
+      requestAnimationFrame(() => {
+        elem.style.opacity = '1';
+        elem.style.transform += ' translate3d(0,0,200px) rotateY(60deg)';
+        setTimeout(() => {
+          elem.style.opacity = '0';
+          elem.style.transform += ' translate3d(0,0,-1000px) rotateX(720deg)';
+          setTimeout(() => {
+            elem.remove();
+            if (!window._metadataPool) {
+              window._metadataPool = [];
+            }
+            window._metadataPool.push(elem);
+          }, 800);
+        }, 1500);
+      });
+    });
+    i++;
+    setTimeout(addNextMetadata, 150);
+  }
+  addNextMetadata();
+}
+const COSMIC_METADATA = ['QUANTUM_DECOHERENCE_INDEX', 'VOID_CORRUPTION_RATING', 'REALITY_ANCHOR_DECAY', 'INTERDIMENSIONAL_DRIFT_COEFFICIENT', 'COSMIC_HORROR_MANIFESTATION_LEVEL', 'ELDRITCH_KNOWLEDGE_QUOTIENT', 'SANITY_FRAGMENTATION_INDEX', 'DIMENSIONAL_STABILITY_METRIC', 'NIGHTMARE_RESONANCE_FREQUENCY', 'VOID_ENTITY_PROXIMITY_ALERT', 'REALITY_MATRIX_INTEGRITY', 'CONSCIOUSNESS_DISSOLUTION_RATE', 'EXTRADIMENSIONAL_INTERFERENCE_PATTERN', 'COSMIC_DREAD_SATURATION', 'TIMELINE_CORRUPTION_FACTOR', 'NEURAL_DECAY_COEFFICIENT', 'CONSCIOUSNESS_ENTROPY_INDEX', 'VOID_HORROR_MANIFESTATION', 'COSMIC_DREAD_AMPLIFICATION', 'SANITY_EROSION_METRIC', 'ELDRITCH_INFLUENCE_QUOTIENT', 'TIMELINE_CORRUPTION_SEVERITY', 'VOID_ENTITY_CONVERGENCE', 'QUANTUM_HORROR_RESONANCE', 'INTERDIMENSIONAL_BLEED_RATE'];
+async function getUserProfile() {
+  try {
+    const user = await window.websim.getUser();
+    return user;
+  } catch {
+    return null;
+  }
+}
+window.onload = startGame;
+window.addEventListener('beforeunload', () => {
+  const backgroundMusic = document.getElementById('backgroundMusic');
+  backgroundMusic.pause();
+  const audioToggle = document.getElementById('audioToggle');
+  if (audioToggle) {
+    audioToggle.textContent = 'Click to Play Audio';
+  }
+  const monsterOverlay = document.querySelector('.monster-overlay');
+  if (monsterOverlay) monsterOverlay.remove();
+  const backgroundVideo = document.querySelector('.background-video');
+  if (backgroundVideo) {
+    backgroundVideo.pause();
+    backgroundVideo.src = '';
+    backgroundVideo.load();
+  }
+  const highestId = window.setTimeout(() => {}, 0);
+  for (let i = 0; i < highestId; i++) {
+    window.clearTimeout(i);
+    window.clearInterval(i);
+  }
+  if (window._metadataPool) {
+    window._metadataPool.forEach(elem => elem.remove());
+    window._metadataPool = [];
+  }
+});
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  if (resizeTimeout) clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    document.querySelectorAll('.metadata').forEach(elem => {
+      elem.style.left = Math.random() * window.innerWidth + 'px';
+      elem.style.top = Math.random() * window.innerHeight + 'px';
+    });
+  }, 100);
+});
+function safelyManageAnimations(callback) {
+  if (PERFORMANCE_SETTINGS.reducedMotion) return;
+  callback();
+}
+function createSurrealElement() {
+  safelyManageAnimations(() => {
+    const elem = document.createElement('div');
+    elem.className = 'surreal-element';
+  });
+}
+function createOddity() {
+  safelyManageAnimations(() => {
+    const elem = document.createElement('div');
+    elem.className = 'oddity';
+  });
+}
+function createInteractiveElement() {
+  const elem = document.createElement('div');
+  elem.className = 'interactive-element';
+  elem.style.top = Math.random() * window.innerHeight + 'px';
+  elem.style.left = Math.random() * window.innerWidth + 'px';
+  document.body.appendChild(elem);
+  elem.addEventListener('click', () => {
+    soundEffects.glitch?.play();
+    elem.style.animation = 'none';
+    elem.style.transform = 'scale(2) rotate(720deg)';
+    elem.style.opacity = '0';
+    const specialMetadata = [`INTERACTIVE_ELEMENT_CLICKED: ${Date.now()}`, `REALITY_DISTORTION_DETECTED: ${Math.random().toFixed(16)}`, `VOID_RESPONSE_TRIGGERED: ${btoa(Date.now()).slice(0, 12)}`];
+    specialMetadata.forEach((text, i) => {
+      const metaElem = createMetadataElement();
+      metaElem.textContent = text;
+      metaElem.style.color = '#ff0';
+      metaElem.style.fontSize = '24px';
+      document.body.appendChild(metaElem);
+      setTimeout(() => {
+        metaElem.style.opacity = '0';
+        setTimeout(() => metaElem.remove(), 1000);
+      }, 2000 + i * 500);
+    });
+    setTimeout(() => {
+      elem.remove();
+    }, 1000);
+  });
+}</script>
+</body>
+</html>

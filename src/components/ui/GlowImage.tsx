@@ -5,6 +5,7 @@ interface GlowImageProps {
   alt: string;
   width?: number;
   height?: number;
+  className?: string;
 }
 
 export default function GlowImage({
@@ -12,6 +13,7 @@ export default function GlowImage({
   alt,
   width = 250,
   height = 250,
+  className,
 }: GlowImageProps) {
   return (
     <Image
@@ -19,7 +21,11 @@ export default function GlowImage({
       alt={alt}
       width={width}
       height={height}
-      className="rounded-sm shadow-neon-thin transition-all duration-300 hover:shadow-neon-strong hover:scale-[1.02]"
+      loading="eager"
+      className={
+        className ??
+        "glowing-image rounded-[10px] shadow-neon-thin transition-all duration-300 hover:shadow-neon-strong hover:scale-[1.02]"
+      }
       unoptimized
     />
   );

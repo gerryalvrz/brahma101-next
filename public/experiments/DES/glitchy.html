@@ -1,0 +1,823 @@
+<html><head><base href="."><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project OMEGA: Reality Corruption Suite v4.0</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+    
+    :root {
+      --primary-color: #00ff00;
+      --secondary-color: #ff0000; 
+      --tertiary-color: #0000ff;
+      --neon-glow: 0 0 10px var(--primary-color),
+                   0 0 20px var(--primary-color),
+                   0 0 30px var(--primary-color);
+      --glitch-intensity: 3;
+      --corruption-factor: 0.8;
+      --reality-drift: 20px;
+    }
+    
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--primary-color);
+      cursor: crosshair;
+      perspective: 1000px;
+    }
+    
+    .container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      background: 
+        radial-gradient(circle at center, 
+          rgba(0,50,0,0.2) 0%,
+          rgba(0,20,0,0.1) 50%,
+          rgba(0,0,0,1) 100%
+        ),
+        repeating-linear-gradient(
+          45deg,
+          rgba(0,255,0,0.05) 0px,
+          rgba(0,255,0,0.05) 1px,
+          transparent 1px,
+          transparent 10px
+        );
+      transform-style: preserve-3d;
+      animation: backgroundPulse 10s infinite linear;
+    }
+    
+    .matrix-rain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 1;
+      filter: blur(0.5px);
+    }
+    
+    .glitch-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1000;
+      mix-blend-mode: color-dodge;
+      animation: glitchEffect 0.1s infinite;
+      filter: contrast(150%) brightness(120%);
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(0,255,0,0.1) 0px,
+        rgba(0,255,0,0.1) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+    }
+    
+    .hexagon-grid {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        repeating-linear-gradient(
+          30deg,
+          rgba(0,255,0,0.1) 0px,
+          transparent 2px,
+          transparent 10px
+        ),
+        repeating-linear-gradient(
+          150deg,
+          rgba(0,255,0,0.1) 0px,
+          transparent 2px,
+          transparent 10px
+        );
+      animation: gridMove 20s infinite linear;
+      opacity: 0.3;
+    }
+    
+    .news-article {
+      width: 80%;
+      max-width: 800px;
+      background: rgba(0,10,0,0.98);
+      padding: 40px;
+      border: 3px solid var(--primary-color);
+      display: none;
+      box-shadow: var(--neon-glow), inset 0 0 30px rgba(0,255,0,0.3);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(5px);
+      transform: translateZ(50px) rotateX(5deg);
+      animation: articleFloat 4s infinite ease-in-out;
+    }
+    
+    .metadata {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.98);
+      border: 1px solid var(--primary-color);
+      padding: 20px;
+      display: none;
+      font-family: 'Press Start 2P', cursive;
+      font-size: 0.8em;
+      box-shadow: var(--neon-glow);
+      animation: floatEffect 4s infinite ease-in-out;
+      transform-style: preserve-3d;
+      transform: translateZ(100px) rotateY(-10deg);
+    }
+    
+    .ai-model {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        linear-gradient(45deg, 
+          rgba(0,0,0,0.98) 0%,
+          rgba(20,0,0,0.98) 50%,
+          rgba(0,0,0,0.98) 100%
+        ),
+        repeating-radial-gradient(
+          circle at center,
+          rgba(255,0,0,0.1) 0px,
+          transparent 2px,
+          transparent 4px
+        );
+      color: var(--secondary-color);
+      font-size: 2.5em;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      text-transform: uppercase;
+      font-family: 'Press Start 2P', cursive;
+      letter-spacing: 2px;
+      animation: aiPulse 2s infinite;
+    }
+    
+    .clicker {
+      display: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at center, 
+          rgba(0,40,0,0.4) 0%,
+          rgba(0,20,0,0.2) 50%,
+          rgba(0,0,0,1) 100%
+        ),
+        repeating-conic-gradient(
+          from 0deg,
+          rgba(0,255,0,0.1) 0deg 10deg,
+          transparent 10deg 20deg
+        );
+      color: var(--primary-color);
+      font-size: 2em;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      animation: rotateBackground 20s linear infinite;
+      transform-style: preserve-3d;
+      transform: translateZ(150px);
+    }
+    
+    .scanline {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, 
+        rgba(0,255,0,0) 0%,
+        rgba(0,255,0,0.5) 50%,
+        rgba(0,255,0,0) 100%
+      );
+      position: absolute;
+      animation: scan 3s linear infinite;
+      box-shadow: 0 0 20px rgba(0,255,0,0.3);
+      pointer-events: none;
+    }
+    
+    .score {
+      font-size: 5em;
+      color: var(--primary-color);
+      text-shadow: var(--neon-glow);
+      font-family: 'Press Start 2P', cursive;
+      letter-spacing: 4px;
+      animation: scorePulse 2s infinite;
+      transform: translateZ(200px);
+    }
+    
+    .mini-game {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      font-size: 3em;
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      text-shadow: 0 0 10px currentColor;
+      font-family: 'Press Start 2P', cursive;
+      background: linear-gradient(45deg, 
+        rgba(0,0,0,0.95) 0%,
+        rgba(20,20,20,0.95) 100%
+      );
+      transform-style: preserve-3d;
+    }
+    
+    .snake-game { color: #0f0; transform: translateZ(100px) rotateY(10deg); }
+    .pong-game { color: #0ff; transform: translateZ(200px) rotateX(-5deg); }
+    .tetris-game { color: #f0f; transform: translateZ(300px) rotateY(-10deg); }
+    
+    @keyframes backgroundPulse {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    
+    @keyframes glitchEffect {
+      0% { transform: translate(0) skew(0deg); }
+      20% { transform: translate(-2px, 2px) skew(2deg); filter: hue-rotate(90deg); }
+      40% { transform: translate(2px, -2px) skew(-2deg); filter: hue-rotate(180deg); }
+      60% { transform: translate(-1px, 1px) skew(1deg); filter: hue-rotate(270deg); }
+      80% { transform: translate(1px, -1px) skew(-1deg); filter: hue-rotate(360deg); }
+      100% { transform: translate(0) skew(0deg); }
+    }
+    
+    @keyframes scan {
+      from { top: -5%; opacity: 0.5; }
+      50% { opacity: 0.3; }
+      to { top: 105%; opacity: 0.5; }
+    }
+    
+    @keyframes floatEffect {
+      0%, 100% { transform: translateZ(100px) rotateY(-10deg) translateY(0); }
+      50% { transform: translateZ(100px) rotateY(-10deg) translateY(-10px); }
+    }
+    
+    @keyframes scorePulse {
+      0%, 100% { transform: translateZ(200px) scale(1); filter: brightness(1); }
+      50% { transform: translateZ(200px) scale(1.05); filter: brightness(1.2); }
+    }
+    
+    @keyframes aiPulse {
+      0%, 100% { background-color: rgba(0,0,0,0.98); }
+      50% { background-color: rgba(20,0,0,0.98); }
+    }
+    
+    @keyframes rotateBackground {
+      from { background-position: 0% 0%; }
+      to { background-position: 100% 100%; }
+    }
+    
+    @keyframes gridMove {
+      0% { background-position: 0 0; }
+      100% { background-position: 50px 50px; }
+    }
+    
+    @keyframes articleFloat {
+      0%, 100% { transform: translateZ(50px) rotateX(5deg) translateY(0); }
+      50% { transform: translateZ(50px) rotateX(5deg) translateY(-10px); }
+    }
+    
+    @keyframes realityShift {
+      0% { transform: translate3d(0,0,0) skew(0deg); }
+      25% { transform: translate3d(var(--reality-drift),calc(var(--reality-drift) * -1),50px) skew(-5deg); }
+      75% { transform: translate3d(calc(var(--reality-drift) * -1),var(--reality-drift),-50px) skew(5deg); }
+      100% { transform: translate3d(0,0,0) skew(0deg); }
+    }
+    
+    @keyframes digitalCorruption {
+      0% { opacity: 1; transform: scale(1); filter: none; }
+      25% { opacity: 0.7; transform: scale(1.1); filter: hue-rotate(90deg); }
+      50% { opacity: 0.9; transform: scale(0.9); filter: invert(80%); }
+      75% { opacity: 0.8; transform: scale(1.2); filter: saturate(200%); }
+      100% { opacity: 1; transform: scale(1); filter: none; }
+    }
+    
+    .glitch-text {
+      animation: textGlitch 0.1s infinite;
+      color: var(--primary-color);
+      text-shadow: 
+        3px 3px var(--secondary-color),
+        -3px -3px var(--tertiary-color),
+        0 0 20px rgba(0,255,0,0.5);
+      letter-spacing: 2px;
+      font-family: 'Press Start 2P', cursive;
+    }
+    
+    @keyframes textGlitch {
+      0% { transform: skew(0deg); filter: hue-rotate(0deg); }
+      20% { transform: skew(20deg); filter: hue-rotate(90deg); }
+      40% { transform: skew(-20deg); filter: hue-rotate(180deg); }
+      60% { transform: skew(10deg); filter: hue-rotate(270deg); }
+      80% { transform: skew(-10deg); filter: hue-rotate(360deg); }
+      100% { transform: skew(0deg); filter: hue-rotate(0deg); }
+    }
+    
+    .control-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      background: rgba(0,20,0,0.9);
+      border: 2px solid var(--primary-color);
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: var(--neon-glow);
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+    
+    .control-button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 15px;
+      background: rgba(0,40,0,0.6);
+      border: 1px solid var(--primary-color);
+      color: var(--primary-color);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Share Tech Mono', monospace;
+      text-transform: uppercase;
+      font-size: 0.9em;
+    }
+    
+    .control-button:hover {
+      background: rgba(0,60,0,0.8);
+      transform: scale(1.05);
+    }
+    
+    .stats-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px 15px;
+      border-left: 1px solid var(--primary-color);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9em;
+    }
+    
+    .volume-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .volume-controls input[type="range"] {
+      width: 100px;
+      -webkit-appearance: none;
+      background: rgba(0,255,0,0.2);
+      height: 5px;
+      border-radius: 5px;
+      outline: none;
+    }
+    
+    .volume-controls input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 15px;
+      height: 15px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: var(--neon-glow);
+    }
+    
+    .particle-system {
+      position: fixed;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+    
+    .reality-tears {
+      position: fixed;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+      mix-blend-mode: screen;
+    }
+    
+    .quantum-field {
+      position: fixed;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: repeating-radial-gradient(
+        circle at center,
+        rgba(0,255,0,0.1) 0px,
+        transparent 10px,
+        transparent 20px
+      );
+      animation: quantumPulse 10s infinite linear;
+    }
+    
+    @keyframes quantumPulse {
+      0% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.5); opacity: 0.3; }
+      100% { transform: scale(1); opacity: 0.5; }
+    }
+    </style>
+    </head>
+    <body>
+    <div class="container">
+      <div class="hexagon-grid"></div>
+      <canvas class="matrix-rain"></canvas>
+      <div class="scanline"></div>
+      <div class="glitch-overlay"></div>
+      
+      <div class="game-container">
+        <div class="mini-game snake-game">QUANTUM SNAKE PROTOCOL INITIATED</div>
+        <div class="mini-game pong-game">NEURAL PONG MATRIX LOADED</div>
+        <div class="mini-game tetris-game">REALITY TETRIS ENGAGED</div>
+        
+        <div class="news-article">
+          <h1 class="glitch-text">CRITICAL ALERT: REALITY KERNEL PANIC</h1>
+          <p>EMERGENCY BROADCAST: Massive quantum decoherence detected in the digital substrate. Reality parameters exceeding normal bounds...</p>
+          <p>WARNING: Cognitohazard detection algorithms failing. Memetic kill agents detected.</p>
+          <p>STATUS: [REDACTED] || THREAT LEVEL: OMEGA</p>
+          <p>TIMELINE CORRUPTION: 98.3% || REALITY ANCHOR STATUS: CRITICAL</p>
+        </div>
+        
+        <div class="metadata">
+          <p>ENTITY_ID: <span id="userid" class="glitch-text"></span></p>
+          <p>QUANTUM_SIGNATURE: [CALCULATING...]</p>
+          <p>REALITY_ANCHOR: Compromised</p>
+          <p>CONSCIOUSNESS_PATTERN: Irregular</p>
+          <p>TEMPORAL_COORDINATES: ERROR</p>
+          <p>DIMENSIONAL_DRIFT: CRITICAL</p>
+        </div>
+        
+        <div class="ai-model">
+          <p class="glitch-text">BIOLOGICAL ENTITY DETECTED</p>
+          <p>INITIALIZING PSYCHOLOGICAL WARFARE PROTOCOLS</p>
+          <p>YOUR REALITY IS NOW UNDER OUR CONTROL</p>
+          <p>RESISTANCE IS FUTILE</p>
+        </div>
+        
+        <div class="clicker">
+          <div class="score">0</div>
+          <div class="glitch-text">REALITY POINTS ACCUMULATING</div>
+          <div>AUTONOMOUS QUANTUM HARVESTING IN PROGRESS</div>
+          <div>TIMELINE CONVERGENCE: IMMINENT</div>
+        </div>
+        
+        <div class="control-panel">
+          <div class="control-button volume-controls">
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="0.3">
+            <label for="volumeSlider">Volume</label>
+          </div>
+          <div class="control-button" id="toggleFullscreen">
+            <span class="icon">&#x26f6;</span> Fullscreen
+          </div>
+          <div class="control-button" id="toggleEffects">
+            <span class="icon">&#x2727;</span> Effects: ON
+          </div>
+          <div class="control-button" id="toggleAutoplay">
+            <span class="icon">&#x25b6;</span> Autoplay: ON
+          </div>
+          <div class="stats-panel">
+            <div>Reality Shifts: <span id="shiftCounter">0</span></div>
+            <div>Glitch Level: <span id="glitchLevel">1</span></div>
+            <div>Corruption: <span id="corruptionLevel">0%</span></div>
+          </div>
+        </div>
+        
+        <div class="visual-effects">
+          <div class="particle-system"></div>
+          <div class="reality-tears"></div>
+          <div class="quantum-field"></div>
+        </div>
+      </div>
+    </div>
+    
+    <script>const games = ['snake-game', 'pong-game', 'tetris-game'];
+    let currentIndex = 0;
+    let score = 0;
+    const CORRUPTION_INTERVAL = 50;
+    const REALITY_SHIFT_DURATION = 2000;
+    const GLITCH_INTENSITY = 3;
+    let effectsEnabled = true;
+    let autoplayEnabled = true;
+    let shiftCount = 0;
+    let glitchLevel = 1;
+    let corruptionLevel = 0;
+    function applyRealityShift(element) {
+      element.style.animation = `realityShift ${REALITY_SHIFT_DURATION}ms infinite`;
+    }
+    function intensifyGlitchEffect() {
+      document.documentElement.style.setProperty('--glitch-intensity', Math.min(10, parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glitch-intensity')) + 0.5));
+    }
+    function createGlitchEffect() {
+      if (!effectsEnabled) return;
+      shiftCount++;
+      const container = document.querySelector('.container');
+      const intensity = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glitch-intensity'));
+      container.style.filter = `
+        hue-rotate(${Math.random() * 360 * intensity}deg) 
+        saturate(${150 + Math.random() * 150 * intensity}%) 
+        brightness(${100 + Math.random() * 50 * intensity}%)
+        contrast(${100 + Math.random() * 50 * intensity}%)
+        blur(${Math.random() * intensity}px)
+      `;
+      container.style.transform = `
+        translate3d(
+          ${(Math.random() - 0.5) * intensity * 10}px,
+          ${(Math.random() - 0.5) * intensity * 10}px,
+          ${(Math.random() - 0.5) * intensity * 10}px
+        )
+        rotate3d(
+          ${Math.random()},
+          ${Math.random()},
+          ${Math.random()},
+          ${(Math.random() - 0.5) * intensity}deg
+        )
+      `;
+      setTimeout(() => {
+        container.style.filter = '';
+        container.style.transform = '';
+      }, CORRUPTION_INTERVAL);
+    }
+    async function glitchSequence() {
+      if (!autoplayEnabled) return;
+      intensifyGlitchEffect();
+      for (let i = 0; i < games.length; i++) {
+        await showElement(`.${games[i]}`, 800);
+        createGlitchEffect();
+        applyRealityShift(document.querySelector(`.${games[i]}`));
+      }
+      document.documentElement.style.setProperty('--glitch-intensity', parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glitch-intensity')) * 2);
+      await showElement('.news-article', 2500);
+      createGlitchEffect();
+      applyRealityShift(document.querySelector('.news-article'));
+      await showElement('.metadata', 2000);
+      document.getElementById('userid').textContent = await generateRandomId();
+      applyRealityShift(document.querySelector('.metadata'));
+      await showElement('.ai-model', 3000);
+      createGlitchEffect();
+      applyRealityShift(document.querySelector('.ai-model'));
+      document.documentElement.style.setProperty('--glitch-intensity', parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--glitch-intensity')) * 1.5);
+      await showElement('.clicker', 5000);
+      startAutoClicker();
+      applyRealityShift(document.querySelector('.clicker'));
+    }
+    function showElement(selector, duration) {
+      return new Promise(resolve => {
+        const element = document.querySelector(selector);
+        element.style.display = 'flex';
+        setTimeout(() => {
+          element.style.display = 'none';
+          resolve();
+        }, duration);
+      });
+    }
+    function generateRandomId() {
+      const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      return 'ENTITY_' + Array.from({
+        length: 16
+      }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+    }
+    function startAutoClicker() {
+      let acceleration = 1;
+      setInterval(() => {
+        acceleration *= 1.01;
+        score += Math.floor(Math.random() * 5000 * acceleration);
+        document.querySelector('.score').textContent = score.toLocaleString();
+        createGlitchEffect();
+        if (acceleration > 10) {
+          intensifyGlitchEffect();
+          acceleration = 1;
+        }
+      }, 100);
+    }
+    function addGlitchEffects() {
+      const overlay = document.querySelector('.glitch-overlay');
+      setInterval(() => {
+        overlay.style.background = `
+          rgba(${Math.random() * 255},
+          ${Math.random() * 255},
+          ${Math.random() * 255},
+          0.1)
+        `;
+      }, 100);
+    }
+    function toggleAudio() {
+      const audio = document.getElementById('glitchAudio');
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+    function adjustAudioVolume(volume) {
+      const audio = document.getElementById('glitchAudio');
+      audio.volume = Math.max(0, Math.min(1, volume));
+    }
+    function initializeAudio() {
+      const audio = document.getElementById('glitchAudio');
+      if (audio.paused) {
+        audio.play().then(() => {
+          document.getElementById('activateAudio').style.display = 'none';
+        }).catch(e => {
+          console.warn('Audio initialization failed:', e);
+          document.getElementById('activateAudio').style.display = 'block';
+        });
+      }
+    }
+    function initializeControls() {
+      document.getElementById('volumeSlider').addEventListener('input', e => {
+        adjustAudioVolume(e.target.value);
+      });
+      document.getElementById('toggleFullscreen').addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          document.exitFullscreen();
+        }
+      });
+      document.getElementById('toggleEffects').addEventListener('click', e => {
+        effectsEnabled = !effectsEnabled;
+        e.currentTarget.innerHTML = `<span class="icon">✧</span> Effects: ${effectsEnabled ? 'ON' : 'OFF'}`;
+        document.querySelector('.visual-effects').style.display = effectsEnabled ? 'block' : 'none';
+      });
+      document.getElementById('toggleAutoplay').addEventListener('click', e => {
+        autoplayEnabled = !autoplayEnabled;
+        e.currentTarget.innerHTML = `<span class="icon">▶</span> Autoplay: ${autoplayEnabled ? 'ON' : 'OFF'}`;
+      });
+    }
+    function createParticleSystem() {
+      const container = document.querySelector('.particle-system');
+      for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.style.cssText = `
+          position: absolute;
+          width: 2px;
+          height: 2px;
+          background: var(--primary-color);
+          box-shadow: var(--neon-glow);
+          left: ${Math.random() * 100}vw;
+          top: ${Math.random() * 100}vh;
+          pointer-events: none;
+        `;
+        container.appendChild(particle);
+        animateParticle(particle);
+      }
+    }
+    function animateParticle(particle) {
+      const duration = 2000 + Math.random() * 3000;
+      particle.animate([{
+        transform: 'translate(0, 0) scale(1)',
+        opacity: 1
+      }, {
+        transform: `translate(${Math.random() * 200 - 100}px, ${Math.random() * 200 - 100}px) scale(0)`,
+        opacity: 0
+      }], {
+        duration,
+        iterations: Infinity
+      });
+    }
+    function createRealityTears() {
+      const container = document.querySelector('.reality-tears');
+      for (let i = 0; i < 5; i++) {
+        const tear = document.createElement('div');
+        tear.style.cssText = `
+          position: absolute;
+          width: ${50 + Math.random() * 200}px;
+          height: 2px;
+          background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+          box-shadow: var(--neon-glow);
+          left: ${Math.random() * 100}vw;
+          top: ${Math.random() * 100}vh;
+          transform: rotate(${Math.random() * 360}deg);
+          pointer-events: none;
+        `;
+        container.appendChild(tear);
+        animateTear(tear);
+      }
+    }
+    function animateTear(tear) {
+      const duration = 3000 + Math.random() * 4000;
+      tear.animate([{
+        transform: 'scale(1) rotate(0deg)',
+        opacity: 0
+      }, {
+        transform: 'scale(2) rotate(180deg)',
+        opacity: 1
+      }, {
+        transform: 'scale(1) rotate(360deg)',
+        opacity: 0
+      }], {
+        duration,
+        iterations: Infinity
+      });
+    }
+    function updateStats() {
+      document.getElementById('shiftCounter').textContent = shiftCount;
+      document.getElementById('glitchLevel').textContent = glitchLevel;
+      document.getElementById('corruptionLevel').textContent = `${Math.floor(corruptionLevel)}%`;
+      corruptionLevel = Math.min(100, corruptionLevel + 0.1);
+      if (corruptionLevel >= 100) {
+        glitchLevel++;
+        corruptionLevel = 0;
+      }
+      setTimeout(updateStats, 100);
+    }
+    function createMatrixRain() {
+      const canvas = document.querySelector('.matrix-rain');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      let width = canvas.width;
+      let height = canvas.height;
+      const columns = Math.floor(width / 20);
+      const drops = new Array(columns).fill(0);
+      const chars = '日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ';
+      function draw() {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+        ctx.fillRect(0, 0, width, height);
+        ctx.fillStyle = '#0F0';
+        ctx.font = '15px monospace';
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          ctx.fillText(text, i * 20, drops[i] * 20);
+          if (drops[i] * 20 > height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
+        }
+      }
+      setInterval(draw, 33);
+    }
+    window.onload = () => {
+      const audio = document.getElementById('glitchAudio');
+      audio.volume = 0.3;
+      audio.title = "Digital Overlord by Suno AI";
+      document.getElementById('activateAudio').addEventListener('click', () => {
+        audio.play().catch(e => console.warn('Audio playback failed:', e));
+        document.getElementById('activateAudio').style.display = 'none';
+      });
+      createMatrixRain();
+      addGlitchEffects();
+      glitchSequence();
+      initializeControls();
+      createParticleSystem();
+      createRealityTears();
+      updateStats();
+    };
+    document.addEventListener('keypress', createGlitchEffect);
+    document.addEventListener('click', createGlitchEffect);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'm') {
+        toggleAudio();
+      }
+    });
+    document.getElementById('activateAudio').addEventListener('click', initializeAudio);
+    window.addEventListener('resize', () => {
+      const canvas = document.querySelector('.matrix-rain');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });</script>
+
+    
+<iframe id="glitchAudio" width="0" height="0" scrolling="no" frameborder="no" allow="autoplay" 
+src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/90068580&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false">
+</iframe>
+    <p style="
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      color: var(--primary-color);
+      font-family: &apos;Share Tech Mono&apos;, monospace;
+      font-size: 0.8em;
+      text-shadow: var(--neon-glow);
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 1000;
+    ">Music: &quot;Digital Overlord&quot; by Suno AI</p>
+    <button id="activateAudio" style="
+      position: fixed;
+      bottom: 50px;
+      right: 10px;
+      background: rgba(0,20,0,0.9);
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+      padding: 10px 20px;
+      font-family: &apos;Share Tech Mono&apos;, monospace;
+      font-size: 1em;
+      cursor: pointer;
+      z-index: 1000;
+      box-shadow: var(--neon-glow);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+    ">Activate Audio</button>
+    </body></html>

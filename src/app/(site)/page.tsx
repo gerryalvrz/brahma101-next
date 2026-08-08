@@ -1,9 +1,11 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import NeonButton from "@/components/ui/NeonButton";
 import GlowImage from "@/components/ui/GlowImage";
+import TypewriterText from "@/components/effects/TypewriterText";
 import Footer from "@/components/layout/Footer";
+import { homeContent } from "@/data/home";
+import styles from "./home.module.css";
 
 const MatrixRain = dynamic(() => import("@/components/effects/MatrixRain"), {
   ssr: false,
@@ -12,80 +14,59 @@ const ParticlesBackground = dynamic(
   () => import("@/components/effects/ParticlesBackground"),
   { ssr: false }
 );
-const TerminalTyper = dynamic(
-  () => import("@/components/effects/TerminalTyper"),
-  { ssr: false }
-);
-const TypewriterText = dynamic(
-  () => import("@/components/effects/TypewriterText"),
-  { ssr: false }
-);
+const TerminalTyper = dynamic(() => import("@/components/effects/TerminalTyper"), {
+  ssr: false,
+});
 
 export default function HomePage() {
+  const h = homeContent.hero;
   return (
-    <main className="flex flex-col items-center min-h-screen p-5 relative">
+    <main className={styles.main}>
       <MatrixRain opacity={0.4} />
       <ParticlesBackground />
 
-      {/* Terminal Box */}
-      <TerminalTyper />
+      <TerminalTyper className={styles.terminalBox} scanLineClassName={styles.scanLine} />
 
-      {/* Main content */}
-      <div className="mt-8 text-center">
-        <h1 className="font-vt323 text-4xl text-neon text-shadow-neon-strong">
-          Welcome to the dance of Dimensions
-        </h1>
-        <p className="mb-5">No one to hold accountable, but yourself.</p>
-
-        <GlowImage
-          src="/images/brahma101.gif"
-          alt="dark moon aesthetics"
-          width={250}
-          height={250}
-        />
-
-        <header className="mt-8">
-          <h1 className="font-vt323 text-5xl text-neon text-shadow-neon-strong text-center">
-            brahma101.eth
-          </h1>
-          <p className="flex items-baseline justify-center text-xl my-2.5">
-            <span>The Art of&nbsp;</span>
-            <TypewriterText words={["(r)evolution", "creation"]} />
-          </p>
-        </header>
-
-        {/* Navigation buttons */}
-        <div className="my-8 flex flex-wrap justify-center">
-          <NeonButton href="https://www.motusdao.org" external>
-            MotusDAO
-          </NeonButton>
-          <NeonButton href="https://www.refimexico.org" external>
-            ReFiMexico
-          </NeonButton>
-          <NeonButton href="https://www.celomexico.org" external>
-            CeloMexico
-          </NeonButton>
-          <NeonButton href="/music">Metacognitive Music</NeonButton>
-          <NeonButton href="/locognitive">Locognitive</NeonButton>
-          <NeonButton href="/e8sel">E8 S.E.L.</NeonButton>
-          <NeonButton href="https://imm-jet.vercel.app/" external>
-            Impact Market Maker
-          </NeonButton>
+      <section className={styles.hero}>
+        <h2 className={styles.welcome}>{h.welcome}</h2>
+        <p className={styles.tag}>{h.welcomeSub}</p>
+        <div className={styles.visual}>
+          <GlowImage
+            src="/images/brahma101.gif"
+            alt="dark moon aesthetics"
+            width={250}
+            height={250}
+          />
         </div>
+        <h1 className={styles.name}>{h.brand}</h1>
+        <p className={styles.tagline}>
+          <span>The Art of&nbsp;</span>
+          <TypewriterText words={h.artOfWords} />
+        </p>
+        <div className={styles.buttonRow}>
+          {h.quickLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              target={link.external ? "_blank" : undefined}
+              rel={link.external ? "noopener noreferrer" : undefined}
+              className={styles.button}
+            >
+              {link.label}
+            </a>
+          ))}
+        </div>
+      </section>
 
-        {/* Narrative section */}
-        <section className="my-12">
-          <h2 className="flex items-baseline justify-center font-vt323 text-2xl">
-            <span>expect&nbsp;</span>
-            <TypewriterText words={["chaos", "(r)evolution"]} />
-          </h2>
-          <p className="mt-4">
-            Weaving the unseen threads of reality into manifested forms.
-          </p>
-        </section>
+      <section className={styles.narrative}>
+        <h2>
+          <span>expect&nbsp;</span>
+          <TypewriterText words={h.expectWords} />
+        </h2>
+        <p>{h.narrative}</p>
+      </section>
 
-        <Footer />
-      </div>
+      <Footer className={styles.footer} />
     </main>
   );
 }

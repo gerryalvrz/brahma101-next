@@ -1,4 +1,10 @@
 import NeonButton from "@/components/ui/NeonButton";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Metacognitive Music",
+  description: "Curated DJ sets and interdimensional circus.",
+};
 
 const SOUNDCLOUD_TRACKS = [
   {

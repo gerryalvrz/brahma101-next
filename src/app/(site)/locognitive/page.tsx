@@ -2,150 +2,156 @@
 
 import { useEffect, useState, useRef } from "react";
 import dynamic from "next/dynamic";
-import BackButton from "@/components/ui/BackButton";
-import NeonButton from "@/components/ui/NeonButton";
+import { locognitiveContent } from "@/data/locognitive";
+import styles from "./locognitive.module.css";
 
-const MatrixRain = dynamic(() => import("@/components/effects/MatrixRain"), {
-  ssr: false,
-});
+const LocognitiveMatrix = dynamic(
+  () => import("@/components/effects/LocognitiveMatrix"),
+  { ssr: false }
+);
 
 const ASCII_CHARS = ["☥", "ℑ", "☸︎", "♅", " ", "♁", ".", "☿", "+"];
 
 function generateAscii(width: number, height: number): string {
-  const textLines = "Locognitive".split("\n");
-  let art = "";
+  const rows: string[] = [];
+
   for (let y = 0; y < height; y++) {
+    let row = "";
     for (let x = 0; x < width; x++) {
-      art += ASCII_CHARS[Math.floor(Math.random() * ASCII_CHARS.length)];
+      row += ASCII_CHARS[(Math.random() * ASCII_CHARS.length) | 0];
     }
-    art += "\n";
+    rows.push(row);
   }
-  // Overlay text
-  const rows = art.split("\n");
-  const startY = Math.floor(height / 2 - textLines.length / 2);
-  for (let i = 0; i < textLines.length; i++) {
-    const line = textLines[i]
-      .padStart(Math.floor((width + textLines[i].length) / 2), " ")
-      .padEnd(width, " ");
-    if (rows[startY + i]) rows[startY + i] = line;
-  }
+
+  // Overlay "Locognitive" like the original HTML
+  const label = "Locognitive";
+  const rowIndex = (height / 2) | 0;
+  const start = Math.max(0, ((width - label.length) / 2) | 0);
+  const base = rows[rowIndex] ?? "".padEnd(width, " ");
+  rows[rowIndex] =
+    base.slice(0, start) + label + base.slice(start + label.length);
+
   return rows.join("\n");
 }
 
 export default function LocognitivePage() {
   const [loading, setLoading] = useState(true);
-  const [ascii, setAscii] = useState("");
-  const intervalRef = useRef<ReturnType<typeof setInterval>>(undefined);
+  const [ascii, setAscii] = useState(() => generateAscii(120, 30));
+  const c = locognitiveContent;
+  // Survive React Strict Mode double-mount in dev
+  const startedAt = useRef<number | null>(null);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setAscii(generateAscii(80, 20));
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlBg = html.style.background;
+    const prevBodyBg = body.style.background;
+    const prevHtmlImage = html.style.backgroundImage;
+    const prevBodyImage = body.style.backgroundImage;
+    html.style.background = "#000";
+    html.style.backgroundImage = "none";
+    body.style.background = "#000";
+    body.style.backgroundImage = "none";
+
+    if (startedAt.current === null) {
+      startedAt.current = Date.now();
+    }
+
+    const tick = window.setInterval(() => {
+      setAscii(generateAscii(120, 30));
     }, 200);
 
-    const timer = setTimeout(() => {
-      clearInterval(intervalRef.current);
+    const remaining = Math.max(0, 3000 - (Date.now() - startedAt.current));
+    const timer = window.setTimeout(() => {
+      window.clearInterval(tick);
       setLoading(false);
-    }, 3000);
+    }, remaining);
 
     return () => {
-      clearInterval(intervalRef.current);
-      clearTimeout(timer);
+      window.clearInterval(tick);
+      window.clearTimeout(timer);
+      html.style.background = prevHtmlBg;
+      html.style.backgroundImage = prevHtmlImage;
+      body.style.background = prevBodyBg;
+      body.style.backgroundImage = prevBodyImage;
     };
   }, []);
 
   if (loading) {
     return (
-      <div className="fixed inset-0 flex justify-center items-center bg-black z-10">
-        <pre className="text-neon text-xs leading-3 whitespace-pre font-mono">
-          {ascii}
-        </pre>
+      <div className={styles.loader}>
+        <pre className={styles.ascii}>{ascii}</pre>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen overflow-y-auto">
-      <BackButton />
-      <MatrixRain opacity={0.3} />
+    <div className={styles.page}>
+      <a href="/" className={styles.backLink}>
+        ← Back to Menu
+      </a>
 
-      <div
-        className="grid gap-5 p-5 min-h-screen items-center"
-        style={{ gridTemplateColumns: "0.8fr 1.2fr 0.8fr" }}
-      >
-        {/* Left — AI Generated Images */}
-        <div className="relative p-4 rounded-[15px] text-center bg-black/40 shadow-neon flex flex-col items-center justify-start gap-4">
-          <h1 className="font-vt323 text-2xl text-neon">AI Generated Images</h1>
-          <div className="flex flex-col gap-2.5 items-center w-full">
-            <NeonButton href="#">Collection I</NeonButton>
-            <NeonButton href="#">Collection II</NeonButton>
-          </div>
-        </div>
+      <LocognitiveMatrix />
 
-        {/* Center — DES */}
-        <div className="relative p-4 rounded-[15px] text-center bg-black/40 shadow-neon flex flex-col items-center justify-start gap-4">
-          <h1 className="font-vt323 text-2xl text-neon">
-            Dimension Explorer Service (D.E.S.)
-          </h1>
-          <div className="max-h-[60vh] overflow-y-auto w-[60%] max-w-[400px] p-4 border-2 border-neon bg-black/80 rounded-[10px]">
-            <div className="flex flex-col gap-2.5 items-center w-full">
-              {[
-                "Fractality",
-                "Tipper Mind Hatch",
-                "Jazzdimension",
-                "Psychoactive Entropy",
-                "Iterate Reality",
-                "Cosmic Spaces",
-                "Quantum Shaggy",
-                "Glitchy message",
-                "Neuroreality",
-                "Psyched ride",
-                "Soft ripples",
-                "Planet E",
-                "Mario",
-              ].map((name) => (
-                <NeonButton key={name} href="#">
-                  {name}
-                </NeonButton>
+      <div className={styles.mainContent}>
+        <div className={styles.grid}>
+          <div className={styles.section}>
+            <h1>AI Generated Images</h1>
+            <div className={styles.buttonList}>
+              {c.collections.map((link) => (
+                <a key={link.label} href={link.href} className={styles.button}>
+                  {link.label}
+                </a>
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Right — Digital Samsaras */}
-        <div className="relative p-4 rounded-[15px] text-center bg-black/40 shadow-neon flex flex-col items-center justify-start gap-4">
-          <h3 className="font-vt323 text-xl text-neon">Digital Samsaras</h3>
-          <div className="p-4 bg-black/50 border-2 border-neon shadow-neon w-full">
-            <iframe
-              src="https://drive.google.com/file/d/1rpa77ZHDyOwN5h4tx2UpOQiaYwgZ2xI4/preview"
-              width="100%"
-              height="200"
-              allow="autoplay"
-              allowFullScreen
-              className="border-2 border-neon"
-            />
+          <div className={styles.section}>
+            <h1>{c.desTitle}</h1>
+            <div className={styles.scrollable}>
+              <div className={styles.buttonList}>
+                {c.desLinks.map((link) => (
+                  <a key={link.label} href={link.href} className={styles.button}>
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="p-4 bg-black/50 border-2 border-neon shadow-neon w-full">
-            <h3 className="font-vt323 text-lg text-neon text-shadow-neon">
-              Sounds sculptured in space
-            </h3>
-            <iframe
-              width="100%"
-              height="100"
-              scrolling="no"
-              frameBorder="no"
-              allow="autoplay"
-              src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/63156685&color=%2300ff00&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false"
-              className="border-2 border-neon"
-            />
+
+          <div className={styles.section}>
+            <h3>Digital Samsaras</h3>
+            <div className={styles.box}>
+              <iframe
+                src={c.drivePreview}
+                width="100%"
+                height="100%"
+                allow="autoplay"
+                allowFullScreen
+                title="Digital Samsaras"
+                style={{ minHeight: 180 }}
+              />
+            </div>
+            <div className={styles.box}>
+              <h3>Sounds sculptured in space</h3>
+              <iframe
+                width="100%"
+                height={100}
+                scrolling="no"
+                frameBorder={0}
+                allow="autoplay"
+                src={c.soundCloudEmbed}
+                title="Sounds sculptured in space"
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="fixed bottom-0 w-full text-center text-base text-neon bg-black/70 py-2.5 shadow-[0_-2px_10px_rgba(0,255,0,0.6)] z-[100]">
-        <span className="text-neon cursor-pointer hover:text-neon-hover">
-          Locognitive
-        </span>
+      <footer className={styles.footer}>
+        <a href={c.footerLink.href} className={styles.footerLink}>
+          {c.footerLink.label}
+        </a>
       </footer>
     </div>
   );

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E8 Socio-Economic Lattice (E8 SEL) Whitepaper</title>
+    <link rel="stylesheet" href="../assets/css/styling.css">
+    <style>
+        :root {
+            --background: #000000;
+            --text: #00ff00;
+            --highlight: #33ff33;
+            --dim: #004400;
+        }
+
+        body {
+            background: var(--background);
+            color: var(--text);
+            font-family: 'Courier New', monospace;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            border-bottom: 2px solid var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .entry {
+            border: 1px solid var(--dim);
+            padding: 15px;
+            margin: 15px 0;
+            background: rgba(0, 20, 0, 0.3);
+            cursor: pointer;
+        }
+
+        .entry:hover {
+            border-color: var(--highlight);
+            background: rgba(0, 40, 0, 0.5);
+        }
+
+        .entry h2 {
+            margin-top: 0;
+            color: var(--highlight);
+        }
+
+        .classification {
+            display: inline-block;
+            padding: 3px 8px;
+            border: 1px solid var(--text);
+            border-radius: 3px;
+            margin: 5px 0;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>E8 SEL Whitepaper</h1>
+            <p>Top Secret Documentation</p>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter1')">
+            <h2>Chapter 1: Introduction to E8 Socio-Economic Lattice</h2>
+            <div class="classification" style="background: rgba(0, 255, 0, 0.1)">Classification: FOUNDATION</div>
+            <p><strong>Description:</strong> The E8 Socio-Economic Lattice (E8 SEL) serves as a blueprint for redefining mental health systems through decentralized governance, equitable access, and interdisciplinary innovation.</p>
+            <p><strong>Core Principles:</strong></p>
+            <ul>
+                <li>Integration of regenerative finance and mental health.</li>
+                <li>Universal access to mental health services via Web3 technology.</li>
+                <li>Leveraging the E8 structure to design scalable, sustainable solutions.</li>
+            </ul>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter2')">
+            <h2>Chapter 2: The E8 Lattice Framework</h2>
+            <div class="classification" style="background: rgba(255, 165, 0, 0.1)">Classification: INTERDISCIPLINARY</div>
+            <p><strong>Description:</strong> The 248-dimensional E8 lattice is utilized to map interconnected societal, ecological, and economic needs, aligning mental health with universal wellbeing.</p>
+            <p><strong>Applications in MotusDAO:</strong></p>
+            <ul>
+                <li>Designing decentralized governance structures inspired by E8 symmetry.</li>
+                <li>Mapping 21 universal needs within Doughnut Economics to scalable mental health solutions.</li>
+                <li>Ensuring balance between local and global perspectives in impact DAOs.</li>
+            </ul>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter3')">
+            <h2>Chapter 3: Governance and Tokenomics</h2>
+            <div class="classification" style="background: rgba(0, 150, 255, 0.1)">Classification: GOVERNANCE</div>
+            <p><strong>Description:</strong> MotusDAO leverages E8 SEL principles to develop a non-hierarchical governance system driven by education, contribution, and interdisciplinary expertise.</p>
+            <p><strong>Key Features:</strong></p>
+            <ul>
+                <li>UBI tokens for therapy services and participation rewards.</li>
+                <li>Governance tokens weighted by verifiable knowledge and activity.</li>
+                <li>Quadratic voting to ensure inclusive decision-making.</li>
+            </ul>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter4')">
+            <h2>Chapter 4: The Psychologists’ Academy</h2>
+            <div class="classification" style="background: rgba(255, 165, 0, 0.1)">Classification: INTERDISCIPLINARY</div>
+            <p><strong>Description:</strong> The academy equips mental health professionals with theoretical, practical, and technological tools inspired by the E8 SEL model.</p>
+            <p><strong>Curriculum Highlights:</strong></p>
+            <ul>
+                <li>Training in next-generation therapeutic methodologies.</li>
+                <li>Integration of Web3 tools to enhance service delivery and transparency.</li>
+                <li>Cross-disciplinary studies to foster holistic mental health approaches.</li>
+            </ul>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter5')">
+            <h2>Chapter 5: Funding Mental Health with Regenerative Finance</h2>
+            <div class="classification" style="background: rgba(255, 165, 0, 0.1)">Classification: ECONOMIC</div>
+            <p><strong>Description:</strong> MotusDAO utilizes regenerative finance models to democratize funding for mental health services, ensuring affordability and accessibility.</p>
+            <p><strong>Mechanisms:</strong></p>
+            <ul>
+                <li>Quadratic funding to prioritize community-driven needs.</li>
+                <li>Retroactive funding to reward professionals serving underserved populations.</li>
+                <li>Impact markets to tokenize and trade contributions to mental health ecosystems.</li>
+            </ul>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter6')">
+            <h2>Chapter 6: Technology Integration</h2>
+            <div class="classification" style="background: rgba(0, 150, 255, 0.1)">Classification: TECHNOLOGICAL</div>
+            <p><strong>Description:</strong> E8 SEL guides the technological underpinnings of MotusDAO, emphasizing transparency, security, and scalability.</p>
+            <p><strong>Technological Highlights:</strong></p>
+            <ul>
+                <li>Decentralized MRV (Monitoring, Reporting, Verification) for impact tracking.</li>
+                <li>Smart contracts for efficient resource allocation.</li>
+                <li>Integration with blockchain-based stablecoins for global accessibility.</li>
+            </ul>
+        </div>
+
+        <div class="entry" onclick="showDetails('chapter7')">
+            <h2>Chapter 7: Expanding the Vision</h2>
+            <div class="classification" style="background: rgba(255, 0, 0, 0.2)">Classification: FUTURE PLANS</div>
+            <p><strong>Description:</strong> MotusDAO's future initiatives aim to expand the E8 SEL framework across global ecosystems, addressing interconnected challenges in health, economics, and environment.</p>
+            <p><strong>Next Steps:</strong></p>
+            <ul>
+                <li>Scaling impact markets to include other social determinants of health.</li>
+                <li>Collaborating with global partners to replicate the E8 SEL model.</li>
+                <li>Innovating new governance tools inspired by multidimensional systems.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showDetails(chapter) {
+            alert(`Opening details for ${chapter}`);
+        }
+    </script>
+</body>
+</html>
