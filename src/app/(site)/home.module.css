@@ -30,50 +30,127 @@
   position: relative;
   width: 80%;
   max-width: 800px;
-  margin: 50px auto 0;
-  padding: 20px;
+  margin: 1.75rem auto 0;
+  padding: 1rem 1.15rem;
   text-align: center;
-  border: 2px solid #0f0;
-  background-color: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(0, 255, 0, 0.45);
+  background-color: rgba(0, 0, 0, 0.72);
   color: #0f0;
   font-family: var(--font-mono);
-  font-size: 1.2rem;
+  font-size: 1rem;
   line-height: 1.5;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.28);
   overflow: hidden;
 }
 
+/*
+ * Full-height layer whose gradient is opaque only across a thin band, so
+ * translateY(±100%) resolves against the terminal's height. The previous
+ * version was 1px tall, which made its 3600% travel just 36px — the sweep
+ * stopped a third of the way down the box.
+ */
 .scanLine {
   pointer-events: none;
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.9), transparent);
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 47%,
+    rgba(0, 255, 0, 0.9) 50%,
+    transparent 53%
+  );
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 22%,
+    #000 78%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent,
+    #000 22%,
+    #000 78%,
+    transparent
+  );
   animation: scan 6s linear infinite;
+  will-change: transform;
 }
 
 @keyframes scan {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
+  from {
+    transform: translate3d(0, -100%, 0);
   }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(3600%);
-    opacity: 0;
+  to {
+    transform: translate3d(0, 100%, 0);
   }
 }
 
-.hero {
-  width: 90%;
-  max-width: 800px;
-  margin-top: 30px;
-  padding: 20px;
+.plasmaField {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Was washing out the whole left half and flattening the menu contrast. */
+  background: radial-gradient(
+    ellipse 62% 55% at 36% 46%,
+    rgba(170, 255, 70, 0.16) 0%,
+    rgba(40, 180, 40, 0.08) 30%,
+    rgba(0, 60, 20, 0.05) 55%,
+    transparent 74%
+  );
+}
+
+.dashboard {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr);
+  gap: clamp(1rem, 3vw, 2.5rem);
+  align-items: center;
+  width: min(1100px, 96vw);
+  min-height: min(78vh, 820px);
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.5rem 1rem;
+}
+
+.orbColumn {
   text-align: center;
+  animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+
+.menuColumn {
+  width: 100%;
+  min-width: 0;
+  /* Trails the hero slightly so the dashboard assembles rather than appears. */
+  animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) 0.14s both;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.welcomeQuiet {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display), monospace;
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  letter-spacing: 0.04em;
+  color: rgba(0, 255, 0, 0.55);
+  text-shadow: none;
+}
+
+.welcomeSub {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(0, 255, 0, 0.65);
 }
 
 .welcome {
@@ -90,6 +167,60 @@
   color: #00ff00;
 }
 
+.orbStage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0.35rem auto;
+  width: min(280px, 70vw);
+  height: min(280px, 70vw);
+}
+
+.plasma {
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 48%,
+    rgba(220, 255, 120, 0.4) 0%,
+    rgba(80, 255, 60, 0.22) 30%,
+    rgba(0, 160, 40, 0.1) 54%,
+    transparent 72%
+  );
+  /* A radial gradient is already soft; a blur filter here only costs frames. */
+  pointer-events: none;
+  animation: plasmaPulse 8s ease-in-out infinite;
+  will-change: opacity;
+}
+
+.orbImage {
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  box-shadow:
+    0 0 32px rgba(120, 255, 60, 0.5),
+    0 0 70px rgba(0, 255, 80, 0.22);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.orbImage:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 44px rgba(160, 255, 80, 0.65),
+    0 0 90px rgba(0, 255, 80, 0.3);
+}
+
+@keyframes plasmaPulse {
+  0%,
+  100% {
+    opacity: 0.78;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 .visual {
   display: flex;
   justify-content: center;
@@ -97,11 +228,13 @@
 }
 
 .name {
-  margin: 0.5rem 0 0.35rem;
+  margin: 0.2rem 0 0.2rem;
   font-family: var(--font-display), monospace;
-  font-size: 3rem;
-  color: #0f0;
-  text-shadow: 0 0 15px #0f0;
+  font-size: clamp(2.1rem, 5vw, 2.85rem);
+  color: #b8ff3a;
+  text-shadow:
+    0 0 10px rgba(180, 255, 60, 0.85),
+    0 0 28px rgba(0, 255, 0, 0.55);
 }
 
 .role {
@@ -116,10 +249,10 @@
   align-items: baseline;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 10px 0 20px;
-  font-size: 1.2rem;
-  color: #00ff00;
-  text-shadow: 0 0 10px #0f0;
+  margin: 0.1rem 0 0.25rem;
+  font-size: 1.05rem;
+  color: #8fff60;
+  text-shadow: 0 0 8px rgba(0, 255, 0, 0.45);
 }
 
 .buttonRow {
@@ -128,6 +261,438 @@
   justify-content: center;
   gap: 0;
   margin: 10px 0;
+}
+
+.workBlock {
+  width: 100%;
+  margin-top: 0;
+}
+
+.workToggle {
+  display: inline-flex;
+  justify-content: center;
+  gap: 0;
+  margin: 0 0 1rem;
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  border-radius: 2px;
+  overflow: hidden;
+  opacity: 0.85;
+}
+
+.workToggleBtn {
+  padding: 0.28rem 0.85rem;
+  color: rgba(0, 255, 0, 0.7);
+  background: transparent;
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+.workToggleBtn + .workToggleBtn {
+  border-left: 1px solid rgba(0, 255, 0, 0.35);
+}
+
+.workToggleActive {
+  background: rgba(0, 255, 0, 0.14);
+  color: #b8ff40;
+}
+
+
+
+.xboxDeck {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  padding: 0.15rem 0 0;
+  overflow: visible;
+}
+
+/* Rotary stage: clipped dial left, arc-slotted folders right */
+.arcStage {
+  --arc-x: 24px;
+  --arc-y: 50%;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 320px;
+  margin: 0;
+  outline: none;
+  overflow: visible;
+  /* Vertical stays with the page; horizontal drag steps the dial. */
+  touch-action: pan-y;
+}
+
+.arcStage:focus-visible {
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 100, 0.28);
+}
+
+.bladeRow {
+  position: absolute;
+  left: var(--arc-x);
+  top: var(--arc-y);
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: calc(min(380px, 100% - 44px) * var(--bar-length, 1));
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  transform-origin: 18px center;
+  /* Compositor-only. Position comes from an inline transform, never left/top,
+     so moving a blade never triggers layout. */
+  transition:
+    transform 0.42s cubic-bezier(0.22, 0.8, 0.28, 1),
+    opacity 0.32s ease;
+  will-change: transform, opacity;
+}
+
+.bladeRowActive {
+  cursor: default;
+}
+
+.dialNode {
+  position: relative;
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+}
+
+/* Circuit trace bridging node to bar, as on the dashboard. */
+.dialNode::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 0.85rem;
+  height: 1px;
+  background: rgba(120, 255, 140, 0.45);
+}
+
+.dialNodeActive::after {
+  background: rgba(215, 255, 90, 0.85);
+  box-shadow: 0 0 6px rgba(200, 255, 80, 0.6);
+}
+
+.dialRing,
+.dialRingOuter,
+.dialCore {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.dialRingOuter {
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(100, 255, 120, 0.42);
+  box-shadow: 0 0 10px rgba(0, 255, 80, 0.22);
+}
+
+.dialRing {
+  width: 25px;
+  height: 25px;
+  border: 1px solid rgba(140, 255, 140, 0.58);
+}
+
+.dialCore {
+  width: 11px;
+  height: 11px;
+  background: rgba(40, 160, 50, 0.72);
+  border: 1px solid rgba(160, 255, 120, 0.75);
+  box-shadow: 0 0 8px rgba(0, 255, 80, 0.4);
+  transition: background-color 0.25s, box-shadow 0.25s, width 0.25s, height 0.25s;
+}
+
+.dialNodeActive .dialCore {
+  width: 14px;
+  height: 14px;
+  background: #d8ff4a;
+  border-color: #f0ff9a;
+  box-shadow:
+    0 0 14px rgba(210, 255, 80, 0.95),
+    0 0 26px rgba(0, 255, 80, 0.5);
+}
+
+.dialNodeActive .dialRing {
+  border-color: rgba(220, 255, 120, 0.9);
+  box-shadow: 0 0 10px rgba(180, 255, 60, 0.4);
+}
+
+.dialNodeActive .dialRingOuter {
+  border-color: rgba(200, 255, 100, 0.7);
+}
+
+.blade {
+  position: relative;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 2.2rem;
+  padding: 0.28rem 1.1rem 0.28rem 0.9rem;
+  color: rgba(190, 255, 175, 0.95);
+  font-family: var(--font-display), monospace;
+  /* Unselected bars on the dashboard are outline only — a filled slab reads
+     far heavier than the reference and buries the grid behind it. */
+  background: rgba(6, 26, 10, 0.26);
+  border: 1px solid rgba(125, 255, 145, 0.5);
+  clip-path: polygon(
+    0 0,
+    calc(100% - 12px) 0,
+    100% 12px,
+    100% 100%,
+    0 100%
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 80, 0.1);
+  transition: color 0.25s, background 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+
+/* Inline opacity drives the arc falloff, so hover reads on the blade itself. */
+.bladeRow:hover .blade {
+  border-color: rgba(160, 255, 170, 0.75);
+  box-shadow:
+    0 0 18px rgba(0, 255, 80, 0.26),
+    inset 0 0 16px rgba(0, 255, 80, 0.1);
+}
+
+.bladeLabel {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  font-size: clamp(0.95rem, 1.9vw, 1.1rem);
+  /* The dashboard face is wide and generously tracked; VT323 needs the help. */
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(0, 255, 80, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bladeActive {
+  color: #0a1600;
+  background: linear-gradient(
+    100deg,
+    rgba(215, 255, 75, 0.94) 0%,
+    rgba(145, 245, 45, 0.86) 100%
+  );
+  border-color: rgba(230, 255, 120, 0.95);
+  box-shadow:
+    0 0 20px rgba(180, 255, 60, 0.5),
+    0 0 34px rgba(0, 255, 80, 0.24),
+    inset 0 0 12px rgba(255, 255, 200, 0.18);
+}
+
+/* Pip-Boy flicker. An opacity overlay stays on the compositor; animating
+   `filter: brightness()` on the blade itself repaints it every frame. */
+.bladeActive::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 215, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  animation: bladeFlicker 4.2s steps(1, end) infinite;
+}
+
+.bladeActive .bladeLabel {
+  text-shadow: none;
+}
+
+@keyframes bladeFlicker {
+  0%,
+  46%,
+  50%,
+  52%,
+  55%,
+  100% {
+    opacity: 0;
+  }
+  47% {
+    opacity: 0.11;
+  }
+  51% {
+    opacity: 0.06;
+  }
+  53% {
+    opacity: 0.09;
+  }
+}
+
+.menuHint {
+  position: relative;
+  z-index: 1;
+  margin: 0.55rem 0 0;
+  padding-left: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(0, 255, 0, 0.45);
+}
+
+
+.fileTree {
+  position: relative;
+  z-index: 0;
+  margin: 1.35rem 0 0 0.15rem;
+  padding: 0.7rem 0.7rem 0.65rem 0.9rem;
+  border-left: 1px solid rgba(0, 255, 80, 0.3);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 40, 10, 0.4) 0%,
+    rgba(0, 20, 5, 0.14) 100%
+  );
+  /* hard separation from the arc layer above */
+  clear: both;
+  isolation: isolate;
+  animation: fileTreeIn 0.34s cubic-bezier(0.22, 0.8, 0.28, 1) both;
+}
+
+@keyframes fileTreeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(-6px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fileItem {
+  animation: fileItemIn 0.3s ease both;
+  /* Files cascade in under the folder instead of all snapping at once. */
+  animation-delay: calc(var(--i) * 34ms + 60ms);
+}
+
+@keyframes fileItemIn {
+  from {
+    opacity: 0;
+    transform: translate3d(-10px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fileTreePath {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem;
+  margin: 0 0 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: rgba(120, 255, 140, 0.55);
+}
+
+.fileTreeRoot {
+  color: rgba(180, 255, 80, 0.75);
+}
+
+.fileTreeSep {
+  opacity: 0.5;
+}
+
+.fileList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.fileLink {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.35rem 0.55rem;
+  color: rgba(170, 255, 150, 0.92);
+  text-decoration: none;
+  font-family: var(--font-display), monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  border: 1px solid transparent;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 8px) 0,
+    100% 8px,
+    100% 100%,
+    0 100%
+  );
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.fileLink:hover,
+.fileLink:focus-visible {
+  color: #041200;
+  background: rgba(170, 255, 70, 0.88);
+  border-color: rgba(210, 255, 100, 0.7);
+  box-shadow: 0 0 14px rgba(0, 255, 80, 0.35);
+  outline: none;
+}
+
+.fileGlyph {
+  flex: 0 0 auto;
+  color: rgba(140, 255, 120, 0.65);
+  font-size: 0.75rem;
+}
+
+.fileLink:hover .fileGlyph,
+.fileLink:focus-visible .fileGlyph {
+  color: rgba(20, 40, 0, 0.7);
+}
+
+.fileName {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.workArchive {
+  padding: 0.5rem 0.25rem;
+}
+
+.archiveStubTitle {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-display), monospace;
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  color: #b8ff40;
+  text-shadow: 0 0 12px rgba(0, 255, 80, 0.45);
+}
+
+.workArchiveHint {
+  margin: 0 0 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: rgba(0, 255, 0, 0.72);
+}
+
+.archiveStubNote {
+  margin: 0.55rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(0, 255, 0, 0.55);
 }
 
 .button {
@@ -154,8 +719,21 @@
 .narrative {
   width: 90%;
   max-width: 800px;
-  margin-top: 1.5rem;
+  margin-top: 2rem;
   text-align: center;
+}
+
+.expectLine {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0 0 10px;
+  font-family: var(--font-display), monospace;
+  font-size: clamp(1.35rem, 3.2vw, 1.85rem);
+  font-weight: 400;
+  color: #00ff00;
+  text-shadow: 0 0 10px #0f0;
 }
 
 .narrative h2 {
@@ -185,9 +763,9 @@
   width: min(1000px, 95vw);
   margin: 1.6rem auto 0;
   padding: 1rem 1.25rem;
-  border: 2px solid #0f0;
-  background: rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.35);
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  background: rgba(0, 0, 0, 0.68);
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.22);
 }
 
 .section h2 {
@@ -268,6 +846,94 @@
   margin: 0.9rem 0 0;
 }
 
+.contactBox {
+  width: min(800px, 92vw);
+  text-align: left;
+}
+
+.contactForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem 1rem;
+  margin-top: 1rem;
+}
+
+.contactField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: #00ff00;
+}
+
+.contactField input,
+.contactField textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.65rem 0.75rem;
+  color: #00ff00;
+  background: rgba(0, 20, 0, 0.55);
+  border: 1px solid rgba(0, 255, 0, 0.55);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.contactField input:focus,
+.contactField textarea:focus {
+  border-color: #00ff00;
+  box-shadow: 0 0 12px rgba(0, 255, 0, 0.35);
+}
+
+.contactField textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.contactMessage {
+  grid-column: 1 / -1;
+}
+
+.contactForm .button {
+  grid-column: 1 / -1;
+  justify-self: start;
+  margin: 0.25rem 0 0;
+}
+
+.contactForm .button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.contactSuccess,
+.contactError {
+  margin: 1rem 0 0;
+  font-family: var(--font-mono);
+}
+
+.contactSuccess {
+  color: #00ff00;
+  text-shadow: 0 0 8px #0f0;
+}
+
+.contactError {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: #ff6666;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .footer {
   width: min(1000px, 95vw);
   margin: 2rem auto 0;
@@ -279,20 +945,56 @@
   font-family: var(--font-mono);
 }
 
+@media (max-width: 860px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 1.25rem;
+  }
+
+  .arcStage {
+    --arc-x: 18px;
+    height: 300px;
+  }
+
+  .bladeRow {
+    width: calc(min(330px, 100% - 34px) * var(--bar-length, 1));
+  }
+
+  .fileTree {
+    margin-top: 1.1rem;
+  }
+}
+
 @media (max-width: 600px) {
   .name {
-    font-size: 2.25rem;
+    font-size: 2.1rem;
   }
 
   .tagline,
+  .expectLine,
   .narrative h2 {
     font-size: 1rem;
     line-height: 1.2;
   }
 
+  .orbStage {
+    width: min(240px, 72vw);
+    height: min(240px, 72vw);
+  }
+
+  .blade {
+    font-size: 0.98rem;
+    min-height: 2.1rem;
+  }
+
   .terminalBox {
     width: 92%;
     margin-top: 24px;
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .contactForm {
+    grid-template-columns: 1fr;
   }
 }

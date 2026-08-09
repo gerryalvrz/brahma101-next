@@ -15,7 +15,14 @@ const FULLSCREEN: CSSProperties = {
   touchAction: "manipulation",
 };
 
-export default function ParticlesBackground() {
+type ParticlesBackgroundProps = {
+  /** Quieter field so sphere grid / plasma can read */
+  quiet?: boolean;
+};
+
+export default function ParticlesBackground({
+  quiet = false,
+}: ParticlesBackgroundProps) {
   const initialized = useRef(false);
   const [mounted, setMounted] = useState(false);
 
@@ -31,6 +38,9 @@ export default function ParticlesBackground() {
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
         navigator.userAgent
       );
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
     const container = document.getElementById("particles-js");
     if (!container) return;
@@ -42,6 +52,8 @@ export default function ParticlesBackground() {
       left: "0",
       width: "100%",
       height: "100%",
+      opacity: quiet ? "0.45" : "0.38",
+      pointerEvents: quiet ? "none" : "auto",
     });
 
     let cancelled = false;
@@ -52,7 +64,13 @@ export default function ParticlesBackground() {
       (window as Window).particlesJS("particles-js", {
         particles: {
           number: {
-            value: isMobile ? 100 : 200,
+            value: quiet
+              ? isMobile
+                ? 14
+                : 28
+              : isMobile
+                ? 36
+                : 64,
             density: { enable: true, value_area: 800 },
           },
           color: { value: "#00ff00" },
@@ -61,25 +79,27 @@ export default function ParticlesBackground() {
             stroke: { width: 0, color: "#000000" },
           },
           opacity: {
-            value: 0.5,
+            value: quiet ? 0.28 : 0.32,
             random: true,
             anim: { enable: false },
           },
           size: {
-            value: 3,
+            value: quiet ? 2 : 2.5,
             random: true,
             anim: { enable: false },
           },
           line_linked: {
-            enable: true,
+            // Linking is an O(n^2) distance check every frame, and the lines
+            // just compete with the sphere grid. Quiet mode = drifting motes.
+            enable: !quiet,
             distance: 150,
             color: "#00ff00",
-            opacity: 0.4,
+            opacity: 0.22,
             width: 1,
           },
           move: {
-            enable: true,
-            speed: isMobile ? 1 : 3,
+            enable: !reducedMotion,
+            speed: quiet ? (isMobile ? 0.4 : 0.8) : isMobile ? 1 : 3,
             direction: "none",
             random: false,
             straight: false,
@@ -91,8 +111,8 @@ export default function ParticlesBackground() {
         interactivity: {
           detect_on: "window",
           events: {
-            onhover: { enable: true, mode: "repulse" },
-            onclick: { enable: true, mode: "push" },
+            onhover: { enable: !quiet, mode: "repulse" },
+            onclick: { enable: !quiet, mode: "push" },
             resize: true,
           },
           modes: {
@@ -109,7 +129,9 @@ export default function ParticlesBackground() {
             remove: { particles_nb: 2 },
           },
         },
-        retina_detect: true,
+        // Rendering the motes at 2x device pixels doubles fill cost for a layer
+        // nobody looks at directly.
+        retina_detect: !quiet,
       });
 
       // particles.js sizes from offsetWidth; nudge a resize so density spans the viewport
@@ -121,13 +143,21 @@ export default function ParticlesBackground() {
     return () => {
       cancelled = true;
     };
-  }, [mounted]);
+  }, [mounted, quiet]);
 
   if (!mounted) return null;
 
   // Portal to body like the original HTML (sibling of content, not nested in flex main)
   return createPortal(
-    <div id="particles-js" style={FULLSCREEN} aria-hidden />,
+    <div
+      id="particles-js"
+      style={{
+        ...FULLSCREEN,
+        opacity: quiet ? 0.45 : 0.38,
+        pointerEvents: quiet ? "none" : "auto",
+      }}
+      aria-hidden
+    />,
     document.body
   );
 }

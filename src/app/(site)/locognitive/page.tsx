@@ -36,7 +36,8 @@ function generateAscii(width: number, height: number): string {
 
 export default function LocognitivePage() {
   const [loading, setLoading] = useState(true);
-  const [ascii, setAscii] = useState(() => generateAscii(120, 30));
+  // Empty until mount — Math.random() in generateAscii would mismatch SSR/client
+  const [ascii, setAscii] = useState("");
   const c = locognitiveContent;
   // Survive React Strict Mode double-mount in dev
   const startedAt = useRef<number | null>(null);
@@ -57,6 +58,7 @@ export default function LocognitivePage() {
       startedAt.current = Date.now();
     }
 
+    setAscii(generateAscii(120, 30));
     const tick = window.setInterval(() => {
       setAscii(generateAscii(120, 30));
     }, 200);
