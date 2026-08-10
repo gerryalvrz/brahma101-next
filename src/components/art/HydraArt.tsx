@@ -158,7 +158,7 @@ export default function HydraArt() {
       setActiveId("shared");
     }
 
-    void import("hydra-synth").then(({ default: HydraCtor }) => {
+    void import("hydra-synth").then(async ({ default: HydraCtor }) => {
       if (cancelled || !canvasRef.current) return;
 
       const w = window.innerWidth;
@@ -180,12 +180,23 @@ export default function HydraArt() {
       window.addEventListener("resize", onResize);
 
       try {
-        hydra.eval(initialCode);
-        setError(null);
+        await new Promise<void>((resolve, reject) => {
+          try {
+            const result: unknown = window.eval(
+              `(async () => {\n${initialCode}\n})()`
+            );
+            Promise.resolve(result).then(() => resolve()).catch(reject);
+          } catch (e) {
+            reject(e);
+          }
+        });
+        if (!cancelled) setError(null);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Failed to run sketch");
+        if (!cancelled) {
+          setError(e instanceof Error ? e.message : "Failed to run sketch");
+        }
       }
-      setReady(true);
+      if (!cancelled) setReady(true);
     });
 
     return () => {
@@ -218,12 +229,22 @@ export default function HydraArt() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  function runCode(source: string) {
+  async function runCode(source: string) {
     const hydra = hydraRef.current;
     if (!hydra) return;
     try {
       hydra.hush();
-      hydra.eval(source);
+      // Match hydra.ojack.xyz: wrap in async IIFE so `await loadScript(...)` works.
+      await new Promise<void>((resolve, reject) => {
+        try {
+          const result: unknown = window.eval(
+            `(async () => {\n${source}\n})()`
+          );
+          Promise.resolve(result).then(() => resolve()).catch(reject);
+        } catch (e) {
+          reject(e);
+        }
+      });
       setError(null);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
@@ -236,7 +257,7 @@ export default function HydraArt() {
     if (!snippet) return;
     setActiveId(id);
     setCode(snippet.code);
-    runCode(snippet.code);
+    void runCode(snippet.code);
   }
 
   async function shareSketch() {
@@ -254,14 +275,14 @@ export default function HydraArt() {
     const snippet = pickRandomSnippet();
     setActiveId(snippet.id);
     setCode(snippet.code);
-    runCode(snippet.code);
+    void runCode(snippet.code);
   }
 
   function diceSketch() {
     const next = diceMutate(codeRef.current);
     setActiveId("mutated");
     setCode(next);
-    runCode(next);
+    void runCode(next);
     setToast(artContent.toastDice);
   }
 
@@ -326,7 +347,7 @@ export default function HydraArt() {
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
-      runCode(code);
+      void runCode(code);
     }
   }
 
@@ -531,7 +552,7 @@ export default function HydraArt() {
                   <button
                     type="button"
                     className={styles.runBtn}
-                    onClick={() => runCode(code)}
+                    onClick={() => void runCode(code)}
                     disabled={!ready}
                   >
                     run
