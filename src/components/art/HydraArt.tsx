@@ -25,6 +25,7 @@ import {
   readCodeFromUrl,
   stamp,
 } from "@/lib/hydra/art-tools";
+import HydraAssistChat from "@/components/art/HydraAssistChat";
 import styles from "./HydraArt.module.css";
 
 function TreeLeaf({
@@ -73,6 +74,7 @@ export default function HydraArt() {
   const [ready, setReady] = useState(false);
   const [showUi, setShowUi] = useState(true);
   const [showTree, setShowTree] = useState(true);
+  const [terminalMinimized, setTerminalMinimized] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [audioOn, setAudioOn] = useState(false);
   const [panelPos, setPanelPos] = useState({ x: 20, y: 220 });
@@ -387,6 +389,13 @@ export default function HydraArt() {
     }
   }
 
+  function applyAssistCode(next: string) {
+    setActiveId("assisted");
+    setCode(next);
+    void runCode(next);
+    setToast("Applied assist sketch");
+  }
+
   const active = findArtSnippet(activeId);
   const blurb =
     active?.blurb ??
@@ -394,7 +403,9 @@ export default function HydraArt() {
       ? "Loaded from share URL."
       : activeId === "mutated"
         ? "Dice-mutated numeric values."
-        : "Custom / edited sketch.");
+        : activeId === "assisted"
+          ? "Applied from Hydra Assist."
+          : "Custom / edited sketch.");
 
   return (
     <div className={styles.root}>
@@ -415,6 +426,9 @@ export default function HydraArt() {
             </button>
           </div>
           <pre className={styles.errorOverlayBody}>{error}</pre>
+          <p className={styles.errorAssistHint}>
+            Open the brahma101 helper → Fix this
+          </p>
         </div>
       ) : null}
 
@@ -445,16 +459,34 @@ export default function HydraArt() {
 
           <div
             ref={terminalRef}
-            className={
-              dragging
-                ? `${styles.terminal} ${styles.terminalDragging}`
-                : styles.terminal
+            className={[
+              styles.terminal,
+              terminalMinimized ? styles.terminalMinimized : "",
+              dragging ? styles.terminalDragging : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            style={
+              terminalMinimized
+                ? undefined
+                : { left: panelPos.x, top: panelPos.y }
             }
-            style={{ left: panelPos.x, top: panelPos.y }}
             onPointerMove={onDragPointerMove}
             onPointerUp={onDragPointerUp}
             onPointerCancel={onDragPointerUp}
           >
+            {terminalMinimized ? (
+              <button
+                type="button"
+                className={styles.terminalDockChip}
+                onClick={() => setTerminalMinimized(false)}
+                aria-label="Open hydra editor"
+              >
+                <span className={styles.dragLabel}>hydra</span>
+                <span className={styles.dragHint}>editor</span>
+              </button>
+            ) : (
+              <>
             <div
               className={styles.dragHandle}
               onPointerDown={onDragPointerDown}
@@ -465,6 +497,14 @@ export default function HydraArt() {
               </span>
               <span className={styles.dragLabel}>drag</span>
               <span className={styles.dragHint}>move panel</span>
+              <button
+                type="button"
+                className={styles.minimizeBtn}
+                onClick={() => setTerminalMinimized(true)}
+                aria-label="Minimize editor"
+              >
+                min
+              </button>
             </div>
 
             <div
@@ -677,9 +717,19 @@ export default function HydraArt() {
               </a>
               {" · AGPL · H toggles ui · drag to move"}
             </p>
+              </>
+            )}
           </div>
         </div>
       ) : null}
+
+      <HydraAssistChat
+        code={code}
+        error={error}
+        audioOn={audioOn}
+        uiVisible={showUi}
+        onApply={applyAssistCode}
+      />
     </div>
   );
 }

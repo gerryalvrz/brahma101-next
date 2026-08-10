@@ -115,7 +115,7 @@ export const homeContent: HomeContent = {
     narrative: "Weaving the unseen threads of reality into manifested forms.",
   },
   work: {
-    nowLabel: "NOW",
+    nowLabel: "LIVE",
     archiveLabel: "ARCHIVE",
     contactLabel: "CONTACT",
     archiveHint: "Writing / blog interface coming soon.",
