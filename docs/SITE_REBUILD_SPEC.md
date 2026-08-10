@@ -16,6 +16,8 @@ Condensed from the full Claude brief. **Single source of truth** for structure; 
 - Motion: subtle; never block content or accessibility.
 - `brahma101.gif`: not dominant on new `/` — About or `/research` context.
 - `/art`: live hydra-synth playground (`src/data/art.ts` + `HydraArt`).
+- `/create-music`: live Strudel playground (`src/data/music.ts` + `StrudelMusic`).
+- Homepage NOW **Livecoding** folder: Create music + Generative art.
 
 ## Execution phases
 

@@ -223,6 +223,22 @@ export const homeContent: HomeContent = {
         ],
       },
       {
+        id: "livecoding",
+        label: "Livecoding",
+        projects: [
+          {
+            id: "create-music",
+            label: "Create music",
+            href: "/create-music",
+          },
+          {
+            id: "generative-art",
+            label: "Generative art",
+            href: "/art",
+          },
+        ],
+      },
+      {
         id: "research",
         label: "Research / art",
         projects: [

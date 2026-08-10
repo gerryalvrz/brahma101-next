@@ -1,0 +1,635 @@
+.root {
+  position: relative;
+  width: 100vw;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: #000;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(0, 255, 0, 0.08), transparent 55%),
+    linear-gradient(135deg, #0f0c29 0%, #032b2d 48%, #24243e 100%);
+}
+
+.stagePulse {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(0, 255, 0, 0.14), transparent 42%),
+    radial-gradient(circle at 70% 60%, rgba(50, 255, 180, 0.1), transparent 45%);
+  animation: stageBreathe 2.4s ease-in-out infinite;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.stagePlaying .stagePulse {
+  opacity: 1;
+}
+
+@keyframes stageBreathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+.orbit {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  width: min(42vmin, 280px);
+  height: min(42vmin, 280px);
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  border-radius: 50%;
+  box-shadow:
+    0 0 40px rgba(0, 255, 0, 0.08),
+    inset 0 0 40px rgba(0, 255, 0, 0.05);
+  pointer-events: none;
+}
+
+.stagePlaying .orbit {
+  animation: orbitSpin 12s linear infinite;
+  border-color: rgba(0, 255, 0, 0.45);
+}
+
+@keyframes orbitSpin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.orbitCore {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 28%;
+  height: 28%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 0, 0.55), rgba(0, 255, 0, 0.05) 70%, transparent);
+  opacity: 0.35;
+}
+
+.stagePlaying .orbitCore {
+  opacity: 0.85;
+  animation: corePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes corePulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 12, 41, 0.55) 0%,
+    transparent 28%,
+    transparent 55%,
+    rgba(3, 43, 45, 0.65) 100%
+  );
+}
+
+.chromeBar {
+  position: fixed;
+  top: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: none;
+}
+
+.chromeBar > * {
+  pointer-events: auto;
+}
+
+.back,
+.toggleUi {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--neon);
+  border: 1px solid var(--neon-dim);
+  background: rgba(0, 0, 0, 0.72);
+  padding: 0.55rem 0.9rem;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+
+.back:hover,
+.toggleUi:hover {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.toggleUi {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.72rem;
+}
+
+.ui {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ui > * {
+  pointer-events: auto;
+}
+
+.header {
+  padding: 5.5rem 1.25rem 1rem;
+  max-width: 36rem;
+  pointer-events: none;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display, "VT323", monospace);
+  font-size: clamp(2.75rem, 8vw, 4.5rem);
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(0, 255, 0, 0.45);
+}
+
+.subtitle {
+  margin: 0.6rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: rgba(0, 255, 0, 0.75);
+  letter-spacing: 0.04em;
+}
+
+.blurb {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 28rem;
+}
+
+.terminal {
+  position: fixed;
+  z-index: 15;
+  width: min(56rem, calc(100vw - 2.5rem));
+  max-width: calc(100vw - 1rem);
+  padding: 0.55rem 0.75rem 0.75rem;
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+  touch-action: none;
+}
+
+.terminalDragging {
+  border-color: var(--neon);
+  box-shadow: 0 0 28px rgba(0, 255, 0, 0.2);
+  user-select: none;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: -0.15rem 0 0.55rem;
+  padding: 0.35rem 0.2rem;
+  cursor: grab;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.18);
+  user-select: none;
+}
+
+.terminalDragging .dragHandle {
+  cursor: grabbing;
+}
+
+.dragGrip {
+  color: rgba(0, 255, 0, 0.55);
+  font-size: 0.7rem;
+  letter-spacing: -0.12em;
+  line-height: 1;
+}
+
+.dragLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 0, 0.7);
+}
+
+.dragHint {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.terminalBody {
+  display: grid;
+  grid-template-columns: minmax(13.5rem, 16.5rem) minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.terminalBodyEditorOnly {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.treePane {
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  background: rgba(0, 12, 0, 0.9);
+  padding: 0.55rem 0.45rem 0.55rem 0.55rem;
+  overflow: auto;
+  max-height: 18rem;
+  font-family: var(--font-mono);
+}
+
+.treeRoot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-right: 0.25rem;
+}
+
+.treeFolderBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  padding: 0.1rem 0.2rem 0.1rem 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.treeFolderBtn:hover .treeRootLabel,
+.treeFolderBtn:hover .treeFolderLabel {
+  color: #fff;
+}
+
+.treeFolderBtn:hover {
+  background: rgba(0, 255, 0, 0.08);
+}
+
+.treeCaret {
+  color: rgba(0, 255, 0, 0.55);
+  font-size: 0.58rem;
+  width: 0.7rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.treeRootLabel {
+  color: var(--neon);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.docsLink {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+
+.docsLink:hover {
+  color: var(--neon);
+}
+
+.treeBranch {
+  margin-bottom: 0.2rem;
+}
+
+.treeFolderLabel {
+  color: rgba(0, 255, 0, 0.7);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.treeList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0.15rem;
+}
+
+.treeItem {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+.treeGuide {
+  flex-shrink: 0;
+  color: rgba(0, 255, 0, 0.35);
+  font-size: 0.72rem;
+  user-select: none;
+  white-space: pre;
+}
+
+.treeBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #9dff9d;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  padding: 0.12rem 0.35rem;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 2px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.treeBtn:hover:not(:disabled) {
+  background: rgba(0, 255, 0, 0.14);
+  color: #fff;
+}
+
+.treeBtnActive {
+  background: var(--neon);
+  color: #000;
+}
+
+.treeBtn:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+.editorPane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.panelBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.panelBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.ghostBtn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--neon-dim);
+  background: transparent;
+  color: var(--neon);
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ghostBtn:hover {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.toolRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.toolBtn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  background: rgba(0, 20, 0, 0.55);
+  color: #b8ffb8;
+  padding: 0.28rem 0.5rem;
+  cursor: pointer;
+}
+
+.toolBtn:hover:not(:disabled) {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.toolBtn:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.toolBtnActive {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.runBtn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--neon);
+  background: transparent;
+  color: var(--neon);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.runBtn:hover:not(:disabled) {
+  background: var(--neon);
+  color: #000;
+}
+
+.runBtn:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
+.hint {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.editor {
+  width: 100%;
+  flex: 1;
+  min-height: 12rem;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: #b8ffb8;
+  background: rgba(0, 12, 0, 0.9);
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  padding: 0.65rem;
+  outline: none;
+}
+
+.editor:focus {
+  border-color: var(--neon);
+}
+
+.error {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #ff6b8a;
+}
+
+.errorOverlay {
+  position: fixed;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 30;
+  max-width: min(28rem, calc(100vw - 2.5rem));
+  padding: 0.65rem 0.75rem;
+  background: rgba(40, 0, 10, 0.92);
+  border: 1px solid #ff6b8a;
+  box-shadow: 0 0 20px rgba(255, 80, 120, 0.25);
+  pointer-events: auto;
+}
+
+.errorOverlayHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ff9bb0;
+}
+
+.errorDismiss {
+  appearance: none;
+  border: 1px solid rgba(255, 107, 138, 0.5);
+  background: transparent;
+  color: #ff9bb0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+}
+
+.errorDismiss:hover {
+  background: #ff6b8a;
+  color: #1a0005;
+}
+
+.errorOverlayBody {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #ffd0da;
+}
+
+.toast {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  max-width: min(36rem, calc(100vw - 2rem));
+  padding: 0.45rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #000;
+  background: var(--neon);
+  border: 1px solid var(--neon);
+  box-shadow: 0 0 18px rgba(0, 255, 0, 0.35);
+  pointer-events: none;
+}
+
+.credit {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.credit a {
+  color: rgba(0, 255, 0, 0.7);
+}
+
+.credit a:hover {
+  color: var(--color-accent);
+}
+
+@media (max-width: 760px) {
+  .header {
+    padding-top: 4.75rem;
+  }
+
+  .terminal {
+    width: calc(100vw - 1.5rem);
+  }
+
+  .terminalBody {
+    grid-template-columns: 1fr;
+  }
+
+  .treePane {
+    max-height: 11rem;
+  }
+
+  .editor {
+    min-height: 8rem;
+  }
+}

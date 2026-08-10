@@ -81,7 +81,8 @@ const FIELD_ORDER: Exclude<Field, "confirm">[] = [
 
 const SITE_PAGES = [
   { id: "research", label: "research", href: "/research" },
-  { id: "art", label: "art", href: "/art" },
+  { id: "create-music", label: "create-music", href: "/create-music" },
+  { id: "art", label: "generative-art", href: "/art" },
   { id: "music", label: "music", href: "/music" },
   { id: "locognitive", label: "locognitive", href: "/locognitive" },
   { id: "e8sel", label: "e8sel", href: "/e8sel" },
