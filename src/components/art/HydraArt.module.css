@@ -74,7 +74,11 @@
 .ui {
   position: relative;
   z-index: 10;
-  padding-bottom: 1.5rem;
+  pointer-events: none;
+}
+
+.ui > * {
+  pointer-events: auto;
 }
 
 .header {
@@ -110,13 +114,59 @@
 }
 
 .terminal {
-  margin: 0 1.25rem;
-  max-width: min(56rem, calc(100vw - 2.5rem));
-  padding: 0.75rem;
+  position: fixed;
+  z-index: 15;
+  width: min(56rem, calc(100vw - 2.5rem));
+  max-width: calc(100vw - 1rem);
+  padding: 0.55rem 0.75rem 0.75rem;
   background: rgba(0, 0, 0, 0.82);
   border: 1px solid rgba(0, 255, 0, 0.35);
   backdrop-filter: blur(8px);
   box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+  touch-action: none;
+}
+
+.terminalDragging {
+  border-color: var(--neon);
+  box-shadow: 0 0 28px rgba(0, 255, 0, 0.2);
+  user-select: none;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: -0.15rem 0 0.55rem;
+  padding: 0.35rem 0.2rem;
+  cursor: grab;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.18);
+  user-select: none;
+}
+
+.terminalDragging .dragHandle {
+  cursor: grabbing;
+}
+
+.dragGrip {
+  color: rgba(0, 255, 0, 0.55);
+  font-size: 0.7rem;
+  letter-spacing: -0.12em;
+  line-height: 1;
+}
+
+.dragLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 0, 0.7);
+}
+
+.dragHint {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 .terminalBody {
@@ -124,6 +174,10 @@
   grid-template-columns: minmax(13.5rem, 16.5rem) minmax(0, 1fr);
   gap: 0.75rem;
   align-items: stretch;
+}
+
+.terminalBodyEditorOnly {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .treePane {
@@ -272,6 +326,62 @@
   margin-bottom: 0.45rem;
 }
 
+.panelBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.ghostBtn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--neon-dim);
+  background: transparent;
+  color: var(--neon);
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ghostBtn:hover {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.toolRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.toolBtn {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  background: rgba(0, 20, 0, 0.55);
+  color: #b8ffb8;
+  padding: 0.28rem 0.5rem;
+  cursor: pointer;
+}
+
+.toolBtn:hover:not(:disabled) {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.toolBtn:disabled {
+  opacity: 0.4;
+  cursor: wait;
+}
+
 .runBtn {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -329,6 +439,77 @@
   color: #ff6b8a;
 }
 
+.errorOverlay {
+  position: fixed;
+  left: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 30;
+  max-width: min(28rem, calc(100vw - 2.5rem));
+  padding: 0.65rem 0.75rem;
+  background: rgba(40, 0, 10, 0.92);
+  border: 1px solid #ff6b8a;
+  box-shadow: 0 0 20px rgba(255, 80, 120, 0.25);
+  pointer-events: auto;
+}
+
+.errorOverlayHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ff9bb0;
+}
+
+.errorDismiss {
+  appearance: none;
+  border: 1px solid rgba(255, 107, 138, 0.5);
+  background: transparent;
+  color: #ff9bb0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+}
+
+.errorDismiss:hover {
+  background: #ff6b8a;
+  color: #1a0005;
+}
+
+.errorOverlayBody {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: #ffd0da;
+}
+
+.toast {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  max-width: min(36rem, calc(100vw - 2rem));
+  padding: 0.45rem 0.8rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #000;
+  background: var(--neon);
+  border: 1px solid var(--neon);
+  box-shadow: 0 0 18px rgba(0, 255, 0, 0.35);
+  pointer-events: none;
+}
+
 .credit {
   margin: 0.65rem 0 0;
   font-family: var(--font-mono);
@@ -350,7 +531,7 @@
   }
 
   .terminal {
-    max-width: none;
+    width: calc(100vw - 1.5rem);
   }
 
   .terminalBody {

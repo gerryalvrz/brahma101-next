@@ -22,6 +22,10 @@ export const artContent = {
   },
   docsHref: "https://hydra.ojack.xyz/docs/docs/learning/getting-started/",
   editorHint: "Edit · Ctrl/⌘+Enter to run",
+  toastShare: "Share link copied",
+  toastShot: "Screenshot saved",
+  toastShader: "Shader exported",
+  toastDice: "Values mutated",
 } as const;
 
 /** Progressive examples from Hydra’s getting-started tutorial. */
