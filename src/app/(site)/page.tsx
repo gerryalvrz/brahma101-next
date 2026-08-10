@@ -6,7 +6,6 @@ import Footer from "@/components/layout/Footer";
 import ContactBox from "@/components/home/ContactBox";
 import DashboardChassis from "@/components/home/DashboardChassis";
 import WorkLinks from "@/components/home/WorkLinks";
-import XboxOrb from "@/components/home/XboxOrb";
 import { homeContent } from "@/data/home";
 import styles from "./home.module.css";
 
@@ -20,7 +19,7 @@ const ParticlesBackground = dynamic(
 const SphereGrid = dynamic(() => import("@/components/effects/SphereGrid"), {
   ssr: false,
 });
-const TerminalTyper = dynamic(() => import("@/components/effects/TerminalTyper"), {
+const XboxOrb = dynamic(() => import("@/components/home/XboxOrb"), {
   ssr: false,
 });
 
@@ -68,14 +67,10 @@ export default function HomePage() {
         <p>{h.narrative}</p>
       </section>
 
-      <TerminalTyper
-        className={styles.terminalBox}
-        scanLineClassName={styles.scanLine}
-      />
-
       <ContactBox
         title={homeContent.contact.title}
         subtitle={homeContent.contact.subtitle}
+        work={homeContent.work}
       />
 
       <Footer className={styles.footer} />

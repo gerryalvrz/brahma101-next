@@ -23,6 +23,25 @@ const COLLAR_AMBIENT = 360 / 56;
 const COLLAR_PHASE0 = -18;
 
 /**
+ * Literal string SVG attrs — Node vs browser Math.cos can disagree at float
+ * edges, and that mismatch resurfaces on server-action revalidation/hydration.
+ */
+const COLLAR_TICKS = [
+  { key: "0.04", x1: "175.549", y1: "119.398", x2: "184.267", y2: "121.636", strokeWidth: "2.2" },
+  { key: "0.11", x1: "160.100", y1: "149.719", x2: "162.797", y2: "151.950", strokeWidth: "1.1" },
+  { key: "0.19", x1: "128.714", y1: "172.523", x2: "130.922", y2: "178.101", strokeWidth: "1.1" },
+  { key: "0.28", x1: "85.384", y1: "176.618", x2: "83.698", y2: "185.459", strokeWidth: "1.1" },
+  { key: "0.31", x1: "71.286", y1: "172.523", x2: "69.078", y2: "178.101", strokeWidth: "2.2" },
+  { key: "0.42", x1: "31.648", y1: "137.577", x2: "28.581", y2: "139.263", strokeWidth: "1.1" },
+  { key: "0.51", x1: "22.154", y1: "95.102", x2: "13.172", y2: "94.537", strokeWidth: "1.1" },
+  { key: "0.58", x1: "31.648", y1: "62.423", x2: "28.581", y2: "60.737", strokeWidth: "1.1" },
+  { key: "0.67", x1: "62.423", y1: "31.648", x2: "59.533", y2: "26.390", strokeWidth: "2.2" },
+  { key: "0.79", x1: "119.398", y1: "24.451", x2: "121.636", y2: "15.733", strokeWidth: "1.1" },
+  { key: "0.88", x1: "156.860", y1: "46.605", x2: "161.233", y2: "42.498", strokeWidth: "1.1" },
+  { key: "0.96", x1: "175.549", y1: "80.602", x2: "178.940", y2: "79.732", strokeWidth: "1.1" },
+] as const;
+
+/**
  * Per-layer chaos: atom-like shells with phase offsets, eccentric wobble, and
  * off-center pivot points — so nothing lines up like a constellation diagram.
  */
@@ -554,28 +573,18 @@ export default function XboxOrb({
           strokeWidth="5"
         />
         <g ref={collarTicksRef}>
-          {(
-            [
-              0.04, 0.11, 0.19, 0.28, 0.31, 0.42, 0.51, 0.58, 0.67, 0.79, 0.88,
-              0.96,
-            ] as const
-          ).map((frac, i) => {
-            const a = frac * Math.PI * 2;
-            const r0 = 78;
-            const r1 = i % 3 === 0 ? 87 : i % 2 === 0 ? 84 : 81.5;
-            return (
-              <line
-                key={frac}
-                x1={100 + Math.cos(a) * r0}
-                y1={100 + Math.sin(a) * r0}
-                x2={100 + Math.cos(a) * r1}
-                y2={100 + Math.sin(a) * r1}
-                stroke="rgba(180,255,130,0.55)"
-                strokeWidth={i % 4 === 0 ? 2.2 : 1.1}
-                strokeLinecap="round"
-              />
-            );
-          })}
+          {COLLAR_TICKS.map((tick) => (
+            <line
+              key={tick.key}
+              x1={tick.x1}
+              y1={tick.y1}
+              x2={tick.x2}
+              y2={tick.y2}
+              stroke="rgba(180,255,130,0.55)"
+              strokeWidth={tick.strokeWidth}
+              strokeLinecap="round"
+            />
+          ))}
         </g>
         {/* Docking port facing the menu chassis — stays fixed */}
         <path

@@ -162,6 +162,7 @@ export default function WorkLinks({ work }: WorkLinksProps) {
   }, []);
 
   useEffect(() => {
+    if (mode !== "now") return;
     const el = arcRef.current;
     if (!el) return;
 
@@ -200,7 +201,7 @@ export default function WorkLinks({ work }: WorkLinksProps) {
       clearTimeout(idleTimer);
       el.removeEventListener("wheel", onWheel);
     };
-  }, [groups.length, step]);
+  }, [mode, groups.length, step]);
 
   /**
    * Touch / pen: vertical swipe mirrors desktop wheel (primary); horizontal
@@ -379,6 +380,18 @@ export default function WorkLinks({ work }: WorkLinksProps) {
         >
           {work.archiveLabel}
         </button>
+        <a
+          href="#contact"
+          className={styles.workToggleBtn}
+          onClick={(event) => {
+            event.preventDefault();
+            document
+              .getElementById("contact")
+              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+        >
+          {work.contactLabel}
+        </a>
       </div>
 
       {mode === "now" ? (

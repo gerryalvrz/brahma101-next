@@ -108,7 +108,7 @@
   /* Left column stays tight so the orb can sit against the dial clearance. */
   grid-template-columns: minmax(200px, 0.78fr) minmax(300px, 1.22fr);
   gap: 0;
-  align-items: center;
+  align-items: stretch;
   width: min(1100px, 96vw);
   min-height: min(78vh, 820px);
   margin-top: 0.75rem;
@@ -137,6 +137,7 @@
   z-index: 1;
   /* Park the hub on the right edge of its cell so dead air isn't to the right of the orb. */
   justify-self: end;
+  align-self: center;
   width: min(100%, 360px);
   text-align: center;
   animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) both;
@@ -147,7 +148,9 @@
   z-index: 2;
   width: 100%;
   min-width: 0;
-  /* Dial stays above the orb aura where they nearly touch. */
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
   /* Trails the hero slightly so the dashboard assembles rather than appears. */
   animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) 0.14s both;
 }
@@ -249,19 +252,26 @@
 }
 
 .workBlock {
+  --menu-inset: clamp(2.75rem, 9vw, 5.25rem);
   width: 100%;
   margin-top: 0;
+  /* Pin toggle Y — same spot in NOW and ARCHIVE (no recentering jump). */
+  padding-top: clamp(2.75rem, 11vh, 6.5rem);
 }
 
 .workToggle {
+  position: relative;
+  z-index: 3;
   display: inline-flex;
   justify-content: center;
   gap: 0;
-  margin: 0 0 1rem;
+  /* Same column as ARCHIVE so the control sits clear of the orb */
+  margin: 0 0 1rem var(--menu-inset);
   border: 1px solid rgba(0, 255, 0, 0.35);
   border-radius: 2px;
   overflow: hidden;
   opacity: 0.85;
+  background: transparent;
 }
 
 .workToggleBtn {
@@ -273,6 +283,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   cursor: pointer;
+  text-decoration: none;
   transition: background-color 0.25s, color 0.25s;
 }
 
@@ -701,11 +712,24 @@
 }
 
 .workArchive {
-  padding: 0.5rem 0.25rem;
+  position: relative;
+  z-index: 1;
+  /* Align with the toggle — both clear the orb aura. */
+  margin: 0 0 0 var(--menu-inset);
+  padding: 1.05rem 1.15rem 1.2rem;
+  max-width: 26rem;
+  min-height: 9.5rem;
+  border: 1px solid rgba(0, 255, 0, 0.32);
+  background: rgba(0, 6, 2, 0.92);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45),
+    0 0 28px rgba(0, 0, 0, 0.55);
+  animation: fileTreeIn 0.34s cubic-bezier(0.22, 0.8, 0.28, 1) both;
 }
 
 .archiveStubTitle {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.4rem;
   font-family: var(--font-display), monospace;
   font-size: 1.35rem;
   letter-spacing: 0.08em;
@@ -717,14 +741,18 @@
   margin: 0 0 0.55rem;
   font-family: var(--font-mono);
   font-size: 0.9rem;
-  color: rgba(0, 255, 0, 0.72);
+  line-height: 1.45;
+  color: rgba(184, 255, 184, 0.82);
 }
 
 .archiveStubNote {
-  margin: 0.55rem 0 0;
+  margin: 0.65rem 0 0;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(0, 255, 0, 0.16);
   font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: rgba(0, 255, 0, 0.55);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(0, 255, 0, 0.5);
 }
 
 .button {
@@ -878,94 +906,6 @@
   margin: 0.9rem 0 0;
 }
 
-.contactBox {
-  width: min(800px, 92vw);
-  text-align: left;
-}
-
-.contactForm {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.85rem 1rem;
-  margin-top: 1rem;
-}
-
-.contactField {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: #00ff00;
-}
-
-.contactField input,
-.contactField textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 0.65rem 0.75rem;
-  color: #00ff00;
-  background: rgba(0, 20, 0, 0.55);
-  border: 1px solid rgba(0, 255, 0, 0.55);
-  border-radius: 4px;
-  font-family: var(--font-mono);
-  font-size: 0.95rem;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.contactField input:focus,
-.contactField textarea:focus {
-  border-color: #00ff00;
-  box-shadow: 0 0 12px rgba(0, 255, 0, 0.35);
-}
-
-.contactField textarea {
-  resize: vertical;
-  min-height: 6rem;
-}
-
-.contactMessage {
-  grid-column: 1 / -1;
-}
-
-.contactForm .button {
-  grid-column: 1 / -1;
-  justify-self: start;
-  margin: 0.25rem 0 0;
-}
-
-.contactForm .button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
-.contactSuccess,
-.contactError {
-  margin: 1rem 0 0;
-  font-family: var(--font-mono);
-}
-
-.contactSuccess {
-  color: #00ff00;
-  text-shadow: 0 0 8px #0f0;
-}
-
-.contactError {
-  grid-column: 1 / -1;
-  margin: 0;
-  color: #ff6666;
-}
-
-.honeypot {
-  position: absolute;
-  left: -9999px;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
-}
-
 .footer {
   width: min(1000px, 95vw);
   margin: 2rem auto 0;
@@ -988,7 +928,16 @@
 
   .orbColumn {
     justify-self: center;
+    align-self: auto;
     width: 100%;
+  }
+
+  .menuColumn {
+    align-self: auto;
+  }
+
+  .workBlock {
+    padding-top: 0;
   }
 
   .orbStage {
@@ -1010,7 +959,7 @@
   .workToggle {
     width: 100%;
     max-width: 280px;
-    margin: 0 auto 0.85rem;
+    margin: 0 auto 1rem;
   }
 
   .workToggleBtn {
@@ -1035,6 +984,11 @@
     margin-top: 0.85rem;
     margin-left: 0;
     padding: 0.65rem 0.55rem 0.6rem 0.75rem;
+  }
+
+  .workArchive {
+    margin-left: 0;
+    max-width: none;
   }
 
   .menuHint {
@@ -1118,9 +1072,5 @@
     margin-top: 20px;
     font-size: 0.9rem;
     padding: 0.85rem 0.9rem;
-  }
-
-  .contactForm {
-    grid-template-columns: 1fr;
   }
 }

@@ -1,0 +1,514 @@
+/**
+ * Contact terminal — same chrome as /art Hydra editor:
+ * title bar + worktree pane + REPL pane.
+ */
+
+.contactBox {
+  width: min(56rem, 92vw);
+  text-align: left;
+}
+
+.terminal {
+  position: relative;
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem 0.75rem;
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+}
+
+.titleBar {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: -0.15rem 0 0.55rem;
+  padding: 0.35rem 0.2rem;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.18);
+  user-select: none;
+}
+
+.titleGrip {
+  color: rgba(0, 255, 0, 0.55);
+  font-size: 0.7rem;
+  letter-spacing: -0.12em;
+  line-height: 1;
+}
+
+.titleLabel {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 0, 0.7);
+}
+
+.titleHint {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(13.5rem, 16.5rem) minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+.bodyEditorOnly {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* —— worktree —— */
+
+.treePane {
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  background: rgba(0, 12, 0, 0.9);
+  padding: 0.55rem 0.45rem 0.55rem 0.55rem;
+  overflow: auto;
+  max-height: 22rem;
+  font-family: var(--font-mono);
+}
+
+.treeRoot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  padding-right: 0.25rem;
+}
+
+.treeFolderBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.2rem;
+  padding: 0.1rem 0.2rem 0.1rem 0;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+
+.treeFolderBtn:hover .treeRootLabel,
+.treeFolderBtn:hover .treeFolderLabel {
+  color: #fff;
+}
+
+.treeFolderBtn:hover {
+  background: rgba(0, 255, 0, 0.08);
+}
+
+.treeCaret {
+  color: rgba(0, 255, 0, 0.55);
+  font-size: 0.58rem;
+  width: 0.7rem;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.treeRootLabel {
+  color: var(--neon, #00ff00);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.treeBranch {
+  margin-bottom: 0.2rem;
+}
+
+.treeFolderLabel {
+  color: rgba(0, 255, 0, 0.7);
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+}
+
+.treeList {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0.15rem;
+}
+
+.treeItem {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+  line-height: 1.35;
+}
+
+.treeGuide {
+  flex-shrink: 0;
+  color: rgba(0, 255, 0, 0.35);
+  font-size: 0.72rem;
+  user-select: none;
+  white-space: pre;
+}
+
+.treeLink {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #9dff9d;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  padding: 0.12rem 0.35rem;
+  margin: 0;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.treeLink:hover {
+  background: rgba(0, 255, 0, 0.14);
+  color: #fff;
+}
+
+.treeLinkActive {
+  background: var(--neon, #00ff00);
+  color: #000;
+}
+
+.treeLinkActive:hover {
+  background: var(--neon, #00ff00);
+  color: #000;
+}
+
+.treeExt {
+  margin-left: 0.2rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.58rem;
+}
+
+/* —— editor / REPL —— */
+
+.editorPane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 16rem;
+}
+
+.panelBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.panelBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.ghostBtn {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--neon-dim, rgba(0, 255, 0, 0.45));
+  background: transparent;
+  color: var(--neon, #00ff00);
+  padding: 0.3rem 0.55rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.ghostBtn:hover {
+  background: var(--neon, #00ff00);
+  color: #000;
+  border-color: var(--neon, #00ff00);
+}
+
+.hint {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.sendBtn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--neon, #00ff00);
+  background: transparent;
+  color: var(--neon, #00ff00);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sendBtn:hover:not(:disabled) {
+  background: var(--neon, #00ff00);
+  color: #000;
+}
+
+.sendBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.repl {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 16rem;
+  max-height: 24rem;
+  box-sizing: border-box;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #b8ffb8;
+  background: rgba(0, 12, 0, 0.9);
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  padding: 0.65rem;
+  cursor: text;
+}
+
+.repl:focus-within {
+  border-color: var(--neon, #00ff00);
+}
+
+.replHeader {
+  flex-shrink: 0;
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.14);
+}
+
+.shellLine {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 1.35em;
+}
+
+.shellUser {
+  color: #5ce1ff;
+  font-weight: 600;
+}
+
+.shellAt,
+.shellColon {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.shellHost {
+  color: #c084fc;
+}
+
+.shellPct {
+  color: #b8ff40;
+  font-weight: 700;
+}
+
+.shellMsg {
+  color: #f2ffe6;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.25);
+}
+
+.instructions {
+  margin-top: 0.55rem;
+}
+
+.comment {
+  margin: 0;
+  color: #6b8f71;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.commentHash {
+  color: #4a6b52;
+}
+
+.log {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 255, 0, 0.45) transparent;
+  margin-bottom: 0.45rem;
+  min-height: 3rem;
+}
+
+.lineBlank,
+.lineSystem,
+.lineInput,
+.lineError,
+.lineOk {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.lineSystem {
+  color: #8ec8a0;
+}
+
+.lineInput {
+  color: #d7ffe0;
+}
+
+.linePrompt {
+  color: #e8c547;
+}
+
+.lineValue {
+  color: #d7ffe0;
+}
+
+.lineError {
+  color: #ff6b8a;
+}
+
+.lineOk {
+  color: #00ff00;
+  text-shadow: 0 0 8px #0f0;
+}
+
+.promptForm {
+  margin: 0;
+  flex-shrink: 0;
+  padding-top: 0.2rem;
+  border-top: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.promptLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  cursor: text;
+}
+
+.promptName {
+  flex-shrink: 0;
+  color: #e8c547;
+}
+
+.promptEditor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: 1;
+  min-width: 2ch;
+  min-height: 1.35em;
+}
+
+.promptValue {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #f2ffe6;
+  pointer-events: none;
+}
+
+.promptCaret {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.promptInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  font: inherit;
+  cursor: text;
+}
+
+.promptInput:disabled {
+  cursor: wait;
+}
+
+.promptIdle {
+  margin: 0;
+}
+
+.restart {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--neon, #00ff00);
+  font: inherit;
+  font-size: 0.72rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.restart:hover,
+.restart:focus-visible {
+  text-shadow: 0 0 8px #0f0;
+  outline: none;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.creditRow {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.65rem 0 0;
+  flex-wrap: wrap;
+}
+
+.credit {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 760px) {
+  .contactBox {
+    width: min(100%, 92vw);
+  }
+
+  .body {
+    grid-template-columns: 1fr;
+  }
+
+  .treePane {
+    max-height: 11rem;
+  }
+
+  .editorPane {
+    min-height: 14rem;
+  }
+
+  .repl {
+    min-height: 14rem;
+    max-height: 20rem;
+  }
+}

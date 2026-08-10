@@ -28,6 +28,7 @@ export interface WorkGroup {
 export interface WorkContent {
   nowLabel: string;
   archiveLabel: string;
+  contactLabel: string;
   now: WorkGroup[];
   /** Placeholder until blog UI ships */
   archiveHint: string;
@@ -116,6 +117,7 @@ export const homeContent: HomeContent = {
   work: {
     nowLabel: "NOW",
     archiveLabel: "ARCHIVE",
+    contactLabel: "CONTACT",
     archiveHint: "Writing / blog interface coming soon.",
     now: [
       {
@@ -268,7 +270,8 @@ export const homeContent: HomeContent = {
     ],
   },
   contact: {
-    title: "Open channel",
-    subtitle: "Leave a signal — email, phone, or both. It lands in my inbox.",
+    title: "Contact me",
+    subtitle:
+      "Terminal style contact form. Write your name, email, phone, subject, and message. Then click send.",
   },
 };
