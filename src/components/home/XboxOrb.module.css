@@ -1,0 +1,326 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  isolation: isolate;
+  overflow: visible;
+  will-change: translate;
+  transition: translate 0.45s cubic-bezier(0.22, 0.8, 0.28, 1);
+}
+
+.layer {
+  position: absolute;
+  inset: -6%;
+  width: 112%;
+  height: 112%;
+  pointer-events: none;
+  /* Off-center pivots → atom shells, not a star chart */
+  transform-origin: 48% 53%;
+}
+
+.ringsA {
+  z-index: 2;
+  opacity: 0.9;
+  will-change: transform;
+  transform-origin: 44% 56%;
+}
+
+.ringsB {
+  z-index: 3;
+  opacity: 0.75;
+  will-change: transform;
+  transform-origin: 57% 45%;
+}
+
+.shells {
+  z-index: 4;
+  opacity: 0.92;
+  mix-blend-mode: screen;
+  will-change: transform;
+  transform-origin: 46% 48%;
+}
+
+.shardsSpin {
+  z-index: 5;
+  opacity: 0.85;
+  will-change: transform;
+  transform-origin: 55% 58%;
+}
+
+/* —— Bloom —— */
+.aura {
+  position: absolute;
+  inset: -22%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 44%,
+    rgba(230, 255, 140, 0.55) 0%,
+    rgba(100, 255, 70, 0.28) 28%,
+    rgba(20, 140, 40, 0.12) 52%,
+    transparent 72%
+  );
+  animation: auraPulse 7s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate(-3%, 2%);
+}
+
+.halo {
+  position: absolute;
+  inset: -4%;
+  border-radius: 50%;
+  border: 1px solid rgba(160, 255, 120, 0.28);
+  box-shadow:
+    0 0 18px rgba(120, 255, 80, 0.25),
+    inset 0 0 22px rgba(80, 255, 60, 0.12);
+  animation: haloBreathe 9s ease-in-out infinite;
+  z-index: 1;
+  pointer-events: none;
+  transform: translate(2.5%, -1.5%) scale(1.02, 0.97);
+}
+
+/* Xbox micro-detail: overlapping plasma membranes + caustic ridges */
+.plasmaVeil {
+  position: absolute;
+  inset: 4%;
+  width: 92%;
+  height: 92%;
+  z-index: 6;
+  pointer-events: none;
+  border-radius: 50%;
+  mix-blend-mode: screen;
+  opacity: 0.92;
+  transform: translate(-1.5%, 1%);
+}
+
+/* —— Core —— */
+.corePlasma {
+  position: absolute;
+  inset: 12%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 38%,
+    rgba(255, 255, 200, 0.7) 0%,
+    rgba(200, 255, 90, 0.45) 22%,
+    rgba(40, 180, 50, 0.22) 48%,
+    rgba(0, 60, 20, 0.05) 70%,
+    transparent 78%
+  );
+  z-index: 7;
+  pointer-events: none;
+  animation: plasmaPulse 6.5s ease-in-out infinite;
+}
+
+.coreDisc {
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(10, 40, 18, 0.55) 0%,
+    rgba(0, 20, 8, 0.82) 70%,
+    rgba(0, 10, 4, 0.95) 100%
+  );
+  box-shadow:
+    inset 0 0 24px rgba(0, 0, 0, 0.65),
+    0 0 20px rgba(120, 255, 80, 0.2);
+  z-index: 8;
+  pointer-events: none;
+}
+
+/* Toothed housing that clamps the gif into the machine */
+.collar {
+  position: absolute;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  z-index: 9;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* —— Media (gif) —— */
+.media {
+  position: absolute;
+  inset: 20%;
+  z-index: 10;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    0 0 0 2px rgba(40, 90, 40, 0.85),
+    0 0 0 3px rgba(180, 255, 140, 0.35),
+    inset 0 0 18px rgba(0, 0, 0, 0.45),
+    0 0 28px rgba(120, 255, 60, 0.4),
+    0 0 60px rgba(0, 255, 80, 0.18);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 0.8, 0.28, 1),
+    box-shadow 0.35s ease;
+}
+
+.gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.mediaSheen {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 220, 0.22) 0%,
+    transparent 38%,
+    transparent 62%,
+    rgba(0, 40, 10, 0.18) 100%
+  );
+  pointer-events: none;
+  mix-blend-mode: soft-light;
+}
+
+.root:hover .media {
+  transform: scale(1.03);
+  box-shadow:
+    0 0 0 1px rgba(220, 255, 160, 0.55),
+    0 0 36px rgba(160, 255, 80, 0.65),
+    0 0 80px rgba(0, 255, 80, 0.32);
+}
+
+.root:hover .aura {
+  opacity: 1;
+  filter: brightness(1.15);
+}
+
+.root:hover .ringsA,
+.root:hover .ringsB {
+  opacity: 1;
+}
+
+/* —— Foreground glass —— */
+.rim {
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  border: 1.5px solid rgba(190, 255, 150, 0.35);
+  box-shadow:
+    inset 0 0 12px rgba(200, 255, 160, 0.15),
+    0 0 14px rgba(100, 255, 80, 0.2);
+  z-index: 11;
+  pointer-events: none;
+}
+
+.rimHighlight {
+  position: absolute;
+  inset: 16%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse 55% 35% at 32% 28%,
+    rgba(255, 255, 230, 0.28) 0%,
+    transparent 55%
+  );
+  z-index: 12;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/* Fixed mote anchored to the lower-right of the gif */
+.satellite {
+  position: absolute;
+  right: 18%;
+  bottom: 18%;
+  width: 16%;
+  height: 16%;
+  z-index: 13;
+  pointer-events: none;
+}
+
+.satRing,
+.satShell,
+.satCore {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+}
+
+.satRing {
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgba(160, 255, 120, 0.55);
+  box-shadow: 0 0 10px rgba(80, 255, 60, 0.35);
+}
+
+.satShell {
+  width: 72%;
+  height: 72%;
+  border: 1px solid rgba(140, 255, 110, 0.4);
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(50, 120, 40, 0.45),
+    rgba(0, 30, 10, 0.6)
+  );
+}
+
+.satCore {
+  width: 38%;
+  height: 38%;
+  background: radial-gradient(
+    circle at 40% 35%,
+    #f0ffb0 0%,
+    #8dff40 45%,
+    #1a8020 100%
+  );
+  box-shadow: 0 0 12px rgba(160, 255, 80, 0.8);
+}
+
+/* —— Motion (ambient pulses; layer spin is JS) —— */
+@keyframes auraPulse {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes haloBreathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes plasmaPulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura,
+  .halo,
+  .corePlasma {
+    animation: none;
+  }
+
+  .root {
+    transition: none;
+  }
+}

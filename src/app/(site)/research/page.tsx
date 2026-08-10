@@ -12,7 +12,7 @@ const links = [
   { href: "/locognitive", label: "Locognitive" },
   { href: "/e8sel", label: "E8 S.E.L." },
   { href: "/hack", label: "Hack" },
-  { href: "/art", label: "Generative art (stub)" },
+  { href: "/art", label: "Generative art · Hydra" },
   {
     href: "/prophet-and-the-fool",
     label: "The Prophet and the Fool (book)",

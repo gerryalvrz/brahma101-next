@@ -1,11 +1,12 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import GlowImage from "@/components/ui/GlowImage";
 import TypewriterText from "@/components/effects/TypewriterText";
 import Footer from "@/components/layout/Footer";
 import ContactBox from "@/components/home/ContactBox";
+import DashboardChassis from "@/components/home/DashboardChassis";
 import WorkLinks from "@/components/home/WorkLinks";
+import XboxOrb from "@/components/home/XboxOrb";
 import { homeContent } from "@/data/home";
 import styles from "./home.module.css";
 
@@ -33,16 +34,17 @@ export default function HomePage() {
       <ParticlesBackground />
 
       <section className={styles.dashboard}>
+        <div className={styles.engineFrame} aria-hidden>
+          <DashboardChassis />
+        </div>
+
         <div className={styles.orbColumn}>
           <p className={styles.welcomeQuiet}>{h.welcome}</p>
           <div className={styles.orbStage}>
-            <div className={styles.plasma} aria-hidden />
-            <GlowImage
+            <XboxOrb
               src="/images/brahma101.gif"
               alt="dark moon aesthetics"
-              width={250}
-              height={250}
-              className={styles.orbImage}
+              size={250}
             />
           </div>
           <h1 className={styles.name}>{h.brand}</h1>

@@ -106,7 +106,7 @@
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr);
-  gap: clamp(1rem, 3vw, 2.5rem);
+  gap: clamp(0.5rem, 2vw, 1.25rem);
   align-items: center;
   width: min(1100px, 96vw);
   min-height: min(78vh, 820px);
@@ -114,12 +114,33 @@
   padding: 0.5rem 0.5rem 1rem;
 }
 
+/* Shared mechanical chassis behind orb + rotary menu */
+.engineFrame {
+  position: absolute;
+  inset: -4% -2% -6% -4%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+}
+
+.engineFrame :global(.dashboard-chassis),
+.engineFrame svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
 .orbColumn {
+  position: relative;
+  z-index: 1;
   text-align: center;
   animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) both;
 }
 
 .menuColumn {
+  position: relative;
+  z-index: 1;
   width: 100%;
   min-width: 0;
   /* Trails the hero slightly so the dashboard assembles rather than appears. */
@@ -173,52 +194,10 @@
   justify-content: center;
   align-items: center;
   margin: 0.35rem auto;
-  width: min(280px, 70vw);
-  height: min(280px, 70vw);
-}
-
-.plasma {
-  position: absolute;
-  inset: -8%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 48%,
-    rgba(220, 255, 120, 0.4) 0%,
-    rgba(80, 255, 60, 0.22) 30%,
-    rgba(0, 160, 40, 0.1) 54%,
-    transparent 72%
-  );
-  /* A radial gradient is already soft; a blur filter here only costs frames. */
-  pointer-events: none;
-  animation: plasmaPulse 8s ease-in-out infinite;
-  will-change: opacity;
-}
-
-.orbImage {
-  position: relative;
-  z-index: 1;
-  border-radius: 12px;
-  box-shadow:
-    0 0 32px rgba(120, 255, 60, 0.5),
-    0 0 70px rgba(0, 255, 80, 0.22);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.orbImage:hover {
-  transform: scale(1.02);
-  box-shadow:
-    0 0 44px rgba(160, 255, 80, 0.65),
-    0 0 90px rgba(0, 255, 80, 0.3);
-}
-
-@keyframes plasmaPulse {
-  0%,
-  100% {
-    opacity: 0.78;
-  }
-  50% {
-    opacity: 1;
-  }
+  width: min(320px, 78vw);
+  height: min(320px, 78vw);
+  /* Extra room for aura bloom + satellite mote */
+  overflow: visible;
 }
 
 .visual {
@@ -363,29 +342,39 @@
 .dialNode {
   position: relative;
   flex: 0 0 auto;
-  width: 38px;
-  height: 38px;
+  width: 42px;
+  height: 42px;
 }
 
-/* Circuit trace bridging node to bar, as on the dashboard. */
+/* Circuit trace bridging node to bar — part of the shared chassis rail */
 .dialNode::after {
   content: "";
   position: absolute;
   left: 100%;
   top: 50%;
-  width: 0.85rem;
-  height: 1px;
-  background: rgba(120, 255, 140, 0.45);
+  width: 1.1rem;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(180, 255, 120, 0.75),
+    rgba(120, 255, 140, 0.15)
+  );
+  box-shadow: 0 0 6px rgba(120, 255, 80, 0.35);
 }
 
 .dialNodeActive::after {
-  background: rgba(215, 255, 90, 0.85);
-  box-shadow: 0 0 6px rgba(200, 255, 80, 0.6);
+  background: linear-gradient(
+    90deg,
+    rgba(230, 255, 100, 0.95),
+    rgba(180, 255, 80, 0.25)
+  );
+  box-shadow: 0 0 10px rgba(210, 255, 80, 0.7);
 }
 
 .dialRing,
 .dialRingOuter,
-.dialCore {
+.dialCore,
+.dialShell {
   position: absolute;
   inset: 0;
   margin: auto;
@@ -394,44 +383,76 @@
 }
 
 .dialRingOuter {
-  width: 38px;
-  height: 38px;
-  border: 1px solid rgba(100, 255, 120, 0.42);
-  box-shadow: 0 0 10px rgba(0, 255, 80, 0.22);
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(100, 255, 120, 0.5);
+  box-shadow:
+    0 0 12px rgba(0, 255, 80, 0.28),
+    inset 0 0 8px rgba(80, 255, 60, 0.12);
+}
+
+.dialShell {
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(160, 255, 130, 0.35);
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(60, 140, 50, 0.35) 0%,
+    rgba(0, 30, 10, 0.55) 70%
+  );
 }
 
 .dialRing {
-  width: 25px;
-  height: 25px;
-  border: 1px solid rgba(140, 255, 140, 0.58);
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(140, 255, 140, 0.65);
+  box-shadow: inset 0 0 6px rgba(120, 255, 80, 0.25);
 }
 
 .dialCore {
-  width: 11px;
-  height: 11px;
-  background: rgba(40, 160, 50, 0.72);
-  border: 1px solid rgba(160, 255, 120, 0.75);
-  box-shadow: 0 0 8px rgba(0, 255, 80, 0.4);
-  transition: background-color 0.25s, box-shadow 0.25s, width 0.25s, height 0.25s;
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(
+    circle at 40% 35%,
+    #f0ffb0 0%,
+    #8dff40 45%,
+    #1a8020 100%
+  );
+  border: 1px solid rgba(200, 255, 140, 0.85);
+  box-shadow:
+    0 0 10px rgba(0, 255, 80, 0.55),
+    inset 0 0 4px rgba(255, 255, 200, 0.35);
+  transition:
+    background-color 0.25s,
+    box-shadow 0.25s,
+    width 0.25s,
+    height 0.25s;
 }
 
 .dialNodeActive .dialCore {
-  width: 14px;
-  height: 14px;
-  background: #d8ff4a;
-  border-color: #f0ff9a;
+  width: 15px;
+  height: 15px;
   box-shadow:
-    0 0 14px rgba(210, 255, 80, 0.95),
-    0 0 26px rgba(0, 255, 80, 0.5);
+    0 0 16px rgba(210, 255, 80, 0.95),
+    0 0 28px rgba(0, 255, 80, 0.55);
 }
 
 .dialNodeActive .dialRing {
-  border-color: rgba(220, 255, 120, 0.9);
-  box-shadow: 0 0 10px rgba(180, 255, 60, 0.4);
+  border-color: rgba(220, 255, 120, 0.95);
+  box-shadow: 0 0 12px rgba(180, 255, 60, 0.45);
 }
 
 .dialNodeActive .dialRingOuter {
-  border-color: rgba(200, 255, 100, 0.7);
+  border-color: rgba(200, 255, 100, 0.8);
+}
+
+.dialNodeActive .dialShell {
+  border-color: rgba(220, 255, 140, 0.55);
+  background: radial-gradient(
+    circle at 40% 35%,
+    rgba(100, 200, 60, 0.45) 0%,
+    rgba(10, 50, 15, 0.6) 70%
+  );
 }
 
 .blade {
@@ -952,6 +973,10 @@
     gap: 1.25rem;
   }
 
+  .engineFrame {
+    display: none;
+  }
+
   .arcStage {
     --arc-x: 18px;
     height: 300px;
@@ -979,8 +1004,8 @@
   }
 
   .orbStage {
-    width: min(240px, 72vw);
-    height: min(240px, 72vw);
+    width: min(280px, 82vw);
+    height: min(280px, 82vw);
   }
 
   .blade {

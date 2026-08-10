@@ -15,7 +15,7 @@ Condensed from the full Claude brief. **Single source of truth** for structure; 
 - Dark / cypherpunk base; mono-leaning headers, readable body sans.
 - Motion: subtle; never block content or accessibility.
 - `brahma101.gif`: not dominant on new `/` — About or `/research` context.
-- `/art`: stub for future Hydra fork.
+- `/art`: live hydra-synth playground (`src/data/art.ts` + `HydraArt`).
 
 ## Execution phases
 

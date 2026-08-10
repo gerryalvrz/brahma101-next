@@ -41,7 +41,7 @@ const ANGLE_STEP = 30;
 const ARC_RADIUS_X = 88;
 const ARC_RADIUS_Y = 132;
 /** Half the dial node's width — shifts the arc point onto the node centre. */
-const NODE_OFFSET = 19;
+const NODE_OFFSET = 21;
 
 /**
  * Bars are deliberately uneven lengths, as in the dashboard. Keyed to the
@@ -286,6 +286,7 @@ export default function WorkLinks({ work }: WorkLinksProps) {
                     aria-hidden
                   >
                     <span className={styles.dialRingOuter} />
+                    <span className={styles.dialShell} />
                     <span className={styles.dialRing} />
                     <span className={styles.dialCore} />
                   </span>
