@@ -74,6 +74,7 @@ export default function HydraArt() {
   const [showUi, setShowUi] = useState(true);
   const [showTree, setShowTree] = useState(true);
   const [toast, setToast] = useState<string | null>(null);
+  const [audioOn, setAudioOn] = useState(false);
   const [panelPos, setPanelPos] = useState({ x: 20, y: 220 });
   const [dragging, setDragging] = useState(false);
   const terminalRef = useRef<HTMLDivElement>(null);
@@ -344,6 +345,41 @@ export default function HydraArt() {
     setToast(artContent.toastShader);
   }
 
+  function toggleAudio() {
+    const hydra = hydraRef.current;
+    if (!hydra) return;
+
+    if (audioOn) {
+      try {
+        hydra.synth.a?.hide();
+        hydra.synth.a?.stream?.getTracks().forEach((t) => t.stop());
+      } catch {
+        /* ignore */
+      }
+      hydra.detectAudio = false;
+      setAudioOn(false);
+      setToast(artContent.toastAudioOff);
+      return;
+    }
+
+    try {
+      if (!hydra.synth.a) {
+        hydra._initAudio();
+      }
+      hydra.detectAudio = true;
+      const audio = hydra.synth.a;
+      if (audio) {
+        window.a = audio;
+        audio.setBins(6);
+        audio.show();
+      }
+      setAudioOn(true);
+      setToast(artContent.toastAudioOn);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Mic permission failed");
+    }
+  }
+
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
@@ -595,6 +631,19 @@ export default function HydraArt() {
                     title="Download PNG screenshot"
                   >
                     shot
+                  </button>
+                  <button
+                    type="button"
+                    className={
+                      audioOn
+                        ? `${styles.toolBtn} ${styles.toolBtnActive}`
+                        : styles.toolBtn
+                    }
+                    onClick={toggleAudio}
+                    disabled={!ready}
+                    title="Enable microphone FFT (a.fft)"
+                  >
+                    {audioOn ? "audio on" : "audio"}
                   </button>
                   <button
                     type="button"

@@ -91,9 +91,9 @@
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  /* Was washing out the whole left half and flattening the menu contrast. */
+  /* Tracks the orb hub after it docks closer to the dial. */
   background: radial-gradient(
-    ellipse 62% 55% at 36% 46%,
+    ellipse 58% 55% at 42% 46%,
     rgba(170, 255, 70, 0.16) 0%,
     rgba(40, 180, 40, 0.08) 30%,
     rgba(0, 60, 20, 0.05) 55%,
@@ -105,8 +105,9 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(220px, 0.9fr) minmax(280px, 1.1fr);
-  gap: clamp(0.5rem, 2vw, 1.25rem);
+  /* Left column stays tight so the orb can sit against the dial clearance. */
+  grid-template-columns: minmax(200px, 0.78fr) minmax(300px, 1.22fr);
+  gap: 0;
   align-items: center;
   width: min(1100px, 96vw);
   min-height: min(78vh, 820px);
@@ -134,15 +135,19 @@
 .orbColumn {
   position: relative;
   z-index: 1;
+  /* Park the hub on the right edge of its cell so dead air isn't to the right of the orb. */
+  justify-self: end;
+  width: min(100%, 360px);
   text-align: center;
   animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) both;
 }
 
 .menuColumn {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
   min-width: 0;
+  /* Dial stays above the orb aura where they nearly touch. */
   /* Trails the hero slightly so the dashboard assembles rather than appears. */
   animation: riseIn 0.55s cubic-bezier(0.22, 0.8, 0.28, 1) 0.14s both;
 }
@@ -193,7 +198,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0.35rem auto;
+  /* Overhang into the dial clearance — Xbox nodes sit just outside the shell. */
+  margin: 0.35rem calc(-1 * clamp(2.25rem, 6vw, 4.75rem)) 0.35rem auto;
   width: min(320px, 78vw);
   height: min(320px, 78vw);
   /* Extra room for aura bloom + satellite mote */
@@ -302,8 +308,12 @@
   margin: 0;
   outline: none;
   overflow: visible;
-  /* Vertical stays with the page; horizontal drag steps the dial. */
-  touch-action: pan-y;
+  /* Own the gesture: vertical swipe steps folders (desktop wheel parity);
+     at dial edges WorkLinks forwards movement to page scroll. */
+  touch-action: none;
+  overscroll-behavior: contain;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .arcStage:focus-visible {
@@ -327,6 +337,7 @@
   text-decoration: none;
   color: inherit;
   transform-origin: 18px center;
+  touch-action: none;
   /* Compositor-only. Position comes from an inline transform, never left/top,
      so moving a blade never triggers layout. */
   transition:
@@ -970,53 +981,143 @@
   .dashboard {
     grid-template-columns: 1fr;
     min-height: auto;
-    gap: 1.25rem;
+    gap: 0.85rem;
+    width: min(100%, 96vw);
+    padding: 0.25rem 0 0.75rem;
+  }
+
+  .orbColumn {
+    justify-self: center;
+    width: 100%;
+  }
+
+  .orbStage {
+    margin: 0.2rem auto;
   }
 
   .engineFrame {
     display: none;
   }
 
+  .welcomeQuiet {
+    font-size: 0.85rem;
+  }
+
+  .name {
+    font-size: clamp(1.85rem, 7vw, 2.35rem);
+  }
+
+  .workToggle {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto 0.85rem;
+  }
+
+  .workToggleBtn {
+    flex: 1 1 0;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.78rem;
+  }
+
   .arcStage {
-    --arc-x: 18px;
-    height: 300px;
+    --arc-x: 12px;
+    height: 268px;
+    /* Keep the dial hittable without eating the whole viewport. */
+    max-height: 42vh;
   }
 
   .bladeRow {
-    width: calc(min(330px, 100% - 34px) * var(--bar-length, 1));
+    width: calc(min(100% - 20px, 340px) * var(--bar-length, 1));
+    gap: 0.65rem;
   }
 
   .fileTree {
-    margin-top: 1.1rem;
+    margin-top: 0.85rem;
+    margin-left: 0;
+    padding: 0.65rem 0.55rem 0.6rem 0.75rem;
+  }
+
+  .menuHint {
+    margin-top: 0.7rem;
+    text-align: center;
+  }
+
+  .narrative {
+    margin-top: 1.25rem;
+    padding-inline: 0.25rem;
   }
 }
 
 @media (max-width: 600px) {
+  .main {
+    padding: 14px 12px 20px;
+  }
+
   .name {
-    font-size: 2.1rem;
+    font-size: 2rem;
   }
 
   .tagline,
   .expectLine,
   .narrative h2 {
-    font-size: 1rem;
-    line-height: 1.2;
+    font-size: 0.95rem;
+    line-height: 1.25;
   }
 
   .orbStage {
-    width: min(280px, 82vw);
-    height: min(280px, 82vw);
+    width: min(240px, 72vw);
+    height: min(240px, 72vw);
+  }
+
+  .welcomeSub {
+    font-size: 0.78rem;
+    padding-inline: 0.5rem;
+  }
+
+  .arcStage {
+    --arc-x: 8px;
+    height: 248px;
+  }
+
+  .dialNode {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dialRingOuter {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dialShell {
+    width: 28px;
+    height: 28px;
+  }
+
+  .dialRing {
+    width: 22px;
+    height: 22px;
   }
 
   .blade {
-    font-size: 0.98rem;
-    min-height: 2.1rem;
+    font-size: 0.92rem;
+    min-height: 2rem;
+    padding: 0.24rem 0.85rem 0.24rem 0.7rem;
+  }
+
+  .bladeLabel {
+    letter-spacing: 0.1em;
+  }
+
+  .fileLink {
+    padding: 0.42rem 0.45rem;
   }
 
   .terminalBox {
-    width: 92%;
-    margin-top: 24px;
-    font-size: 0.95rem;
+    width: 100%;
+    margin-top: 20px;
+    font-size: 0.9rem;
+    padding: 0.85rem 0.9rem;
   }
 
   .contactForm {

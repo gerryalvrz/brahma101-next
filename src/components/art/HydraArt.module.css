@@ -382,6 +382,12 @@
   cursor: wait;
 }
 
+.toolBtnActive {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
 .runBtn {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -523,6 +529,13 @@
 
 .credit a:hover {
   color: var(--color-accent);
+}
+
+/* hydra-synth audio FFT meter (100×80 canvas) */
+.root :global(canvas[width="100"]) {
+  z-index: 25 !important;
+  border: 1px solid rgba(0, 255, 0, 0.45) !important;
+  background: rgba(0, 0, 0, 0.65);
 }
 
 @media (max-width: 760px) {

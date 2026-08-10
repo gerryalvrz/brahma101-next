@@ -26,6 +26,8 @@ export const artContent = {
   toastShot: "Screenshot saved",
   toastShader: "Shader exported",
   toastDice: "Values mutated",
+  toastAudioOn: "Mic on · use a.fft[0] in code",
+  toastAudioOff: "Mic off",
 } as const;
 
 /** Progressive examples from Hydra’s getting-started tutorial. */
@@ -116,6 +118,17 @@ src(s0)
     code: `osc(10)
   .rotate(0.5)
   .diff(osc(200))
+  .out()`,
+  },
+  {
+    id: "audio-fft",
+    label: "a.fft",
+    blurb: "Audio-reactive osc — click audio first to allow the mic.",
+    code: `// click "audio" in the toolbar first (mic permission)
+a.setBins(6)
+a.show()
+osc(10, 0, () => a.fft[0] * 4)
+  .color(0, 1, 0.2)
   .out()`,
   },
 ];

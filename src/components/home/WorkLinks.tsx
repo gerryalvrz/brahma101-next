@@ -8,6 +8,7 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MouseEvent as ReactMouseEvent,
   type PointerEvent as ReactPointerEvent,
 } from "react";
 import type { WorkContent } from "@/data/home";
@@ -40,6 +41,9 @@ const ANGLE_STEP = 30;
  */
 const ARC_RADIUS_X = 88;
 const ARC_RADIUS_Y = 132;
+/** Tighter ellipse on narrow viewports so the stack fits above the file tree. */
+const ARC_RADIUS_X_MOBILE = 64;
+const ARC_RADIUS_Y_MOBILE = 108;
 /** Half the dial node's width — shifts the arc point onto the node centre. */
 const NODE_OFFSET = 21;
 
@@ -54,10 +58,18 @@ const BAR_LENGTHS = [1, 0.93, 0.99, 0.9, 0.96];
 const WHEEL_THRESHOLD = 42;
 /** Matches the blade transition so one flick cannot outrun the animation. */
 const WHEEL_COOLDOWN_MS = 260;
-/** Horizontal drag distance per folder step. */
-const DRAG_STEP_PX = 56;
+/** Touch travel (px) per folder step — vertical primary, horizontal secondary. */
+const SWIPE_STEP_PX = 48;
+/** Movement before we lock the gesture to dial vs page. */
+const AXIS_LOCK_PX = 12;
 
-function arcStyle(rel: number, index: number): CSSProperties {
+type ArcRadii = { x: number; y: number };
+
+function arcStyle(
+  rel: number,
+  index: number,
+  radii: ArcRadii
+): CSSProperties {
   // Park distant folders one slot past the window so they travel in from
   // roughly the right place instead of appearing mid-arc.
   const slot = Math.max(-WINDOW - 1, Math.min(WINDOW + 1, rel));
@@ -66,8 +78,8 @@ function arcStyle(rel: number, index: number): CSSProperties {
 
   const rad = (slot * ANGLE_STEP * Math.PI) / 180;
   // 0° = east (3 o'clock); negative = up (toward 12)
-  const x = ARC_RADIUS_X * Math.cos(rad);
-  const y = ARC_RADIUS_Y * Math.sin(rad);
+  const x = radii.x * Math.cos(rad);
+  const y = radii.y * Math.sin(rad);
 
   let opacity: number;
   if (beyondWindow) opacity = 0;
@@ -87,10 +99,21 @@ function arcStyle(rel: number, index: number): CSSProperties {
   } as CSSProperties;
 }
 
+function atDialEdge(index: number, direction: number, length: number) {
+  return (
+    (direction > 0 && index >= length - 1) || (direction < 0 && index <= 0)
+  );
+}
+
 export default function WorkLinks({ work }: WorkLinksProps) {
   const groups = work.now;
   const [mode, setMode] = useState<WorkMode>("now");
   const [selectedIndex, setActiveIndex] = useState(0);
+  const [radii, setRadii] = useState<ArcRadii>({
+    x: ARC_RADIUS_X,
+    y: ARC_RADIUS_Y,
+  });
+  const [touchHint, setTouchHint] = useState(false);
   const baseId = useId();
   const arcRef = useRef<HTMLDivElement>(null);
 
@@ -118,6 +141,27 @@ export default function WorkLinks({ work }: WorkLinksProps) {
   );
 
   useEffect(() => {
+    const narrow = window.matchMedia("(max-width: 860px)");
+    const coarse = window.matchMedia("(pointer: coarse)");
+    const sync = () => {
+      const mobile = narrow.matches;
+      setRadii(
+        mobile
+          ? { x: ARC_RADIUS_X_MOBILE, y: ARC_RADIUS_Y_MOBILE }
+          : { x: ARC_RADIUS_X, y: ARC_RADIUS_Y }
+      );
+      setTouchHint(mobile || coarse.matches);
+    };
+    sync();
+    narrow.addEventListener("change", sync);
+    coarse.addEventListener("change", sync);
+    return () => {
+      narrow.removeEventListener("change", sync);
+      coarse.removeEventListener("change", sync);
+    };
+  }, []);
+
+  useEffect(() => {
     const el = arcRef.current;
     if (!el) return;
 
@@ -130,13 +174,10 @@ export default function WorkLinks({ work }: WorkLinksProps) {
       if (Math.abs(wheel.deltaY) < 1) return;
 
       const direction = wheel.deltaY > 0 ? 1 : -1;
-      const index = activeIndexRef.current;
-      const atEdge =
-        (direction > 0 && index >= groups.length - 1) ||
-        (direction < 0 && index <= 0);
-
-      // At either end, stop swallowing the gesture so the page scrolls on.
-      if (atEdge) return;
+      if (atDialEdge(activeIndexRef.current, direction, groups.length)) {
+        // At either end, stop swallowing the gesture so the page scrolls on.
+        return;
+      }
       wheel.preventDefault();
 
       accumulated += wheel.deltaY;
@@ -161,28 +202,127 @@ export default function WorkLinks({ work }: WorkLinksProps) {
     };
   }, [groups.length, step]);
 
-  // Horizontal drag steps the dial. Vertical is left alone so touch devices
-  // keep normal page scrolling (see `touch-action: pan-y` on the stage).
-  const dragOrigin = useRef<{ x: number; index: number } | null>(null);
+  /**
+   * Touch / pen: vertical swipe mirrors desktop wheel (primary); horizontal
+   * swipe still works. Once locked to the dial we capture the pointer; at a
+   * dial edge we forward remaining movement to the page so both scroll modes
+   * coexist — same contract as the wheel handler.
+   */
+  const gesture = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    lastY: number;
+    originIndex: number;
+    lock: "dial" | "page" | null;
+    stepped: boolean;
+  } | null>(null);
+  const suppressClickRef = useRef(false);
 
   function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.pointerType === "mouse") return;
-    dragOrigin.current = { x: event.clientX, index: activeIndex };
+    gesture.current = {
+      pointerId: event.pointerId,
+      startX: event.clientX,
+      startY: event.clientY,
+      lastY: event.clientY,
+      originIndex: activeIndex,
+      lock: null,
+      stepped: false,
+    };
   }
 
   function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
-    const origin = dragOrigin.current;
-    if (!origin) return;
-    const steps = Math.round((origin.x - event.clientX) / DRAG_STEP_PX);
+    const g = gesture.current;
+    if (!g || event.pointerId !== g.pointerId) return;
+
+    const dx = event.clientX - g.startX;
+    const dy = event.clientY - g.startY;
+
+    if (!g.lock) {
+      if (Math.abs(dx) < AXIS_LOCK_PX && Math.abs(dy) < AXIS_LOCK_PX) return;
+
+      const vertical = Math.abs(dy) >= Math.abs(dx);
+      // Swipe up → next folder (same as wheel down / content advancing).
+      const direction = vertical
+        ? dy < 0
+          ? 1
+          : -1
+        : dx < 0
+          ? 1
+          : -1;
+
+      if (
+        vertical &&
+        atDialEdge(activeIndexRef.current, direction, groups.length)
+      ) {
+        g.lock = "page";
+        try {
+          event.currentTarget.setPointerCapture(event.pointerId);
+        } catch {
+          /* capture can fail if the pointer already ended */
+        }
+        return;
+      }
+
+      g.lock = "dial";
+      try {
+        event.currentTarget.setPointerCapture(event.pointerId);
+      } catch {
+        /* capture can fail if the pointer already ended */
+      }
+    }
+
+    if (g.lock === "page") {
+      const delta = g.lastY - event.clientY;
+      g.lastY = event.clientY;
+      if (delta !== 0) window.scrollBy(0, delta);
+      return;
+    }
+
+    if (g.lock !== "dial") return;
+
+    event.preventDefault();
+
+    const travel =
+      Math.abs(dy) >= Math.abs(dx)
+        ? g.startY - event.clientY
+        : g.startX - event.clientX;
+    const steps = Math.round(travel / SWIPE_STEP_PX);
     const next = Math.max(
       0,
-      Math.min(groups.length - 1, origin.index + steps)
+      Math.min(groups.length - 1, g.originIndex + steps)
     );
-    if (next !== activeIndexRef.current) setActiveIndex(next);
+    if (next !== activeIndexRef.current) {
+      g.stepped = true;
+      suppressClickRef.current = true;
+      setActiveIndex(next);
+    }
   }
 
-  function endDrag() {
-    dragOrigin.current = null;
+  function endDrag(event: ReactPointerEvent<HTMLDivElement>) {
+    const g = gesture.current;
+    if (!g || event.pointerId !== g.pointerId) return;
+    if (g.lock) {
+      try {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      } catch {
+        /* already released */
+      }
+    }
+    gesture.current = null;
+  }
+
+  function onBladeClick(
+    index: number,
+    event: ReactMouseEvent<HTMLButtonElement>
+  ) {
+    if (suppressClickRef.current) {
+      event.preventDefault();
+      suppressClickRef.current = false;
+      return;
+    }
+    setActiveIndex(index);
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -276,8 +416,8 @@ export default function WorkLinks({ work }: WorkLinksProps) {
                   className={`${styles.bladeRow} ${
                     selected ? styles.bladeRowActive : ""
                   }`}
-                  style={arcStyle(rel, index)}
-                  onClick={() => setActiveIndex(index)}
+                  style={arcStyle(rel, index, radii)}
+                  onClick={(event) => onBladeClick(index, event)}
                 >
                   <span
                     className={`${styles.dialNode} ${
@@ -342,7 +482,9 @@ export default function WorkLinks({ work }: WorkLinksProps) {
           ) : null}
 
           <p className={styles.menuHint}>
-            Folders · scroll or ↑↓ · {activeIndex + 1}/{groups.length}
+            {touchHint
+              ? `Folders · swipe · ${activeIndex + 1}/${groups.length}`
+              : `Folders · scroll or ↑↓ · ${activeIndex + 1}/${groups.length}`}
           </p>
         </div>
       ) : (
