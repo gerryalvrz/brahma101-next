@@ -93,6 +93,7 @@ const SITE_PAGES = [
     href: "/prophet-and-the-fool",
   },
   { id: "writing", label: "writing", href: "/writing" },
+  { id: "papers", label: "papers", href: "/papers" },
 ] as const;
 
 function isValidEmail(value: string) {

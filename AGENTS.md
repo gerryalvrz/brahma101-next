@@ -22,7 +22,7 @@ Personal site of Gerry Alvarez / **brahma101.eth** — [brahma101.cyou](https://
 2. **Left — orb column:** welcome line → `XboxOrb` (`/images/brahma101.gif`) → brand `brahma101.eth` → “The Art of” typewriter (`artOfWords`) → `welcomeSub`.
 3. **Right — menu column:** `WorkLinks` with three chrome tabs:
    - **LIVE** (default) — Xbox blade folders on a rotary arc. Blades = top-level `work.live` folders. Nested folders open in the file tree under the arc (`live/{folder}/…`); files keep their existing routes/URLs. Wheel / ↑↓ / swipe changes blade (clamped, does not wrap). **Thinking** (last blade) is a portal: click it (or `Archive/` in its tree) to switch to the ARCHIVE tab.
-   - **ARCHIVE** — same blade chrome: **Writing** (blogs & articles; two-step select → `/writing/[slug]`), plus empty libraries for **Research papers**, **Images**, and **Videos** (Hermes syndication later). Empty copy: `work.archiveHint` / per-library `hint`.
+   - **ARCHIVE** — same blade chrome: **Writing** (blogs & articles; two-step select → `/writing/[slug]`), **Research papers** (PDFs; two-step select → `/papers/[slug]`), plus empty libraries for **Images** and **Videos**. Empty writing copy: `work.archiveHint`.
    - **CONTACT ME** — smooth-scrolls to `#contact` (not a mode).
 
 **LIVE folders (order in `homeContent.work.live`):** Agent infra & open source → MotusDAO → Avril → Ecosystem → Locognitive → Thinking (→ ARCHIVE).
@@ -40,6 +40,8 @@ Personal site of Gerry Alvarez / **brahma101.eth** — [brahma101.cyou](https://
 | `/` | Dashboard landing | `home.ts` + `HomeView` |
 | `/writing` | Post index | `content/writing/*.md` via `src/lib/writing/` |
 | `/writing/[slug]` | Terminal reader | same |
+| `/papers` | Research PDF index | `content/papers/*.md` + `public/papers/*.pdf` |
+| `/papers/[slug]` | PDF reader | same |
 | `/art` | Live hydra-synth playground | `src/data/art.ts` + `HydraArt` |
 | `/create-music` | Live Strudel playground | `src/data/music.ts` + `StrudelMusic` |
 | `/research` | Quiet gateway to rabbit holes | `research/page.tsx` |
@@ -57,7 +59,9 @@ Homepage LIVE **Locognitive** → D.E.S. (`/locognitive`) + Images + Generative 
 
 File-based Markdown + GFM. Filename = slug. Frontmatter: `title`, `date` (YYYY-MM-DD), `summary`, `tags`, `draft`. Drafts hidden in production. Supabase `posts` unused.
 
-**How to publish:** project skill `.cursor/skills/writing-archive/SKILL.md` (explicit invoke). Also `content/writing/README.md`.
+**Papers:** `content/papers/{slug}.md` + matching `public/papers/{slug}.pdf`. Same frontmatter. Loader: `src/lib/papers/`.
+
+**How to publish writing:** project skill `.cursor/skills/writing-archive/SKILL.md` (explicit invoke). Also `content/writing/README.md` and `content/papers/README.md`.
 
 ## Livecoding (React)
 

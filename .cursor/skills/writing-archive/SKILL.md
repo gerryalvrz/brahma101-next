@@ -60,7 +60,7 @@ Extra YAML keys (existing posts have `series` and `part`) are **ignored by the s
 
 No extra wiring. After the file is valid:
 
-- `/` ARCHIVE → **Writing** (Xbox media-player list of blogs & articles) — server `src/app/(site)/page.tsx` maps metas → `ArchiveEntry[]` → `HomeView` → `WorkLinks`. Papers / Images / Videos are empty library blades in `home.ts`, not writing posts. Do not put essays in those libraries.
+- `/` ARCHIVE → **Writing** (Xbox media-player list of blogs & articles) — server `src/app/(site)/page.tsx` maps metas → `ArchiveEntry[]` → `HomeView` → `WorkLinks`. **Research papers** is a separate ARCHIVE blade (`content/papers/` + `public/papers/`). Images / Videos are empty library blades. Do not put essays in the papers library.
 - `/writing` index
 - `/writing/{slug}` terminal reader (`WritingReaderTerminal`)
 

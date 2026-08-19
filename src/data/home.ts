@@ -44,6 +44,13 @@ export type ArchiveLibraryBlade = {
   hint: string;
 };
 
+/** ARCHIVE blade that renders the research-papers track list. */
+export type ArchivePapersBlade = {
+  kind: "papers";
+  id: "papers";
+  label: string;
+};
+
 /** ARCHIVE blade that renders the writing track list instead of a file tree. */
 export type ArchiveWritingBlade = {
   kind: "writing";
@@ -54,6 +61,7 @@ export type ArchiveWritingBlade = {
 export type LiveBlade = WorkFolder | ArchivePortalBlade;
 export type ArchiveBlade =
   | ArchiveWritingBlade
+  | ArchivePapersBlade
   | ArchiveLibraryBlade
   | WorkFolder;
 
@@ -93,6 +101,12 @@ export function isArchiveWriting(
   blade: WorkBlade
 ): blade is ArchiveWritingBlade {
   return blade.kind === "writing";
+}
+
+export function isArchivePapers(
+  blade: WorkBlade
+): blade is ArchivePapersBlade {
+  return blade.kind === "papers";
 }
 
 export function liveFolders(live: LiveBlade[]): WorkFolder[] {
@@ -476,12 +490,7 @@ export const homeContent: HomeContent = {
     ],
     archive: [
       { kind: "writing", id: "writing", label: "Writing" },
-      {
-        kind: "library",
-        id: "papers",
-        label: "Research papers",
-        hint: "No PDFs in the library yet.",
-      },
+      { kind: "papers", id: "papers", label: "Research papers" },
       {
         kind: "library",
         id: "images",

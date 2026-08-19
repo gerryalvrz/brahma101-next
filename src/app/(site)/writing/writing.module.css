@@ -239,6 +239,26 @@
   margin: 0.5rem 0 1.25rem;
 }
 
+.pdfActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0 0 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.pdfActions a {
+  color: var(--color-primary);
+}
+
+.pdfFrame {
+  width: 100%;
+  height: min(78vh, 52rem);
+  border: 1px solid rgba(0, 255, 0, 0.22);
+  background: rgba(0, 0, 0, 0.45);
+}
+
 /* ------------------------------------------------------------------ */
 /* Article reader — homepage terminal chrome + Matrix palette          */
 /* Wallpaper from experiments; UI matches ContactBox / site terminal   */

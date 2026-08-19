@@ -14,6 +14,7 @@ import {
 import { useRouter } from "next/navigation";
 import {
   isArchiveLibrary,
+  isArchivePapers,
   isArchivePortal,
   isArchiveWriting,
   isWorkFolder,
@@ -31,6 +32,8 @@ type WorkLinksProps = {
   work: WorkContent;
   /** Writing posts for the ARCHIVE → Writing media-player list (newest first). */
   archive: ArchiveEntry[];
+  /** Research PDFs for ARCHIVE → Research papers. */
+  papers: ArchiveEntry[];
 };
 
 /**
@@ -218,7 +221,7 @@ function FileTree({
   );
 }
 
-export default function WorkLinks({ work, archive }: WorkLinksProps) {
+export default function WorkLinks({ work, archive, papers }: WorkLinksProps) {
   const router = useRouter();
   const [mode, setMode] = useState<WorkMode>("live");
   const [liveIndex, setLiveIndex] = useState(0);
@@ -226,6 +229,7 @@ export default function WorkLinks({ work, archive }: WorkLinksProps) {
   const [liveCwd, setLiveCwd] = useState<WorkFolder[]>([]);
   const [archiveCwd, setArchiveCwd] = useState<WorkFolder[]>([]);
   const [archiveIndex, setArchiveIndex] = useState(0);
+  const [papersIndex, setPapersIndex] = useState(0);
   const archiveListRef = useRef<HTMLUListElement>(null);
   const [radii, setRadii] = useState<ArcRadii>({
     x: ARC_RADIUS_X,
@@ -507,21 +511,29 @@ export default function WorkLinks({ work, archive }: WorkLinksProps) {
     }
   }
 
-  /* ---------------------- ARCHIVE (writing) player ---------------------- */
+  /* ---------------------- ARCHIVE track lists ---------------------- */
 
-  const archiveMax = Math.max(0, archive.length - 1);
-  const activeArchiveIndex = Math.min(archiveIndex, archiveMax);
-  const [archiveMoreBelow, setArchiveMoreBelow] = useState(false);
   const writingSelected = active ? isArchiveWriting(active) : false;
+  const papersSelected = active ? isArchivePapers(active) : false;
   const librarySelected = active ? isArchiveLibrary(active) : false;
   const portalSelected = active ? isArchivePortal(active) : false;
+  const trackSelected = writingSelected || papersSelected;
+  const trackEntries = writingSelected ? archive : papers;
+  const trackIndex = writingSelected ? archiveIndex : papersIndex;
+  const setTrackIndex = writingSelected ? setArchiveIndex : setPapersIndex;
+  const trackMax = Math.max(0, trackEntries.length - 1);
+  const activeTrackIndex = Math.min(trackIndex, trackMax);
+  const [archiveMoreBelow, setArchiveMoreBelow] = useState(false);
 
-  const openArchiveEntry = useCallback(
+  const openTrackEntry = useCallback(
     (index: number) => {
-      const entry = archive[index];
-      if (entry) router.push(`/writing/${entry.slug}`);
+      const entry = (writingSelected ? archive : papers)[index];
+      if (!entry) return;
+      router.push(
+        writingSelected ? `/writing/${entry.slug}` : `/papers/${entry.slug}`
+      );
     },
-    [archive, router]
+    [archive, papers, router, writingSelected]
   );
 
   const syncArchiveMore = useCallback(() => {
@@ -531,49 +543,48 @@ export default function WorkLinks({ work, archive }: WorkLinksProps) {
   }, []);
 
   useEffect(() => {
-    if (!writingSelected) return;
-    const row = archiveListRef.current?.children[activeArchiveIndex];
+    if (!trackSelected) return;
+    const row = archiveListRef.current?.children[activeTrackIndex];
     if (row instanceof HTMLElement) {
       row.scrollIntoView({ block: "nearest" });
     }
     syncArchiveMore();
-  }, [writingSelected, activeArchiveIndex, syncArchiveMore]);
+  }, [trackSelected, activeTrackIndex, syncArchiveMore]);
 
   function onArchiveKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    if (archive.length === 0) return;
+    if (trackEntries.length === 0) return;
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
-        setArchiveIndex((i) => Math.min(archiveMax, i + 1));
+        setTrackIndex((i) => Math.min(trackMax, i + 1));
         break;
       case "ArrowUp":
         event.preventDefault();
-        setArchiveIndex((i) => Math.max(0, i - 1));
+        setTrackIndex((i) => Math.max(0, i - 1));
         break;
       case "Home":
         event.preventDefault();
-        setArchiveIndex(0);
+        setTrackIndex(0);
         break;
       case "End":
         event.preventDefault();
-        setArchiveIndex(archiveMax);
+        setTrackIndex(trackMax);
         break;
       case "Enter":
       case " ":
         event.preventDefault();
-        openArchiveEntry(activeArchiveIndex);
+        openTrackEntry(activeTrackIndex);
         break;
       default:
         break;
     }
   }
 
-  /** Xbox two-step: first click highlights, click on highlighted row opens. */
   function onArchiveRowClick(index: number) {
-    if (index === activeArchiveIndex) {
-      openArchiveEntry(index);
+    if (index === activeTrackIndex) {
+      openTrackEntry(index);
     } else {
-      setArchiveIndex(index);
+      setTrackIndex(index);
     }
   }
 
@@ -581,28 +592,33 @@ export default function WorkLinks({ work, archive }: WorkLinksProps) {
   const setCwd = mode === "live" ? setLiveCwd : setArchiveCwd;
   const rootLabel = (mode === "live" ? work.liveLabel : work.archiveLabel).toLowerCase();
 
-  function writingPlayer() {
+  function mediaPlayer() {
+    const title = writingSelected ? "Blogs & articles" : "Research papers";
+    const empty = writingSelected
+      ? work.archiveHint
+      : "No PDFs in the library yet.";
     return (
       <div className={styles.workArchive}>
         <div className={styles.archivePlate}>
           <p className={styles.archiveCount}>
-            {archive.length} {archive.length === 1 ? "Entry" : "Entries"}
+            {trackEntries.length}{" "}
+            {trackEntries.length === 1 ? "Entry" : "Entries"}
           </p>
-          <p className={styles.archiveTitle}>Blogs & articles</p>
+          <p className={styles.archiveTitle}>{title}</p>
         </div>
 
-        {archive.length === 0 ? (
-          <p className={styles.workArchiveHint}>{work.archiveHint}</p>
+        {trackEntries.length === 0 ? (
+          <p className={styles.workArchiveHint}>{empty}</p>
         ) : (
           <>
             <div
               className={styles.archiveDeck}
               role="listbox"
               tabIndex={0}
-              aria-label="Archive entries"
+              aria-label={title}
               aria-activedescendant={
-                archive[activeArchiveIndex]
-                  ? `${baseId}-post-${archive[activeArchiveIndex].slug}`
+                trackEntries[activeTrackIndex]
+                  ? `${baseId}-post-${trackEntries[activeTrackIndex].slug}`
                   : undefined
               }
               onKeyDown={onArchiveKeyDown}
@@ -612,8 +628,8 @@ export default function WorkLinks({ work, archive }: WorkLinksProps) {
                 className={styles.archiveList}
                 onScroll={syncArchiveMore}
               >
-                {archive.map((entry, index) => {
-                  const selected = index === activeArchiveIndex;
+                {trackEntries.map((entry, index) => {
+                  const selected = index === activeTrackIndex;
                   return (
                     <li
                       key={entry.slug}
@@ -809,7 +825,7 @@ export default function WorkLinks({ work, archive }: WorkLinksProps) {
 
         {portalSelected ? portalPanel() : null}
 
-        {writingSelected ? writingPlayer() : null}
+        {trackSelected ? mediaPlayer() : null}
 
         {librarySelected && isArchiveLibrary(active) ? libraryPanel(active) : null}
 

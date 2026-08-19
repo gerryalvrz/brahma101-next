@@ -10,7 +10,10 @@ const vt323 = VT323({
 
 /** Site-wide defaults; route segments under `src/app/(site)/` set title/description via `layout.tsx`. */
 export const metadata: Metadata = {
-  icons: { icon: "/favicon.png" },
+  icons: {
+    icon: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/apple-icon.png", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({

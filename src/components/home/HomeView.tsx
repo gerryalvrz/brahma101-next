@@ -25,9 +25,10 @@ const XboxOrb = dynamic(() => import("@/components/home/XboxOrb"), {
 
 type HomeViewProps = {
   archive: ArchiveEntry[];
+  papers: ArchiveEntry[];
 };
 
-export default function HomeView({ archive }: HomeViewProps) {
+export default function HomeView({ archive, papers }: HomeViewProps) {
   const h = homeContent.hero;
   return (
     <main className={styles.main}>
@@ -59,7 +60,7 @@ export default function HomeView({ archive }: HomeViewProps) {
         </div>
 
         <div className={styles.menuColumn}>
-          <WorkLinks work={homeContent.work} archive={archive} />
+          <WorkLinks work={homeContent.work} archive={archive} papers={papers} />
         </div>
       </section>
 

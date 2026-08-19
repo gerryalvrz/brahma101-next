@@ -1,10 +1,9 @@
 import HomeView from "@/components/home/HomeView";
 import { getVisibleWritingPostMetas } from "@/lib/writing";
+import { getVisiblePaperMetas } from "@/lib/papers";
 import type { ArchiveEntry } from "@/data/home";
 
 export default function HomePage() {
-  // Server side: read posts from content/writing/ and hand the client a
-  // serializable slice (no filesystem paths, no body content).
   const archive: ArchiveEntry[] = getVisibleWritingPostMetas().map((post) => ({
     slug: post.slug,
     title: post.title,
@@ -12,5 +11,12 @@ export default function HomePage() {
     draft: post.draft,
   }));
 
-  return <HomeView archive={archive} />;
+  const papers: ArchiveEntry[] = getVisiblePaperMetas().map((paper) => ({
+    slug: paper.slug,
+    title: paper.title,
+    date: paper.date,
+    draft: paper.draft,
+  }));
+
+  return <HomeView archive={archive} papers={papers} />;
 }

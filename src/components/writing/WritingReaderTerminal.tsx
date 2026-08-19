@@ -9,12 +9,20 @@ type WritingReaderTerminalProps = {
   slug: string;
   title: string;
   children: ReactNode;
+  fileLabel?: string;
+  hint?: string;
+  indexHref?: string;
+  indexLabel?: string;
 };
 
 export default function WritingReaderTerminal({
   slug,
   title,
   children,
+  fileLabel = `${slug}.md`,
+  hint = "writing · read",
+  indexHref = "/writing",
+  indexLabel = "Writing",
 }: WritingReaderTerminalProps) {
   const router = useRouter();
   const [minimized, setMinimized] = useState(false);
@@ -32,7 +40,7 @@ export default function WritingReaderTerminal({
           <span className={styles.titleGrip} aria-hidden>
             ⋮⋮
           </span>
-          <span className={styles.dockLabel}>{slug}.md</span>
+          <span className={styles.dockLabel}>{fileLabel}</span>
           <span className={styles.dockRestore}>restore</span>
         </button>
       </main>
@@ -50,8 +58,8 @@ export default function WritingReaderTerminal({
           <span className={styles.titleGrip} aria-hidden>
             ⋮⋮
           </span>
-          <span className={styles.titleLabel}>{slug}.md</span>
-          <span className={styles.titleHint}>writing · read</span>
+          <span className={styles.titleLabel}>{fileLabel}</span>
+          <span className={styles.titleHint}>{hint}</span>
           <div className={styles.titleActions}>
             <button
               type="button"
@@ -65,8 +73,8 @@ export default function WritingReaderTerminal({
             <button
               type="button"
               className={styles.titleAction}
-              onClick={() => router.push("/writing")}
-              aria-label="Close to writing index"
+              onClick={() => router.push(indexHref)}
+              aria-label={`Close to ${indexLabel} index`}
               title="Close"
             >
               ×
@@ -75,8 +83,8 @@ export default function WritingReaderTerminal({
         </header>
 
         <div className={styles.terminalBody}>
-          <Link href="/writing" className={styles.back}>
-            ← Writing
+          <Link href={indexHref} className={styles.back}>
+            ← {indexLabel}
           </Link>
           {children}
         </div>
