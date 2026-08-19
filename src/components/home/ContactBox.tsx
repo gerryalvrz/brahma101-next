@@ -14,7 +14,7 @@ import {
   submitContactMessage,
   type ContactFormState,
 } from "@/app/actions/contact";
-import type { WorkContent, WorkProject } from "@/data/home";
+import { liveFolders, type WorkContent, type WorkFile, type WorkNode } from "@/data/home";
 import homeStyles from "@/app/(site)/home.module.css";
 import styles from "./ContactBox.module.css";
 
@@ -129,12 +129,26 @@ function useShellTyper(messages: readonly string[]) {
   return display;
 }
 
+function folderIds(nodes: WorkNode[]): Record<string, boolean> {
+  const out: Record<string, boolean> = {};
+  function walk(list: WorkNode[]) {
+    for (const node of list) {
+      if (node.kind === "folder") {
+        out[node.id] = false;
+        walk(node.children);
+      }
+    }
+  }
+  walk(nodes);
+  return out;
+}
+
 function TreeLeafLink({
   project,
   isLast,
   prefix,
 }: {
-  project: WorkProject;
+  project: WorkFile;
   isLast: boolean;
   prefix: string;
 }) {
@@ -175,6 +189,65 @@ function TreeLeafLink({
   );
 }
 
+function TreeNodes({
+  nodes,
+  prefix,
+  open,
+  onToggle,
+}: {
+  nodes: WorkNode[];
+  prefix: string;
+  open: Record<string, boolean>;
+  onToggle: (id: string) => void;
+}) {
+  return (
+    <ul className={styles.treeList}>
+      {nodes.map((node, i) => {
+        const isLast = i === nodes.length - 1;
+        const childPrefix = prefix + (isLast ? "    " : "│   ");
+        if (node.kind === "folder") {
+          const folderOpen = Boolean(open[node.id]);
+          return (
+            <li key={node.id} className={styles.treeBranch}>
+              <button
+                type="button"
+                className={styles.treeFolderBtn}
+                onClick={() => onToggle(node.id)}
+                aria-expanded={folderOpen}
+              >
+                <span className={styles.treeGuide} aria-hidden>
+                  {prefix}
+                  {isLast ? "└── " : "├── "}
+                </span>
+                <span className={styles.treeCaret} aria-hidden>
+                  {folderOpen ? "▼" : "▶"}
+                </span>
+                <span className={styles.treeFolderLabel}>{node.label}/</span>
+              </button>
+              {folderOpen ? (
+                <TreeNodes
+                  nodes={node.children}
+                  prefix={childPrefix}
+                  open={open}
+                  onToggle={onToggle}
+                />
+              ) : null}
+            </li>
+          );
+        }
+        return (
+          <TreeLeafLink
+            key={node.id}
+            project={node}
+            isLast={isLast}
+            prefix={prefix}
+          />
+        );
+      })}
+    </ul>
+  );
+}
+
 type ContactBoxProps = {
   title: string;
   subtitle: string;
@@ -196,12 +269,9 @@ export default function ContactBox({ title, subtitle, work }: ContactBoxProps) {
   const [showTree, setShowTree] = useState(true);
   const [openFolders, setOpenFolders] = useState({
     site: true,
-    now: true,
+    live: true,
     pages: true,
-    groups: Object.fromEntries(work.now.map((g) => [g.id, false])) as Record<
-      string,
-      boolean
-    >,
+    groups: folderIds(liveFolders(work.live)),
   });
   const lastResultRef = useRef<ContactFormState>(initialState);
   const shellText = useShellTyper(SHELL_MESSAGES);
@@ -364,7 +434,7 @@ export default function ContactBox({ title, subtitle, work }: ContactBoxProps) {
     }
   }
 
-  function toggleFolder(key: "site" | "now" | "pages") {
+  function toggleFolder(key: "site" | "live" | "pages") {
     setOpenFolders((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
@@ -378,9 +448,6 @@ export default function ContactBox({ title, subtitle, work }: ContactBoxProps) {
   const canSend = field === "confirm" && !pending && !done;
   const activePrompt =
     field === "confirm" ? "$" : FIELD_META[field].prompt;
-
-  const nowGroups = work.now;
-  const lastGroupIdx = nowGroups.length - 1;
 
   return (
     <section
@@ -429,60 +496,28 @@ export default function ContactBox({ title, subtitle, work }: ContactBoxProps) {
                     <button
                       type="button"
                       className={styles.treeFolderBtn}
-                      onClick={() => toggleFolder("now")}
-                      aria-expanded={openFolders.now}
+                      onClick={() => toggleFolder("live")}
+                      aria-expanded={openFolders.live}
                     >
                       <span className={styles.treeGuide} aria-hidden>
                         ├──{" "}
                       </span>
                       <span className={styles.treeCaret} aria-hidden>
-                        {openFolders.now ? "▼" : "▶"}
+                        {openFolders.live ? "▼" : "▶"}
                       </span>
                       <span className={styles.treeFolderLabel}>
-                        {work.nowLabel.toLowerCase()}/
+                        {work.liveLabel.toLowerCase()}/
                       </span>
                     </button>
 
-                    {openFolders.now
-                      ? nowGroups.map((group, gi) => {
-                          const groupOpen = openFolders.groups[group.id];
-                          const isLastGroup = gi === lastGroupIdx;
-                          return (
-                            <div key={group.id} className={styles.treeBranch}>
-                              <button
-                                type="button"
-                                className={styles.treeFolderBtn}
-                                onClick={() => toggleGroup(group.id)}
-                                aria-expanded={groupOpen}
-                              >
-                                <span className={styles.treeGuide} aria-hidden>
-                                  │   {isLastGroup ? "└── " : "├── "}
-                                </span>
-                                <span className={styles.treeCaret} aria-hidden>
-                                  {groupOpen ? "▼" : "▶"}
-                                </span>
-                                <span className={styles.treeFolderLabel}>
-                                  {group.label}/
-                                </span>
-                              </button>
-                              {groupOpen ? (
-                                <ul className={styles.treeList}>
-                                  {group.projects.map((project, pi) => (
-                                    <TreeLeafLink
-                                      key={project.id}
-                                      project={project}
-                                      isLast={pi === group.projects.length - 1}
-                                      prefix={
-                                        isLastGroup ? "│       " : "│   │   "
-                                      }
-                                    />
-                                  ))}
-                                </ul>
-                              ) : null}
-                            </div>
-                          );
-                        })
-                      : null}
+                    {openFolders.live ? (
+                      <TreeNodes
+                        nodes={liveFolders(work.live)}
+                        prefix="│   "
+                        open={openFolders.groups}
+                        onToggle={toggleGroup}
+                      />
+                    ) : null}
                   </div>
 
                   <div className={styles.treeBranch}>
@@ -687,7 +722,7 @@ export default function ContactBox({ title, subtitle, work }: ContactBoxProps) {
             {showTree ? "hide tree" : "show tree"}
           </button>
           <p className={styles.credit}>
-            site worktree · same routes as NOW · type send when ready
+            site worktree · same routes as LIVE · type send when ready
           </p>
         </div>
       </div>

@@ -255,7 +255,7 @@
   --menu-inset: clamp(2.75rem, 9vw, 5.25rem);
   width: 100%;
   margin-top: 0;
-  /* Pin toggle Y — same spot in NOW and ARCHIVE (no recentering jump). */
+  /* Pin toggle Y — same spot in LIVE and ARCHIVE (no recentering jump). */
   padding-top: clamp(2.75rem, 11vh, 6.5rem);
 }
 
@@ -519,9 +519,9 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   text-shadow: 0 0 8px rgba(0, 255, 80, 0.3);
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.15;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .bladeActive {
@@ -648,6 +648,27 @@
   color: rgba(180, 255, 80, 0.75);
 }
 
+.fileTreeCrumb {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.fileTreeCrumb:hover,
+.fileTreeCrumb:focus-visible {
+  color: rgba(180, 255, 80, 0.95);
+  outline: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .fileTreeSep {
   opacity: 0.5;
 }
@@ -665,6 +686,7 @@
   display: flex;
   align-items: center;
   gap: 0.45rem;
+  width: 100%;
   min-width: 0;
   padding: 0.35rem 0.55rem;
   color: rgba(170, 255, 150, 0.92);
@@ -672,6 +694,10 @@
   font-family: var(--font-display), monospace;
   font-size: 0.95rem;
   letter-spacing: 0.03em;
+  text-align: left;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
   border: 1px solid transparent;
   clip-path: polygon(
     0 0,
@@ -714,45 +740,216 @@
 .workArchive {
   position: relative;
   z-index: 1;
-  /* Align with the toggle — both clear the orb aura. */
-  margin: 0 0 0 var(--menu-inset);
-  padding: 1.05rem 1.15rem 1.2rem;
+  /* Same band as the LIVE file tree (ARCHIVE now shares the Xbox deck). */
+  margin: 1.35rem 0 0 0.15rem;
   max-width: 26rem;
   min-height: 9.5rem;
-  border: 1px solid rgba(0, 255, 0, 0.32);
-  background: rgba(0, 6, 2, 0.92);
-  backdrop-filter: blur(10px);
-  box-shadow:
-    0 0 0 1px rgba(0, 0, 0, 0.45),
-    0 0 28px rgba(0, 0, 0, 0.55);
+  /* No panel chrome: like the dashboard, the player floats on the scene. */
   animation: fileTreeIn 0.34s cubic-bezier(0.22, 0.8, 0.28, 1) both;
-}
 
-.archiveStubTitle {
-  margin: 0 0 0.4rem;
-  font-family: var(--font-display), monospace;
-  font-size: 1.35rem;
-  letter-spacing: 0.08em;
-  color: #b8ff40;
-  text-shadow: 0 0 12px rgba(0, 255, 80, 0.45);
+  /* Xbox track-list palette: washed CRT yellow-greens, not saturated neon. */
+  --xb-text: #cfe6a4;
+  --xb-text-dim: rgba(207, 230, 164, 0.75);
+  --xb-frame: rgba(160, 220, 90, 0.55);
+  --xb-slat: rgba(14, 34, 8, 0.62);
 }
 
 .workArchiveHint {
-  margin: 0 0 0.55rem;
+  margin: 0.75rem 0 0;
   font-family: var(--font-mono);
   font-size: 0.9rem;
   line-height: 1.45;
   color: rgba(184, 255, 184, 0.82);
 }
 
-.archiveStubNote {
-  margin: 0.65rem 0 0;
-  padding-top: 0.65rem;
-  border-top: 1px solid rgba(0, 255, 0, 0.16);
+/* --- ARCHIVE media-player (Xbox dashboard track list) --- */
+
+/*
+ * Header plate: angular wing shape from the dashboard — top edge stops short
+ * and the right side slants outward as it drops toward the list. clip-path
+ * kills real borders, so the outline is a ::before layer 1px larger than the
+ * ::after fill, both cut with the same polygon.
+ */
+.archivePlate {
+  position: relative;
+  /* Plate sits flush on the list frame, one assembly like the dashboard. */
+  margin: 0 0 -1px;
+  width: calc(100% - 0.5rem);
+  padding: 0.5rem 1rem 0.6rem;
+}
+
+.archivePlate::before,
+.archivePlate::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  clip-path: polygon(
+    10px 0,
+    calc(100% - 52px) 0,
+    100% 100%,
+    0 100%,
+    0 10px
+  );
+}
+
+.archivePlate::before {
+  inset: 0;
+  background: var(--xb-frame);
+}
+
+.archivePlate::after {
+  inset: 1px;
+  background: linear-gradient(
+    180deg,
+    rgba(20, 46, 10, 0.9) 0%,
+    rgba(4, 14, 3, 0.92) 100%
+  );
+}
+
+.archiveCount,
+.archiveTitle {
+  position: relative;
+  z-index: 1;
+}
+
+.archiveCount {
+  margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.82rem;
-  line-height: 1.45;
-  color: rgba(0, 255, 0, 0.5);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--xb-text-dim);
+}
+
+.archiveTitle {
+  margin: 0.05rem 0 0;
+  font-family: var(--font-display), monospace;
+  font-size: 1.4rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  /* Near-white like "VIC'S SKATING MIX", only a whisper of glow. */
+  color: #eef7dd;
+  text-shadow: 0 0 8px rgba(190, 255, 130, 0.3);
+}
+
+.archiveDeck {
+  position: relative;
+  outline: none;
+  padding: 5px;
+  border: 1px solid var(--xb-frame);
+  border-radius: 8px;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 26, 6, 0.55) 0%,
+    rgba(2, 8, 2, 0.7) 100%
+  );
+}
+
+.archiveDeck:focus-visible {
+  border-color: rgba(210, 255, 150, 0.85);
+  box-shadow: 0 0 10px rgba(160, 255, 90, 0.3);
+}
+
+.archiveList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  /* Thin gaps between slats — rows read as separate strips. */
+  gap: 2px;
+  max-height: 15.5rem;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.archiveList::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual dark slat per row, as in the dashboard track list. */
+.archiveRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.34rem 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  color: var(--xb-text);
+  cursor: pointer;
+  background: var(--xb-slat);
+  border-radius: 1px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.archiveRow:hover {
+  background: rgba(30, 60, 16, 0.7);
+}
+
+/* Selected track: flat black slat, plain white bold text — no glow chrome. */
+.archiveRowActive,
+.archiveRowActive:hover {
+  background: #000;
+  color: #fff;
+}
+
+.archiveNum {
+  flex: none;
+  min-width: 1.4rem;
+}
+
+.archiveRowTitle {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.archiveRowActive .archiveRowTitle {
+  font-weight: 700;
+}
+
+.archiveDraft {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffcc66;
+}
+
+.archiveDate {
+  flex: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--xb-text-dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.archiveRowActive .archiveDate {
+  color: #fff;
+}
+
+/* "More below" arrow, bottom-right of the frame like the dashboard's ▼. */
+.archiveMore {
+  position: absolute;
+  right: 8px;
+  bottom: 4px;
+  z-index: 1;
+  font-size: 0.72rem;
+  line-height: 1;
+  color: #d6ff9e;
+  text-shadow: 0 0 6px rgba(160, 255, 90, 0.5);
+  pointer-events: none;
+  animation: archiveMorePulse 1.6s ease-in-out infinite;
+}
+
+@keyframes archiveMorePulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .button {

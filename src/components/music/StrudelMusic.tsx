@@ -24,6 +24,7 @@ import {
   stamp,
 } from "@/lib/strudel/music-tools";
 import { loadStrudel, type StrudelApi } from "@/lib/strudel/load-strudel";
+import StrudelAssistChat from "@/components/music/StrudelAssistChat";
 import styles from "./StrudelMusic.module.css";
 
 function TreeLeaf({
@@ -72,6 +73,7 @@ export default function StrudelMusic() {
   const [playing, setPlaying] = useState(false);
   const [showUi, setShowUi] = useState(true);
   const [showTree, setShowTree] = useState(true);
+  const [terminalMinimized, setTerminalMinimized] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [panelPos, setPanelPos] = useState({ x: 20, y: 220 });
   const [dragging, setDragging] = useState(false);
@@ -282,6 +284,13 @@ export default function StrudelMusic() {
     downloadText(`strudel-${id}.txt`, text);
   }
 
+  function applyAssistCode(next: string) {
+    setActiveId("assisted");
+    setCode(next);
+    void playCode(next);
+    setToast("Applied assist pattern");
+  }
+
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       e.preventDefault();
@@ -301,7 +310,9 @@ export default function StrudelMusic() {
       ? "Loaded from share URL."
       : activeId === "mutated"
         ? "Dice-mutated numeric values."
-        : "Custom / edited pattern.");
+        : activeId === "assisted"
+          ? "Applied from brahma101 helper."
+          : "Custom / edited pattern.");
 
   return (
     <div className={styles.root}>
@@ -332,6 +343,9 @@ export default function StrudelMusic() {
             </button>
           </div>
           <pre className={styles.errorOverlayBody}>{error}</pre>
+          <p className={styles.errorAssistHint}>
+            Open the brahma101 helper → Fix this
+          </p>
         </div>
       ) : null}
 
@@ -362,16 +376,34 @@ export default function StrudelMusic() {
 
           <div
             ref={terminalRef}
-            className={
-              dragging
-                ? `${styles.terminal} ${styles.terminalDragging}`
-                : styles.terminal
+            className={[
+              styles.terminal,
+              terminalMinimized ? styles.terminalMinimized : "",
+              dragging ? styles.terminalDragging : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            style={
+              terminalMinimized
+                ? undefined
+                : { left: panelPos.x, top: panelPos.y }
             }
-            style={{ left: panelPos.x, top: panelPos.y }}
             onPointerMove={onDragPointerMove}
             onPointerUp={onDragPointerUp}
             onPointerCancel={onDragPointerUp}
           >
+            {terminalMinimized ? (
+              <button
+                type="button"
+                className={styles.terminalDockChip}
+                onClick={() => setTerminalMinimized(false)}
+                aria-label="Open strudel editor"
+              >
+                <span className={styles.dragLabel}>strudel</span>
+                <span className={styles.dragHint}>editor</span>
+              </button>
+            ) : (
+              <>
             <div
               className={styles.dragHandle}
               onPointerDown={onDragPointerDown}
@@ -382,6 +414,14 @@ export default function StrudelMusic() {
               </span>
               <span className={styles.dragLabel}>drag</span>
               <span className={styles.dragHint}>move panel</span>
+              <button
+                type="button"
+                className={styles.minimizeBtn}
+                onClick={() => setTerminalMinimized(true)}
+                aria-label="Minimize editor"
+              >
+                min
+              </button>
             </div>
 
             <div
@@ -586,9 +626,18 @@ export default function StrudelMusic() {
               </a>
               {" · AGPL · H toggles ui · drag to move"}
             </p>
+              </>
+            )}
           </div>
         </div>
       ) : null}
+
+      <StrudelAssistChat
+        code={code}
+        error={error}
+        uiVisible={showUi}
+        onApply={applyAssistCode}
+      />
     </div>
   );
 }

@@ -207,10 +207,40 @@
   touch-action: none;
 }
 
+.terminalMinimized {
+  left: 1.1rem !important;
+  top: auto !important;
+  right: auto;
+  bottom: 1.1rem;
+  width: auto !important;
+  max-width: none;
+  padding: 0;
+}
+
 .terminalDragging {
   border-color: var(--neon);
   box-shadow: 0 0 28px rgba(0, 255, 0, 0.2);
   user-select: none;
+}
+
+.terminalDockChip {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: transparent;
+  padding: 0.45rem 0.65rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.terminalDockChip:hover {
+  background: rgba(0, 255, 0, 0.12);
+}
+
+.terminalDockChip .dragHint {
+  margin-left: 0;
 }
 
 .dragHandle {
@@ -248,6 +278,24 @@
   font-family: var(--font-mono);
   font-size: 0.6rem;
   color: rgba(255, 255, 255, 0.35);
+}
+
+.minimizeBtn {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--neon-dim);
+  background: transparent;
+  color: var(--neon);
+  padding: 0.18rem 0.4rem;
+  cursor: pointer;
+}
+
+.minimizeBtn:hover {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
 }
 
 .terminalBody {
@@ -578,6 +626,13 @@
   font-size: 0.72rem;
   line-height: 1.4;
   color: #ffd0da;
+}
+
+.errorAssistHint {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: rgba(255, 180, 200, 0.75);
 }
 
 .toast {

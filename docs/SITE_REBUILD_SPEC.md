@@ -17,7 +17,7 @@ Condensed from the full Claude brief. **Single source of truth** for structure; 
 - `brahma101.gif`: not dominant on new `/` — About or `/research` context.
 - `/art`: live hydra-synth playground (`src/data/art.ts` + `HydraArt`).
 - `/create-music`: live Strudel playground (`src/data/music.ts` + `StrudelMusic`).
-- Homepage NOW **Livecoding** folder: Create music + Generative art.
+- Homepage LIVE **Livecoding** folder: Create music + Generative art.
 
 ## Execution phases
 
@@ -39,7 +39,8 @@ Condensed from the full Claude brief. **Single source of truth** for structure; 
 
 ### Phase C — Content engine
 
-- MDX (or equivalent) at `/writing`; first real posts; optional newsletter later.
+- **Writing v1 (done direction):** Markdown + GFM at `/writing` + `/writing/[slug]` from `content/writing/{slug}.md`. Git/filesystem is source of truth. Hermes (external) and `/studio` come later. Supabase `posts` unused for now.
+- Optional newsletter later.
 
 ### Deferred (do not build until needed)
 
@@ -64,4 +65,5 @@ Condensed from the full Claude brief. **Single source of truth** for structure; 
 | `src/app/(site)/page.tsx` | Composes homepage |
 | `src/app/(site)/writing/page.tsx` | Writing index stub |
 | `src/app/(site)/research/page.tsx` | Gateway to easter eggs |
-| `content/writing/` | Future MDX/posts (Phase C) |
+| `content/writing/` | Markdown posts (`{slug}.md` + frontmatter) |
+| `src/lib/writing/` | Post loader, frontmatter validation, GFM render |
