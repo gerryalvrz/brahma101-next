@@ -464,6 +464,12 @@ export const homeContent: HomeContent = {
           },
           {
             kind: "file",
+            id: "world-cinema",
+            label: "World Cinema",
+            href: "/cinema",
+          },
+          {
+            kind: "file",
             id: "generative-art",
             label: "Generative Art",
             href: "/art",
