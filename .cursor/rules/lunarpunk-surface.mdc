@@ -1,0 +1,28 @@
+---
+description: Lunarpunk default page surface — use site gradient backdrop unless the route has a custom atmosphere
+alwaysApply: true
+---
+
+# Lunarpunk default surface
+
+**Default backdrop** for new and standard pages (same family as `/cinema`, writing/papers indexes, research, music):
+
+```css
+linear-gradient(135deg, #0f0c29, #032B2D, #24243e)
+```
+
+Tokens live in `src/app/globals.css`:
+
+- `--surface-lunarpunk-1/2/3`
+- painted on `body::before` (+ soft green ambient on `body::after`)
+
+## Rules
+
+1. **New pages inherit this by default.** Do not invent a new flat background or purple/cream AI-slop theme. Leave `body` transparent so the Lunarpunk surface shows.
+2. **Do not change** custom atmospheres:
+   - `/` homepage (Matrix / Xbox dashboard)
+   - `/locognitive` (pure black + own matrix)
+   - `/art`, `/create-music` (black playgrounds)
+   - `/writing/[slug]` terminal reader (unix-magic wallpaper shell)
+3. Prefer CSS variables (`var(--surface-lunarpunk-*)` / `var(--color-bg-*)`) over hardcoding hex when touching shared chrome.
+4. If a page must opt out, cover the viewport locally (opaque `#000` / own canvas) — do not rewrite `globals.css` for one route.

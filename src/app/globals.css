@@ -3,10 +3,22 @@
 @tailwind utilities;
 
 :root {
-  /* Classic brahma101 Matrix system */
-  --color-bg-1: #0f0c29;
-  --color-bg-2: #032b2d;
-  --color-bg-3: #24243e;
+  /*
+   * Lunarpunk default surface — locked design-system backdrop for standard
+   * pages (/cinema, /writing index, /papers, /research, /music, …).
+   * Source: classic brahma101 / Lunarpunkwebsite
+   *   linear-gradient(135deg, #0f0c29, #032B2D, #24243e)
+   *
+   * Do NOT replace this for new standard pages. Custom atmospheres opt out:
+   * home (/), locognitive, art, create-music, writing/[slug] terminal shell.
+   */
+  --surface-lunarpunk-1: #0f0c29;
+  --surface-lunarpunk-2: #032b2d;
+  --surface-lunarpunk-3: #24243e;
+
+  --color-bg-1: var(--surface-lunarpunk-1);
+  --color-bg-2: var(--surface-lunarpunk-2);
+  --color-bg-3: var(--surface-lunarpunk-3);
   --color-primary: #00ff00;
   --color-primary-rgb: 0, 255, 0;
   --color-accent: #ff33cc;
@@ -28,7 +40,7 @@ html {
   scroll-behavior: smooth;
   color-scheme: dark;
   /* Solid fallback so rubber-band / overscroll never flashes white */
-  background-color: var(--color-bg-1);
+  background-color: var(--surface-lunarpunk-1);
   min-height: 100%;
 }
 
@@ -48,23 +60,45 @@ body {
 }
 
 /*
- * Legacy index gradient, as a fixed layer rather than
- * `background-attachment: fixed`. The attachment version re-rasterises the
- * whole backdrop on every scroll frame (badly on Safari/iOS); a fixed element
- * is promoted once and then just composited.
+ * Default Lunarpunk backdrop (fixed layer — avoid background-attachment:fixed
+ * which re-rasterises on every scroll on Safari/iOS).
  */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
   background-image: linear-gradient(
     135deg,
-    var(--color-bg-1),
-    var(--color-bg-2),
-    var(--color-bg-3)
+    var(--surface-lunarpunk-1),
+    var(--surface-lunarpunk-2),
+    var(--surface-lunarpunk-3)
   );
+}
+
+/*
+ * Soft green ambient wells from Lunarpunk `.abstract-shape` — subtle depth
+ * on default pages without stealing focus from content.
+ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse 42% 36% at 18% 18%,
+      rgba(0, 255, 0, 0.14),
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse 38% 42% at 82% 78%,
+      rgba(0, 180, 80, 0.1),
+      transparent 58%
+    );
+  opacity: 0.85;
 }
 
 a {

@@ -1,45 +1,37 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { bestOfGenre, bestOfSubgenre } from "@/data/cinema/bestOf";
 import { cinemaContent } from "@/data/cinema/content";
 import { cinemaCountries } from "@/data/cinema/countries";
+import { getSubgenreById } from "@/data/cinema/subgenres";
 import {
-  cinemaPresets,
-  defaultCinemaPresetId,
-  type CinemaPreset,
-} from "@/data/cinema/presets";
-import {
-  getSubgenreById,
-  type CinemaSubgenre,
-} from "@/data/cinema/subgenres";
+  CINEMA_DEFAULT_MIN_RATING,
+  CINEMA_DEFAULT_MIN_VOTES,
+  CINEMA_DEFAULT_SORT,
+  CINEMA_DEFAULT_TOP,
+} from "@/lib/cinema/filters";
 import type {
   CinemaDiscoverResponse,
   CinemaGenre,
   CinemaMovieSummary,
 } from "@/lib/cinema/types";
-import CinemaBrowse from "./CinemaBrowse";
 import CinemaFilters, {
   type CinemaFilterState,
 } from "./CinemaFilters";
-import CinemaPresets from "./CinemaPresets";
 import MovieCard from "./MovieCard";
 import MovieDetailModal from "./MovieDetailModal";
 import styles from "./cinema.module.css";
 
-function presetToFilters(preset: CinemaPreset): CinemaFilterState {
-  const f = preset.filters;
-  return {
-    genreId: f.genreId ?? "",
-    subgenreId: f.subgenreId ?? "",
-    country: f.country ?? "",
-    decade: f.decade ?? "",
-    minRating: f.minRating ?? 0,
-    minVotes: f.minVotes ?? 200,
-    sort: f.sort ?? "brahma",
-    top: f.top ?? 100,
-  };
-}
+const DEFAULT_FILTERS: CinemaFilterState = {
+  genreId: "",
+  subgenreId: "",
+  country: "",
+  decade: "",
+  minRating: CINEMA_DEFAULT_MIN_RATING,
+  minVotes: CINEMA_DEFAULT_MIN_VOTES,
+  sort: CINEMA_DEFAULT_SORT,
+  top: CINEMA_DEFAULT_TOP,
+};
 
 function filtersToQuery(filters: CinemaFilterState, page: number): string {
   const params = new URLSearchParams();
@@ -106,19 +98,8 @@ type Props = {
 };
 
 export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
-  const defaultPreset =
-    cinemaPresets.find((p) => p.id === defaultCinemaPresetId) ??
-    cinemaPresets[0];
-
-  const [filters, setFilters] = useState<CinemaFilterState>(() =>
-    presetToFilters(defaultPreset)
-  );
-  const [applied, setApplied] = useState<CinemaFilterState>(() =>
-    presetToFilters(defaultPreset)
-  );
-  const [activePresetId, setActivePresetId] = useState<string | null>(
-    defaultCinemaPresetId
-  );
+  const [filters, setFilters] = useState<CinemaFilterState>(DEFAULT_FILTERS);
+  const [applied, setApplied] = useState<CinemaFilterState>(DEFAULT_FILTERS);
   const [genres] = useState<CinemaGenre[]>(initialGenres);
   const [movies, setMovies] = useState<CinemaMovieSummary[]>([]);
   const [page, setPage] = useState(1);
@@ -129,12 +110,9 @@ export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [selected, setSelected] = useState<CinemaMovieSummary | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [filtersOpen, setFiltersOpen] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
-  const filtersRef = useRef<HTMLElement | null>(null);
-  const chartRef = useRef<HTMLElement | null>(null);
 
   const fetchPage = useCallback(
     async (filterState: CinemaFilterState, pageNum: number, append: boolean) => {
@@ -186,36 +164,9 @@ export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
     return () => abortRef.current?.abort();
   }, [applied, fetchPage]);
 
-  const applyChart = (preset: CinemaPreset) => {
-    const next = presetToFilters(preset);
-    setFilters(next);
-    setActivePresetId(preset.id);
-    setPage(1);
-    setApplied(next);
-    requestAnimationFrame(() => {
-      chartRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  };
-
   const applyFilters = () => {
-    setActivePresetId(null);
     setPage(1);
     setApplied({ ...filters });
-  };
-
-  const onSelectGenre = (genre: CinemaGenre) => {
-    applyChart(bestOfGenre(genre));
-  };
-
-  const onSelectSubgenre = (sub: CinemaSubgenre) => {
-    applyChart(bestOfSubgenre(sub));
-  };
-
-  const openRefine = () => {
-    setFiltersOpen(true);
-    requestAnimationFrame(() => {
-      filtersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
   };
 
   const canLoadMore = page < totalPages && !loading && !loadingMore && !error;
@@ -243,49 +194,10 @@ export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
 
   return (
     <div className={styles.explorer}>
-      <section className={styles.section} aria-labelledby="cinema-presets">
-        <h2 id="cinema-presets" className={styles.sectionTitle}>
-          {cinemaContent.presetsHeading}
+      <section className={styles.section} aria-labelledby="cinema-filters">
+        <h2 id="cinema-filters" className={styles.sectionTitle}>
+          {cinemaContent.filtersHeading}
         </h2>
-        <CinemaPresets
-          activeId={activePresetId}
-          onSelect={applyChart}
-          disabled={loading}
-        />
-      </section>
-
-      <section className={styles.section} aria-labelledby="cinema-browse">
-        <h2 id="cinema-browse" className={styles.sectionTitle}>
-          {cinemaContent.browseHeading}
-        </h2>
-        <CinemaBrowse
-          genres={genres}
-          activeGenreId={applied.genreId}
-          activeSubgenreId={applied.subgenreId || null}
-          onSelectGenre={onSelectGenre}
-          onSelectSubgenre={onSelectSubgenre}
-          disabled={loading || !hasApiKey}
-        />
-      </section>
-
-      <section
-        ref={filtersRef}
-        className={styles.section}
-        aria-labelledby="cinema-filters"
-        hidden={!filtersOpen}
-      >
-        <div className={styles.filtersHeader}>
-          <h2 id="cinema-filters" className={styles.sectionTitle}>
-            {cinemaContent.filtersHeading}
-          </h2>
-          <button
-            type="button"
-            className={styles.collapseBtn}
-            onClick={() => setFiltersOpen(false)}
-          >
-            Hide filters
-          </button>
-        </div>
         <CinemaFilters
           value={filters}
           genres={genres}
@@ -293,14 +205,22 @@ export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
           onApply={applyFilters}
           disabled={loading || !hasApiKey}
         />
-        <p className={styles.scoreHint}>{cinemaContent.scoreHint}</p>
       </section>
 
-      <section
-        ref={chartRef}
-        className={styles.section}
-        aria-labelledby="cinema-chart-title"
-      >
+      <aside className={styles.brahmaCard} aria-labelledby="brahma-score-title">
+        <h2 id="brahma-score-title" className={styles.brahmaTitle}>
+          {cinemaContent.brahmaTitle}
+        </h2>
+        <p className={styles.brahmaLead}>{cinemaContent.brahmaLead}</p>
+        <ul className={styles.brahmaList}>
+          {cinemaContent.brahmaPoints.map((point) => (
+            <li key={point}>{point}</li>
+          ))}
+        </ul>
+        <p className={styles.brahmaExample}>{cinemaContent.brahmaExample}</p>
+      </aside>
+
+      <section className={styles.section} aria-labelledby="cinema-chart-title">
         <p className={styles.chartEyebrow}>
           {chartEyebrow(applied, genres)}
         </p>
@@ -308,8 +228,8 @@ export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
           {loading && movies.length === 0 ? "Loading chart…" : chartTitle}
         </h2>
         <p className={styles.chartSub}>
-          Ranked by Brahma Score — strong ratings with vote confidence, no
-          Hollywood popularity boost.
+          Sorted by Brahma Score — trust for deep consensus, gem lift for
+          strong under-seen films. Lower Min votes to hunt deeper.
         </p>
 
         <div className={styles.chartToolbar}>
@@ -320,13 +240,6 @@ export default function CinemaExplorer({ initialGenres, hasApiKey }: Props) {
                 ? "…"
                 : `${totalResults} Titles`}
           </p>
-          <button
-            type="button"
-            className={styles.refineLink}
-            onClick={openRefine}
-          >
-            Refine and expand results →
-          </button>
         </div>
 
         {error ? (

@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { CinemaDiscoverFilters, CinemaSort } from "@/lib/cinema/types";
 
 export const CINEMA_PAGE_SIZE = 20;
-export const CINEMA_DEFAULT_MIN_VOTES = 200;
+export const CINEMA_DEFAULT_MIN_VOTES = 50;
 export const CINEMA_DEFAULT_MIN_RATING = 0;
 export const CINEMA_DEFAULT_SORT: CinemaSort = "brahma";
 export const CINEMA_DEFAULT_TOP = 100;
@@ -62,6 +62,14 @@ export function normalizeDiscoverFilters(
 export const cinemaDecades: number[] = [
   2020, 2010, 2000, 1990, 1980, 1970, 1960, 1950, 1940, 1930, 1920,
 ];
+
+/** Preset floors for the Min votes filter (select, not free number). */
+export const cinemaMinVoteOptions: number[] = [
+  0, 50, 100, 200, 500, 1000, 2500, 5000,
+];
+
+/** Preset caps for Top N. */
+export const cinemaTopOptions: number[] = [20, 50, 100, 200];
 
 export function decadeRange(decade: number): {
   gte: string;

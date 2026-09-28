@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import Image from "next/image";
 import type { CinemaMovieDetail, CinemaMovieSummary } from "@/lib/cinema/types";
+import { yandexWatchSearchUrl } from "@/lib/cinema/yandexWatch";
 import styles from "./cinema.module.css";
 
 type Props = {
@@ -203,14 +204,28 @@ export default function MovieDetailModal({ movie, open, onClose }: Props) {
               </div>
             ) : null}
 
-            <a
-              href={view.tmdbUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.externalLink}
-            >
-              View on TMDB →
-            </a>
+            <div className={styles.watchActions}>
+              <a
+                href={yandexWatchSearchUrl({
+                  title: view.title,
+                  year: view.year,
+                  director: view.director,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.watchLink}
+              >
+                Watch online (Yandex) →
+              </a>
+              <a
+                href={view.tmdbUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.externalLink}
+              >
+                View on TMDB →
+              </a>
+            </div>
           </div>
         </div>
       </div>

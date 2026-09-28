@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={vt323.variable}>
-      <body className="min-h-screen overflow-y-auto bg-[var(--color-bg-1)]">
+      <body className="min-h-screen overflow-y-auto">
         {children}
       </body>
     </html>

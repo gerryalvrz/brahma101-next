@@ -31,7 +31,7 @@ Personal site of Gerry Alvarez / **brahma101.eth** — [brahma101.cyou](https://
 
 `TerminalTyper` exists as a leftover component; it is **not** mounted on `/`.
 
-**Visual system:** neon `#00ff00` / lime-yellow selection, gradient `#0f0c29 → #032B2D → #24243e`, **VT323** display + **Courier New** body, glass blades, outline buttons that invert on hover. Homepage CSS: `src/app/(site)/home.module.css`.
+**Visual system (Lunarpunk default surface):** neon `#00ff00` / lime-yellow selection, locked backdrop `linear-gradient(135deg, #0f0c29, #032B2D, #24243e)` via `--surface-lunarpunk-*` in `src/app/globals.css` (`body::before` + soft ambient). **VT323** display + **Courier New** body, glass blades, outline buttons that invert on hover. **New standard pages inherit this surface** — do not invent alternate flat BGs. Homepage has its own Matrix/Xbox atmosphere (`home.module.css`); also custom: `/locognitive`, `/art`, `/create-music`, `/writing/[slug]` terminal shell.
 
 ## Routes (IA)
 
@@ -42,6 +42,7 @@ Personal site of Gerry Alvarez / **brahma101.eth** — [brahma101.cyou](https://
 | `/writing/[slug]` | Terminal reader | same |
 | `/papers` | Research PDF index | `content/papers/*.md` + `public/papers/*.pdf` |
 | `/papers/[slug]` | PDF reader | same |
+| `/cinema` | World Cinema Explorer (TMDB + Brahma Score) | `src/data/cinema/` + `CinemaExplorer` |
 | `/art` | Live hydra-synth playground | `src/data/art.ts` + `HydraArt` |
 | `/create-music` | Live Strudel playground | `src/data/music.ts` + `StrudelMusic` |
 | `/research` | Quiet gateway to rabbit holes | `research/page.tsx` |

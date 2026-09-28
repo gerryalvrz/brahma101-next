@@ -1,8 +1,15 @@
 "use client";
 
 import { cinemaCountries } from "@/data/cinema/countries";
-import { cinemaSubgenres } from "@/data/cinema/subgenres";
-import { cinemaDecades } from "@/lib/cinema/filters";
+import {
+  cinemaSubgenreGroups,
+  cinemaSubgenres,
+} from "@/data/cinema/subgenres";
+import {
+  cinemaDecades,
+  cinemaMinVoteOptions,
+  cinemaTopOptions,
+} from "@/lib/cinema/filters";
 import type { CinemaGenre, CinemaSort } from "@/lib/cinema/types";
 import styles from "./cinema.module.css";
 
@@ -32,6 +39,8 @@ const SORT_OPTIONS: { value: CinemaSort; label: string }[] = [
   { value: "year", label: "Year" },
 ];
 
+const MIN_RATING_OPTIONS = [0, 5, 6, 6.5, 7, 7.5, 8];
+
 export default function CinemaFilters({
   value,
   genres,
@@ -43,6 +52,20 @@ export default function CinemaFilters({
     key: K,
     next: CinemaFilterState[K]
   ) => onChange({ ...value, [key]: next });
+
+  const minVotesValue = cinemaMinVoteOptions.includes(value.minVotes)
+    ? value.minVotes
+    : cinemaMinVoteOptions.reduce((prev, cur) =>
+        Math.abs(cur - value.minVotes) < Math.abs(prev - value.minVotes)
+          ? cur
+          : prev
+      );
+
+  const topValue = cinemaTopOptions.includes(value.top)
+    ? value.top
+    : cinemaTopOptions.reduce((prev, cur) =>
+        Math.abs(cur - value.top) < Math.abs(prev - value.top) ? cur : prev
+      );
 
   return (
     <form
@@ -57,10 +80,7 @@ export default function CinemaFilters({
         <select
           value={value.genreId === "" ? "" : String(value.genreId)}
           onChange={(e) =>
-            set(
-              "genreId",
-              e.target.value ? Number(e.target.value) : ""
-            )
+            set("genreId", e.target.value ? Number(e.target.value) : "")
           }
           disabled={disabled}
         >
@@ -81,10 +101,16 @@ export default function CinemaFilters({
           disabled={disabled}
         >
           <option value="">Any</option>
-          {cinemaSubgenres.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
+          {cinemaSubgenreGroups.map((group) => (
+            <optgroup key={group.id} label={group.label}>
+              {cinemaSubgenres
+                .filter((s) => s.group === group.id)
+                .map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.label}
+                  </option>
+                ))}
+            </optgroup>
           ))}
         </select>
       </label>
@@ -125,28 +151,32 @@ export default function CinemaFilters({
 
       <label className={styles.field}>
         <span>Min rating</span>
-        <input
-          type="number"
-          min={0}
-          max={10}
-          step={0.5}
-          value={value.minRating}
-          onChange={(e) => set("minRating", Number(e.target.value) || 0)}
+        <select
+          value={String(value.minRating)}
+          onChange={(e) => set("minRating", Number(e.target.value))}
           disabled={disabled}
-        />
+        >
+          {MIN_RATING_OPTIONS.map((n) => (
+            <option key={n} value={n}>
+              {n === 0 ? "Any" : `${n}+`}
+            </option>
+          ))}
+        </select>
       </label>
 
       <label className={styles.field}>
         <span>Min votes</span>
-        <input
-          type="number"
-          min={0}
-          max={50000}
-          step={10}
-          value={value.minVotes}
-          onChange={(e) => set("minVotes", Number(e.target.value) || 0)}
+        <select
+          value={String(minVotesValue)}
+          onChange={(e) => set("minVotes", Number(e.target.value))}
           disabled={disabled}
-        />
+        >
+          {cinemaMinVoteOptions.map((n) => (
+            <option key={n} value={n}>
+              {n === 0 ? "Any" : `${n.toLocaleString()}+`}
+            </option>
+          ))}
+        </select>
       </label>
 
       <label className={styles.field}>
@@ -166,15 +196,17 @@ export default function CinemaFilters({
 
       <label className={styles.field}>
         <span>Top N</span>
-        <input
-          type="number"
-          min={20}
-          max={500}
-          step={20}
-          value={value.top}
-          onChange={(e) => set("top", Number(e.target.value) || 100)}
+        <select
+          value={String(topValue)}
+          onChange={(e) => set("top", Number(e.target.value))}
           disabled={disabled}
-        />
+        >
+          {cinemaTopOptions.map((n) => (
+            <option key={n} value={n}>
+              Top {n}
+            </option>
+          ))}
+        </select>
       </label>
 
       <div className={styles.filterActions}>

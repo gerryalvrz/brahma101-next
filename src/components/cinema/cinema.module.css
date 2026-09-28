@@ -28,6 +28,52 @@
   max-width: 42rem;
 }
 
+/* ---- Brahma Score explainer ---- */
+
+.brahmaCard {
+  margin-top: 1.5rem;
+  padding: 1.15rem 1.2rem 1.25rem;
+  border: 1px solid rgba(184, 255, 64, 0.28);
+  border-radius: 8px;
+  background: rgba(0, 20, 8, 0.55);
+  box-shadow: 0 0 18px rgba(184, 255, 64, 0.08);
+}
+
+.brahmaTitle {
+  margin: 0;
+  font-family: var(--font-display), monospace;
+  font-size: 1.35rem;
+  color: #b8ff40;
+  text-shadow: 0 0 10px rgba(184, 255, 64, 0.25);
+}
+
+.brahmaLead {
+  margin: 0.55rem 0 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(230, 255, 230, 0.88);
+  max-width: 42rem;
+}
+
+.brahmaList {
+  margin: 0.75rem 0 0;
+  padding-left: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(200, 230, 200, 0.8);
+}
+
+.brahmaExample {
+  margin: 0.85rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.4;
+  color: rgba(184, 255, 64, 0.85);
+}
+
 /* ---- Presets ---- */
 
 .presets {
@@ -775,6 +821,44 @@
 .externalLink:hover {
   color: var(--color-accent);
   border-bottom-color: var(--color-accent);
+}
+
+.watchActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  margin-top: 1rem;
+}
+
+.watchLink {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display), monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.03em;
+  padding: 0.5rem 0.9rem;
+  color: #041018;
+  background: #b8ff40;
+  border: 2px solid #b8ff40;
+  border-radius: 5px;
+  text-decoration: none;
+  box-shadow: 0 0 14px rgba(184, 255, 64, 0.35);
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.watchLink:hover {
+  background: transparent;
+  color: #b8ff40;
+  box-shadow: 0 0 18px rgba(184, 255, 64, 0.45);
+}
+
+.watchActions .externalLink {
+  margin-top: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {

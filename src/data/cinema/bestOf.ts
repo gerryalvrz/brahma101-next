@@ -33,7 +33,7 @@ export const featuredCinemaPresets: CinemaPreset[] = [
     description: "Global films ranked by Brahma Score — no Hollywood boost.",
     filters: {
       sort: "brahma",
-      minVotes: 200,
+      minVotes: 50,
       minRating: 0,
       top: BEST_OF_TOP,
     },
