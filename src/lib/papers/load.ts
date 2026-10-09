@@ -7,10 +7,6 @@ import type { Paper, PaperMeta } from "./types";
 const CONTENT_DIR = path.join(process.cwd(), "content", "papers");
 const PUBLIC_PDF_DIR = path.join(process.cwd(), "public", "papers");
 
-function isProduction(): boolean {
-  return process.env.NODE_ENV === "production";
-}
-
 function listMarkdownFiles(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) {
     return [];
@@ -53,12 +49,9 @@ export function getAllPapers(): Paper[] {
   return papers.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
+/** Papers visible on the site. Drafts are always hidden. */
 export function getVisiblePapers(): Paper[] {
-  const papers = getAllPapers();
-  if (isProduction()) {
-    return papers.filter((paper) => !paper.draft);
-  }
-  return papers;
+  return getAllPapers().filter((paper) => !paper.draft);
 }
 
 export function getVisiblePaperMetas(): PaperMeta[] {

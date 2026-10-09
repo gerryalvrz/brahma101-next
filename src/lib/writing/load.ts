@@ -6,10 +6,6 @@ import type { WritingPost, WritingPostMeta } from "./types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "writing");
 
-function isProduction(): boolean {
-  return process.env.NODE_ENV === "production";
-}
-
 function listMarkdownFiles(): string[] {
   if (!fs.existsSync(CONTENT_DIR)) {
     return [];
@@ -44,16 +40,9 @@ export function getAllWritingPosts(): WritingPost[] {
   return posts.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
-/**
- * Posts visible on the site.
- * Drafts are hidden when NODE_ENV === "production".
- */
+/** Posts visible on the site. Drafts are always hidden. */
 export function getVisibleWritingPosts(): WritingPost[] {
-  const posts = getAllWritingPosts();
-  if (isProduction()) {
-    return posts.filter((post) => !post.draft);
-  }
-  return posts;
+  return getAllWritingPosts().filter((post) => !post.draft);
 }
 
 export function getVisibleWritingPostMetas(): WritingPostMeta[] {

@@ -16,10 +16,15 @@ date: "2026-08-19"
 summary: "One or two sentences for the ARCHIVE list and OG."
 tags:
   - research
-draft: false
+draft: false         # true = hidden everywhere (local + production)
 ---
 
 Optional abstract (GFM). The PDF is served from `/papers/{slug}.pdf`.
 ```
+
+### Visibility
+
+- `draft: true` → **hidden everywhere** (local, preview, production)
+- `draft: false` → published everywhere
 
 `README.md` in this folder is not a paper.

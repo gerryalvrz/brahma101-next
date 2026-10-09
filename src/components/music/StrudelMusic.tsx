@@ -25,6 +25,8 @@ import {
 } from "@/lib/strudel/music-tools";
 import { loadStrudel, type StrudelApi } from "@/lib/strudel/load-strudel";
 import StrudelAssistChat from "@/components/music/StrudelAssistChat";
+import ParamDashboard from "@/components/livecoding/ParamDashboard";
+import { strudelParamCatalog } from "@/lib/livecoding/strudel-params";
 import styles from "./StrudelMusic.module.css";
 
 function TreeLeaf({
@@ -80,6 +82,7 @@ export default function StrudelMusic() {
   const terminalRef = useRef<HTMLDivElement>(null);
   const dragOffset = useRef({ x: 0, y: 0 });
   const draggingRef = useRef(false);
+  const paramRunTimer = useRef<number | null>(null);
   const [openFolders, setOpenFolders] = useState({
     music: true,
     lessons: true,
@@ -211,14 +214,14 @@ export default function StrudelMusic() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  async function playCode(source: string) {
+  async function playCode(source: string, opts?: { quiet?: boolean }) {
     const api = apiRef.current;
     if (!api || !ready) return;
     try {
       await api.evaluate(source);
       setPlaying(true);
       setError(null);
-      setToast(musicContent.toastPlay);
+      if (!opts?.quiet) setToast(musicContent.toastPlay);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       setError(message);
@@ -290,6 +293,20 @@ export default function StrudelMusic() {
     void playCode(next);
     setToast("Applied assist pattern");
   }
+
+  function onParamCodeChange(next: string) {
+    setCode(next);
+    if (paramRunTimer.current) window.clearTimeout(paramRunTimer.current);
+    paramRunTimer.current = window.setTimeout(() => {
+      void playCode(next, { quiet: true });
+    }, 90);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (paramRunTimer.current) window.clearTimeout(paramRunTimer.current);
+    };
+  }, []);
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
@@ -631,6 +648,16 @@ export default function StrudelMusic() {
           </div>
         </div>
       ) : null}
+
+      <ParamDashboard
+        code={code}
+        catalog={strudelParamCatalog}
+        uiVisible={showUi}
+        ready={ready}
+        title="params"
+        emptyHint="No numeric knobs yet. Try .gain(0.5), .lpf(800), or setcpm(90) — then tweak from here."
+        onCodeChange={onParamCodeChange}
+      />
 
       <StrudelAssistChat
         code={code}

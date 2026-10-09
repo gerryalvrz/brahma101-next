@@ -26,6 +26,8 @@ import {
   stamp,
 } from "@/lib/hydra/art-tools";
 import HydraAssistChat from "@/components/art/HydraAssistChat";
+import ParamDashboard from "@/components/livecoding/ParamDashboard";
+import { hydraParamCatalog } from "@/lib/livecoding/hydra-params";
 import styles from "./HydraArt.module.css";
 
 function TreeLeaf({
@@ -82,6 +84,7 @@ export default function HydraArt() {
   const terminalRef = useRef<HTMLDivElement>(null);
   const dragOffset = useRef({ x: 0, y: 0 });
   const draggingRef = useRef(false);
+  const paramRunTimer = useRef<number | null>(null);
   const [openFolders, setOpenFolders] = useState({
     art: true,
     lessons: true,
@@ -395,6 +398,20 @@ export default function HydraArt() {
     void runCode(next);
     setToast("Applied assist sketch");
   }
+
+  function onParamCodeChange(next: string) {
+    setCode(next);
+    if (paramRunTimer.current) window.clearTimeout(paramRunTimer.current);
+    paramRunTimer.current = window.setTimeout(() => {
+      void runCode(next);
+    }, 90);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (paramRunTimer.current) window.clearTimeout(paramRunTimer.current);
+    };
+  }, []);
 
   const active = findArtSnippet(activeId);
   const blurb =
@@ -722,6 +739,16 @@ export default function HydraArt() {
           </div>
         </div>
       ) : null}
+
+      <ParamDashboard
+        code={code}
+        catalog={hydraParamCatalog}
+        uiVisible={showUi}
+        ready={ready}
+        title="params"
+        emptyHint="No numeric knobs yet. Try a lesson like osc(60, 0.1).out() — then tweak from here."
+        onCodeChange={onParamCodeChange}
+      />
 
       <HydraAssistChat
         code={code}

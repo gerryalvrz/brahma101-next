@@ -58,7 +58,7 @@ Homepage LIVE **Locognitive** → D.E.S. (`/locognitive`) + Images + Generative 
 
 ## Writing / ARCHIVE
 
-File-based Markdown + GFM. Filename = slug. Frontmatter: `title`, `date` (YYYY-MM-DD), `summary`, `tags`, `draft`. Drafts hidden in production. Supabase `posts` unused.
+File-based Markdown + GFM. Filename = slug. Frontmatter: `title`, `date` (YYYY-MM-DD), `summary`, `tags`, `draft`. Drafts hidden everywhere (local + production). Supabase `posts` unused.
 
 **Papers:** `content/papers/{slug}.md` + matching `public/papers/{slug}.pdf`. Same frontmatter. Loader: `src/lib/papers/`.
 

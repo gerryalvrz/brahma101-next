@@ -37,10 +37,10 @@ Body.
 
 ### Visibility
 
-| `draft` | Local / `next dev` | Production |
-|---------|--------------------|------------|
-| `true`  | listed + readable  | hidden (`notFound`) |
-| `false` | listed + readable  | listed + readable |
+| `draft` | Local / preview / production |
+|---------|------------------------------|
+| `true`  | **hidden everywhere** (`notFound` if URL guessed) |
+| `false` | listed + readable |
 
 Invalid slug or frontmatter **throws at load time** and can break `/`, `/writing`, and `/writing/[slug]`. Validate before saving.
 
@@ -50,9 +50,9 @@ Invalid slug or frontmatter **throws at load time** and can break `/`, `/writing
 
 Loader: `src/lib/writing/` (`schema.ts` + `load.ts`). Renderer: `marked` GFM (`markdown.ts`).
 
-Rendered on the post page: `title`, `date`, `summary`, `tags`, `draft` badge (dev only), body HTML.
+Rendered on the post page: `title`, `date`, `summary`, `tags`, body HTML. Drafts never appear, so no draft badge.
 
-Homepage ARCHIVE list shows only `title`, `date`, and a draft badge. It does **not** show `summary` or tags.
+Homepage ARCHIVE list shows only `title` and `date` for published posts. It does **not** show `summary` or tags.
 
 Extra YAML keys (existing posts have `series` and `part`) are **ignored by the schema**. Do not add them expecting UI. Do not strip them from existing files unless asked.
 

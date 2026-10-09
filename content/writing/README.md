@@ -21,7 +21,7 @@ summary: "One or two sentences for the index and OG description."
 tags:
   - agents
   - web3
-draft: false         # true = hidden when NODE_ENV=production
+draft: false         # true = hidden everywhere (local + production)
 ---
 
 Body in Markdown (GFM).
@@ -29,7 +29,7 @@ Body in Markdown (GFM).
 
 ### Visibility
 
-- `draft: true` → shown in local/dev, **hidden in production**
+- `draft: true` → **hidden everywhere** (local, preview, production)
 - `draft: false` → published everywhere
 
 ### Ignored files
