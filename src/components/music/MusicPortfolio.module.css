@@ -1,0 +1,244 @@
+.root {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  color: var(--color-primary);
+  font-family: var(--font-mono);
+}
+
+.bg {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: min(72vw, 52rem);
+  height: min(72vh, 36rem);
+  transform: translate(-50%, -50%) scale(1.15);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+  filter: saturate(1.05) contrast(1.05);
+  mask-image: radial-gradient(ellipse at center, #000 35%, transparent 78%);
+  -webkit-mask-image: radial-gradient(
+    ellipse at center,
+    #000 35%,
+    transparent 78%
+  );
+}
+
+.bgPlaceholder {
+  background-image: linear-gradient(
+    135deg,
+    rgba(0, 255, 80, 0.2),
+    rgba(3, 43, 45, 0.95) 45%,
+    rgba(36, 36, 62, 0.9)
+  );
+}
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 20%,
+    rgba(0, 0, 0, 0.55) 75%
+  );
+}
+
+.main {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 4.5rem 1.25rem 7.5rem;
+  box-sizing: border-box;
+  max-width: 56rem;
+  margin: 0 auto;
+}
+
+.mainHasActive .item:not(.active) {
+  opacity: 0.28;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr) 7rem 8rem 3.5rem;
+  gap: 0.5rem 0.75rem;
+  align-items: baseline;
+  padding: 0.55rem 0.35rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: opacity 0.25s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.item:hover,
+.item.active {
+  border-color: rgba(0, 255, 0, 0.35);
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.cell {
+  font-family: var(--font-display), monospace;
+  font-size: clamp(0.85rem, 2.2vw, 1.15rem);
+  line-height: 1.2;
+  color: rgba(0, 255, 0, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.album {
+  color: #fff;
+}
+
+.muted {
+  font-family: var(--font-mono);
+  font-size: clamp(0.65rem, 1.6vw, 0.8rem);
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.corners {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.corner {
+  position: absolute;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(0, 255, 0, 0.55);
+  pointer-events: auto;
+}
+
+.topLeft {
+  top: 1.1rem;
+  left: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.square {
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 1px solid var(--color-primary);
+  box-shadow: 0 0 8px rgba(0, 255, 0, 0.35);
+}
+
+.topRight {
+  top: 1.1rem;
+  right: 1.1rem;
+}
+
+.topRight a {
+  color: rgba(0, 255, 0, 0.55);
+  text-decoration: none;
+}
+
+.topRight a:hover {
+  color: var(--color-primary);
+}
+
+.bottomLeft {
+  bottom: 1.1rem;
+  left: 1.1rem;
+}
+
+.bottomRight {
+  bottom: 1.1rem;
+  right: 1.1rem;
+}
+
+.blink {
+  animation: musicBlink 1s step-end infinite;
+}
+
+@keyframes musicBlink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: 2.5rem;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: min(96vw, 46rem);
+  pointer-events: auto;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 720px) {
+  .item {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "artist year"
+      "album album"
+      "meta meta";
+  }
+
+  .artist {
+    grid-area: artist;
+  }
+
+  .album {
+    grid-area: album;
+  }
+
+  .year {
+    grid-area: year;
+    text-align: right;
+  }
+
+  .category,
+  .label {
+    grid-area: meta;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .bottomLeft,
+  .bottomRight {
+    bottom: calc(2.75rem + 5.5rem);
+  }
+}
