@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import type { MusicSet } from "@/data/sets";
-import { setYear, setsContent } from "@/data/sets";
+import { formatSetDate, setsContent } from "@/data/sets";
 import {
   MUSIC_VIZ_OFF,
   musicVizContent,
@@ -91,7 +91,7 @@ function ProjectRow({
     album: set.title,
     category: set.category ?? "DJ SET",
     label: set.label ?? "Metacognitive Music",
-    year: setYear(set),
+    year: formatSetDate(set),
   };
   const revealed = {
     ...resting,
@@ -184,7 +184,13 @@ function ProjectRow({
 }
 
 export default function MusicPortfolio({ sets }: { sets: MusicSet[] }) {
-  const { playSet, current: nowPlaying } = useMusicPlayer();
+  const {
+    playSet,
+    openDock,
+    current: nowPlaying,
+    dockOpen,
+    playbackReady,
+  } = useMusicPlayer();
   const [activeIndex, setActiveIndex] = useState(-1);
   const [bgUrl, setBgUrl] = useState<string | undefined>();
   const [bgVisible, setBgVisible] = useState(false);
@@ -196,14 +202,18 @@ export default function MusicPortfolio({ sets }: { sets: MusicSet[] }) {
   const idleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const idleTl = useRef<gsap.core.Timeline | null>(null);
 
-  /** Always show a dock on /music — first playable set, no forced autoplay. */
+  /** On /music, open the dock at the saved position (or first set). */
   useEffect(() => {
-    if (seeded.current) return;
+    if (!playbackReady || seeded.current) return;
     seeded.current = true;
-    if (nowPlaying) return;
+    if (dockOpen) return;
+    if (nowPlaying) {
+      openDock();
+      return;
+    }
     const first = sets.find((s) => s.audioUrl) ?? sets[0];
     if (first) playSet(first, { autoplay: false });
-  }, [sets, playSet, nowPlaying]);
+  }, [playbackReady, sets, playSet, openDock, nowPlaying, dockOpen]);
 
   useEffect(() => {
     sets.forEach((s) => {

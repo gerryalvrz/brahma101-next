@@ -13,7 +13,7 @@ tags:
   - e8
   - systems
   - graphs
-draft: false
+draft: true
 ---
 
 Nunca pensé mis proyectos como empresas completamente separadas.

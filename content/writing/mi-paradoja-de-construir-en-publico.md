@@ -11,7 +11,7 @@ tags:
   - publishing
   - entrepreneurship
   - brahma101
-draft: false
+draft: true
 ---
 
 Creo profundamente en open source.

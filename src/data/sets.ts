@@ -69,3 +69,10 @@ export const musicSets: MusicSet[] = [
 export function setYear(set: MusicSet): string {
   return set.date.slice(0, 4);
 }
+
+/** Display date for list / dock — day · month · year of upload. */
+export function formatSetDate(set: MusicSet): string {
+  const [y, m, d] = set.date.split("-");
+  if (!y || !m || !d) return set.date;
+  return `${d}.${m}.${y}`;
+}

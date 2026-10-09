@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { MusicSet } from "@/data/sets";
-import { setYear } from "@/data/sets";
+import { formatSetDate } from "@/data/sets";
 import {
   bindMediaSession,
   requestPlaybackAudioSession,
@@ -37,28 +37,42 @@ export default function SetPlayer({
   onAudioReady,
   onBeforePlay,
   onClose,
+  onPosition,
+  onPlayingChange,
   playNonce = 0,
+  startAt = 0,
 }: {
   set: MusicSet;
   /** Fired when the HTMLAudioElement is created (for Hydra FFT bridge). */
   onAudioReady?: (audio: HTMLAudioElement) => void;
   /** Resume AudioContext before play (user gesture). */
   onBeforePlay?: () => void | Promise<void>;
-  /** Hide + stop (persistent dock close). */
+  /** Hide dock UI — audio keeps playing. */
   onClose?: () => void;
+  /** Throttled time updates for localStorage resume. */
+  onPosition?: (seconds: number) => void;
+  onPlayingChange?: (playing: boolean) => void;
   /** Bumps when the user picks a set — triggers autoplay once ready. */
   playNonce?: number;
+  /** Resume playback head (seconds). */
+  startAt?: number;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
   const onAudioReadyRef = useRef(onAudioReady);
   const onBeforePlayRef = useRef(onBeforePlay);
+  const onPositionRef = useRef(onPosition);
+  const onPlayingChangeRef = useRef(onPlayingChange);
   onAudioReadyRef.current = onAudioReady;
   onBeforePlayRef.current = onBeforePlay;
+  onPositionRef.current = onPosition;
+  onPlayingChangeRef.current = onPlayingChange;
   const pendingAutoplay = useRef(false);
+  const appliedStart = useRef(false);
+  const lastSavedAt = useRef(0);
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(() => Math.max(0, startAt));
   const [duration, setDuration] = useState(set.durationSec);
   const [volume, setVolume] = useState(0.85);
   const [muted, setMuted] = useState(false);
@@ -87,26 +101,52 @@ export default function SetPlayer({
     audio.src = set.audioUrl;
     audioRef.current = audio;
     onAudioReadyRef.current?.(audio);
+    appliedStart.current = false;
     setPlaying(false);
-    setCurrent(0);
+    setCurrent(Math.max(0, startAt));
     // Allow ▶ immediately — large R2 files can take a while for metadata.
     setReady(true);
     setError(null);
     setDuration(set.durationSec);
+
+    const applyStart = () => {
+      if (appliedStart.current) return;
+      const target = Math.max(0, startAt);
+      if (target <= 0) {
+        appliedStart.current = true;
+        return;
+      }
+      const dur = audio.duration;
+      if (Number.isFinite(dur) && dur > 0) {
+        audio.currentTime = Math.min(target, Math.max(0, dur - 1));
+        setCurrent(audio.currentTime);
+        appliedStart.current = true;
+      }
+    };
 
     const onLoaded = () => {
       setReady(true);
       if (Number.isFinite(audio.duration) && audio.duration > 0) {
         setDuration(audio.duration);
       }
+      applyStart();
     };
-    const onTime = () => setCurrent(audio.currentTime);
+    const onTime = () => {
+      setCurrent(audio.currentTime);
+      const now = performance.now();
+      if (now - lastSavedAt.current > 2500) {
+        lastSavedAt.current = now;
+        onPositionRef.current?.(audio.currentTime);
+      }
+    };
     const onEnded = () => {
       if (audio.loop) {
         void audio.play();
         return;
       }
       setPlaying(false);
+      onPlayingChangeRef.current?.(false);
+      onPositionRef.current?.(0);
     };
     const onErr = () =>
       setError("Audio unavailable — check R2 CORS / URL.");
@@ -118,6 +158,8 @@ export default function SetPlayer({
     audio.addEventListener("error", onErr);
 
     return () => {
+      onPositionRef.current?.(audio.currentTime);
+      onPlayingChangeRef.current?.(false);
       audio.pause();
       audio.removeEventListener("loadedmetadata", onLoaded);
       audio.removeEventListener("canplay", onLoaded);
@@ -126,6 +168,8 @@ export default function SetPlayer({
       audio.removeEventListener("error", onErr);
       audioRef.current = null;
     };
+    // startAt applied once per audioUrl mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [set.audioUrl, set.durationSec]);
 
   useEffect(() => {
@@ -162,9 +206,11 @@ export default function SetPlayer({
       }
       await playPromise;
       setPlaying(true);
+      onPlayingChangeRef.current?.(true);
       updateMediaSessionPlaybackState("playing");
     } catch {
       setError("Playback blocked — click ▶ on the Media Bay.");
+      onPlayingChangeRef.current?.(false);
       updateMediaSessionPlaybackState("paused");
     }
   }
@@ -174,6 +220,7 @@ export default function SetPlayer({
     if (!audio) return;
     audio.pause();
     setPlaying(false);
+    onPlayingChangeRef.current?.(false);
     updateMediaSessionPlaybackState("paused");
   }
 
@@ -183,7 +230,9 @@ export default function SetPlayer({
     audio.pause();
     audio.currentTime = 0;
     setPlaying(false);
+    onPlayingChangeRef.current?.(false);
     setCurrent(0);
+    onPositionRef.current?.(0);
     updateMediaSessionPlaybackState("none");
   }
 
@@ -199,6 +248,7 @@ export default function SetPlayer({
       Math.max(0, audio.currentTime + delta)
     );
     setCurrent(audio.currentTime);
+    onPositionRef.current?.(audio.currentTime);
     updateMediaSessionPosition({
       duration: dur,
       position: audio.currentTime,
@@ -266,6 +316,7 @@ export default function SetPlayer({
     const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
     audio.currentTime = ratio * duration;
     setCurrent(audio.currentTime);
+    onPositionRef.current?.(audio.currentTime);
   }
 
   function onBarPointerDown(e: PointerEvent<HTMLDivElement>) {
@@ -311,15 +362,15 @@ export default function SetPlayer({
         </span>
         <span className={styles.chromeRight}>
           <span>
-            {set.category ?? "SET"} · {setYear(set)}
+            {set.category ?? "SET"} · {formatSetDate(set)}
           </span>
           {onClose ? (
             <button
               type="button"
               className={styles.close}
               onClick={onClose}
-              aria-label="Close player"
-              title="Close"
+              aria-label="Hide player"
+              title="Hide — music keeps playing"
             >
               ✕
             </button>
