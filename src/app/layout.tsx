@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { VT323 } from "next/font/google";
+import MusicPlayerProvider from "@/components/music/MusicPlayerContext";
 import "./globals.css";
 
 const vt323 = VT323({
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={vt323.variable}>
       <body className="min-h-screen overflow-y-auto">
-        {children}
+        <MusicPlayerProvider>{children}</MusicPlayerProvider>
       </body>
     </html>
   );

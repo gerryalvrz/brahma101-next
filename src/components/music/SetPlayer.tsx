@@ -3,6 +3,12 @@
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 import type { MusicSet } from "@/data/sets";
 import { setYear } from "@/data/sets";
+import {
+  bindMediaSession,
+  requestPlaybackAudioSession,
+  updateMediaSessionPlaybackState,
+  updateMediaSessionPosition,
+} from "@/lib/music/mediaSession";
 import styles from "./SetPlayer.module.css";
 
 const SEEK_BACK = 10;
@@ -26,9 +32,30 @@ function readStoredVolume() {
   return Number.isFinite(n) ? Math.min(1, Math.max(0, n)) : 0.85;
 }
 
-export default function SetPlayer({ set }: { set: MusicSet }) {
+export default function SetPlayer({
+  set,
+  onAudioReady,
+  onBeforePlay,
+  onClose,
+  playNonce = 0,
+}: {
+  set: MusicSet;
+  /** Fired when the HTMLAudioElement is created (for Hydra FFT bridge). */
+  onAudioReady?: (audio: HTMLAudioElement) => void;
+  /** Resume AudioContext before play (user gesture). */
+  onBeforePlay?: () => void | Promise<void>;
+  /** Hide + stop (persistent dock close). */
+  onClose?: () => void;
+  /** Bumps when the user picks a set — triggers autoplay once ready. */
+  playNonce?: number;
+}) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const barRef = useRef<HTMLDivElement | null>(null);
+  const onAudioReadyRef = useRef(onAudioReady);
+  const onBeforePlayRef = useRef(onBeforePlay);
+  onAudioReadyRef.current = onAudioReady;
+  onBeforePlayRef.current = onBeforePlay;
+  const pendingAutoplay = useRef(false);
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -44,6 +71,10 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
   }, []);
 
   useEffect(() => {
+    if (playNonce > 0) pendingAutoplay.current = true;
+  }, [playNonce]);
+
+  useEffect(() => {
     if (!set.audioUrl) {
       setError("Audio coming soon.");
       setReady(false);
@@ -51,13 +82,17 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
     }
 
     const audio = new Audio();
-    audio.preload = "metadata";
+    audio.crossOrigin = "anonymous";
+    audio.preload = "auto";
     audio.src = set.audioUrl;
     audioRef.current = audio;
+    onAudioReadyRef.current?.(audio);
     setPlaying(false);
     setCurrent(0);
-    setReady(false);
+    // Allow ▶ immediately — large R2 files can take a while for metadata.
+    setReady(true);
     setError(null);
+    setDuration(set.durationSec);
 
     const onLoaded = () => {
       setReady(true);
@@ -74,9 +109,10 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
       setPlaying(false);
     };
     const onErr = () =>
-      setError("Audio unavailable — upload may still be pending on R2.");
+      setError("Audio unavailable — check R2 CORS / URL.");
 
     audio.addEventListener("loadedmetadata", onLoaded);
+    audio.addEventListener("canplay", onLoaded);
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("ended", onEnded);
     audio.addEventListener("error", onErr);
@@ -84,6 +120,7 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
     return () => {
       audio.pause();
       audio.removeEventListener("loadedmetadata", onLoaded);
+      audio.removeEventListener("canplay", onLoaded);
       audio.removeEventListener("timeupdate", onTime);
       audio.removeEventListener("ended", onEnded);
       audio.removeEventListener("error", onErr);
@@ -109,23 +146,35 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
     audio.playbackRate = rate;
   }, [rate]);
 
-  if (!set.audioUrl) return null;
-
-  async function toggle() {
+  async function playNow() {
     const audio = audioRef.current;
     if (!audio) return;
     setError(null);
-    if (playing) {
-      audio.pause();
-      setPlaying(false);
-      return;
-    }
+    requestPlaybackAudioSession();
     try {
-      await audio.play();
+      // Prefer starting element playback first (user gesture / reliability),
+      // then resume Web Audio for Hydra FFT if attached.
+      const playPromise = audio.play();
+      try {
+        await onBeforePlayRef.current?.();
+      } catch {
+        /* FFT context optional */
+      }
+      await playPromise;
       setPlaying(true);
+      updateMediaSessionPlaybackState("playing");
     } catch {
-      setError("Playback blocked — click play again.");
+      setError("Playback blocked — click ▶ on the Media Bay.");
+      updateMediaSessionPlaybackState("paused");
     }
+  }
+
+  function pauseNow() {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    setPlaying(false);
+    updateMediaSessionPlaybackState("paused");
   }
 
   function stop() {
@@ -135,16 +184,78 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
     audio.currentTime = 0;
     setPlaying(false);
     setCurrent(0);
+    updateMediaSessionPlaybackState("none");
   }
 
   function seekBy(delta: number) {
     const audio = audioRef.current;
-    if (!audio || !duration) return;
+    if (!audio) return;
+    const dur =
+      Number.isFinite(audio.duration) && audio.duration > 0
+        ? audio.duration
+        : duration;
     audio.currentTime = Math.min(
-      duration,
+      dur || Number.MAX_SAFE_INTEGER,
       Math.max(0, audio.currentTime + delta)
     );
     setCurrent(audio.currentTime);
+    updateMediaSessionPosition({
+      duration: dur,
+      position: audio.currentTime,
+      playbackRate: audio.playbackRate || 1,
+    });
+  }
+
+  useEffect(() => {
+    if (!ready || !pendingAutoplay.current) return;
+    pendingAutoplay.current = false;
+    void playNow();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only when ready flips / nonce handled via pending flag
+  }, [ready, playNonce]);
+
+  useEffect(() => {
+    if (!set.audioUrl) return;
+    return bindMediaSession(set, {
+      play: () => playNow(),
+      pause: () => pauseNow(),
+      stop: () => stop(),
+      seekBy,
+      getPosition: () => {
+        const audio = audioRef.current;
+        return {
+          position: audio?.currentTime ?? 0,
+          duration:
+            (audio && Number.isFinite(audio.duration) && audio.duration > 0
+              ? audio.duration
+              : duration) || set.durationSec,
+          playbackRate: audio?.playbackRate || 1,
+        };
+      },
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- rebind when track identity changes
+  }, [set.id, set.audioUrl, set.title, set.hoverArtist, set.artist, set.coverUrl]);
+
+  useEffect(() => {
+    updateMediaSessionPlaybackState(playing ? "playing" : "paused");
+  }, [playing]);
+
+  useEffect(() => {
+    if (!playing) return;
+    updateMediaSessionPosition({
+      duration,
+      position: current,
+      playbackRate: rate,
+    });
+  }, [playing, current, duration, rate]);
+
+  if (!set.audioUrl) return null;
+
+  async function toggle() {
+    if (playing) {
+      pauseNow();
+      return;
+    }
+    await playNow();
   }
 
   function seekFromClientX(clientX: number) {
@@ -198,8 +309,21 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
           />
           MEDIA BAY · {status}
         </span>
-        <span>
-          {set.category ?? "SET"} · {setYear(set)}
+        <span className={styles.chromeRight}>
+          <span>
+            {set.category ?? "SET"} · {setYear(set)}
+          </span>
+          {onClose ? (
+            <button
+              type="button"
+              className={styles.close}
+              onClick={onClose}
+              aria-label="Close player"
+              title="Close"
+            >
+              ✕
+            </button>
+          ) : null}
         </span>
       </div>
 
@@ -226,9 +350,13 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
 
         <div className={styles.main}>
           <div className={styles.meta}>
-            <span className={styles.artist}>{set.artist}</span>
+            <span className={styles.artist}>
+              {set.artist}
+              {set.hoverArtist ? ` · ${set.hoverArtist}` : ""}
+            </span>
             <h2 className={styles.title}>{set.title}</h2>
             <div className={styles.tags}>
+              {set.category ? <span className={styles.tag}>{set.category}</span> : null}
               {set.label ? <span className={styles.tag}>{set.label}</span> : null}
               {set.blurb ? <span className={styles.tag}>{set.blurb}</span> : null}
               <span className={styles.tag}>MP3 · 192K</span>
@@ -276,8 +404,7 @@ export default function SetPlayer({ set }: { set: MusicSet }) {
               type="button"
               className={`${styles.btn} ${styles.btnPlay} ${playing ? styles.btnActive : ""}`}
               onClick={toggle}
-              disabled={!ready && !error}
-              aria-label={playing ? "Pause" : "Play"}
+            aria-label={playing ? "Pause" : "Play"}
             >
               {playing ? "❚❚" : "▶"}
             </button>

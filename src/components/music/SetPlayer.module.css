@@ -37,6 +37,33 @@
   color: rgba(0, 255, 0, 0.55);
 }
 
+.chromeRight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.close {
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
+  color: rgba(0, 255, 0, 0.75);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1;
+  width: 1.55rem;
+  height: 1.55rem;
+  padding: 0;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.close:hover {
+  color: #00ff00;
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.12);
+}
+
 .status {
   display: inline-flex;
   align-items: center;

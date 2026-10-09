@@ -1,12 +1,21 @@
 /**
  * Self-hosted DJ sets / recordings for /music.
  * Audio lives on Cloudflare R2. Covers can be local (/public) or R2.
+ *
+ * List pattern (all sets):
+ *   resting artist → "Locognitive"
+ *   hover scramble → hoverArtist (e.g. "RadioShow #1")
+ *   category → "DJ SET"
+ *   label → "Metacognitive Music"
  */
 
 export interface MusicSet {
   id: string;
   title: string;
+  /** Resting list label — always Locognitive for the brand row. */
   artist: string;
+  /** Revealed on hover scramble (e.g. RadioShow #1). */
+  hoverArtist: string;
   date: string; // YYYY-MM-DD
   durationSec: number;
   /** Public R2 URL — omit until the set is uploaded */
@@ -21,9 +30,15 @@ export interface MusicSet {
 const R2_PUBLIC =
   "https://pub-6541e7ac56104137814cf8b35968fc3c.r2.dev";
 
-/** Shared flyer until per-set covers land on R2 */
 const COVER_HIDDEN_TRANSMISSIONS =
   "/music/covers/hidden-transmissions.jpg";
+
+/** Defaults applied to every set row. */
+export const SET_ROW_DEFAULTS = {
+  artist: "Locognitive",
+  category: "DJ SET",
+  label: "Metacognitive Music",
+} as const;
 
 export const setsContent = {
   title: "Metacognitive Music",
@@ -37,27 +52,17 @@ export const setsContent = {
 
 export const musicSets: MusicSet[] = [
   {
-    id: "tdj2-2026-10-09",
-    title: "TDJ2 Recording",
-    artist: "Locognitive",
+    id: "radioshow-1-hidden-transmissions",
+    title: "Hidden Transmissions",
+    artist: SET_ROW_DEFAULTS.artist,
+    hoverArtist: "RadioShow #1",
     date: "2026-10-09",
     durationSec: 6715,
     audioUrl: `${R2_PUBLIC}/tdj2-2026-10-09.mp3`,
     coverUrl: COVER_HIDDEN_TRANSMISSIONS,
-    category: "LIVE SET",
-    label: "SELF HOSTED",
-    blurb: "Live session · 00:50–02:42",
-  },
-  {
-    id: "radioshow-1-hidden-transmissions",
-    title: "Hidden Transmissions",
-    artist: "RadioShow #1",
-    date: "2026-01-01",
-    durationSec: 0,
-    coverUrl: COVER_HIDDEN_TRANSMISSIONS,
-    category: "DJ SET",
-    label: "SELF HOSTED",
-    blurb: "Metacognitive Music Radioshow #1",
+    category: SET_ROW_DEFAULTS.category,
+    label: SET_ROW_DEFAULTS.label,
+    blurb: "Radioshow #1 · live session",
   },
 ];
 

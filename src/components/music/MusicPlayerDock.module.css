@@ -1,0 +1,78 @@
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 200;
+  width: min(96vw, 46rem);
+  max-width: 100vw;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  pointer-events: auto;
+  filter: drop-shadow(0 0 18px rgba(0, 255, 0, 0.22));
+  /* Keep dock above iOS Safari bottom chrome */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@media (max-width: 560px) {
+  .dock {
+    width: 100vw;
+    left: 0;
+    transform: none;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
+  }
+}
+
+.pending {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem 1rem;
+  border: 1px solid rgba(0, 255, 0, 0.5);
+  background: rgba(0, 8, 4, 0.92);
+  color: var(--color-primary);
+  text-align: left;
+}
+
+.pendingChrome {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 0, 0.55);
+  margin-bottom: 0.45rem;
+}
+
+.pendingClose {
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  background: transparent;
+  color: rgba(0, 255, 0, 0.75);
+  width: 1.55rem;
+  height: 1.55rem;
+  cursor: pointer;
+}
+
+.pendingArtist {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 255, 0, 0.65);
+}
+
+.pendingTitle {
+  margin: 0.15rem 0 0;
+  font-family: var(--font-display), monospace;
+  font-size: 1.35rem;
+  color: #e8ffe8;
+}
+
+.pendingHint {
+  margin: 0.45rem 0 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.45);
+}

@@ -20,7 +20,7 @@
   background-repeat: no-repeat;
   opacity: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
   filter: saturate(1.05) contrast(1.05);
   mask-image: radial-gradient(ellipse at center, #000 35%, transparent 78%);
   -webkit-mask-image: radial-gradient(
@@ -59,7 +59,8 @@
   justify-content: center;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 4.5rem 1.25rem 7.5rem;
+  /* Extra bottom space so the persistent Media Bay dock never covers the list */
+  padding: 4.5rem 1.25rem 12rem;
   box-sizing: border-box;
   max-width: 56rem;
   margin: 0 auto;
@@ -80,7 +81,7 @@
 
 .item {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr) 7rem 8rem 3.5rem;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.5fr) 5.5rem minmax(7rem, 1.1fr) 3.5rem;
   gap: 0.5rem 0.75rem;
   align-items: baseline;
   padding: 0.55rem 0.35rem;
@@ -93,6 +94,11 @@
 .item.active {
   border-color: rgba(0, 255, 0, 0.35);
   background: rgba(0, 0, 0, 0.35);
+}
+
+.item.nowPlaying {
+  border-color: rgba(0, 255, 0, 0.65);
+  box-shadow: 0 0 16px rgba(0, 255, 0, 0.12);
 }
 
 .cell {
@@ -165,13 +171,47 @@
 }
 
 .bottomLeft {
-  bottom: 1.1rem;
+  bottom: 12.5rem;
   left: 1.1rem;
 }
 
 .bottomRight {
-  bottom: 1.1rem;
+  bottom: 12.5rem;
   right: 1.1rem;
+}
+
+.vizBar {
+  position: fixed;
+  top: 2.85rem;
+  right: 1.1rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  pointer-events: auto;
+}
+
+.vizBtn {
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  background: rgba(0, 0, 0, 0.55);
+  color: rgba(0, 255, 0, 0.75);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.55rem;
+  cursor: pointer;
+}
+
+.vizBtn:hover {
+  color: #00ff00;
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.1);
+}
+
+.vizLabel {
+  min-width: 7.5rem;
+  text-align: center;
 }
 
 .blink {
@@ -182,16 +222,6 @@
   50% {
     opacity: 0;
   }
-}
-
-.dock {
-  position: fixed;
-  left: 50%;
-  bottom: 2.5rem;
-  transform: translateX(-50%);
-  z-index: 4;
-  width: min(96vw, 46rem);
-  pointer-events: auto;
 }
 
 .srOnly {

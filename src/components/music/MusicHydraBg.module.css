@@ -1,0 +1,23 @@
+.canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.72;
+  mix-blend-mode: screen;
+}
+
+.error {
+  position: fixed;
+  left: 1rem;
+  bottom: 8.5rem;
+  z-index: 5;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: #ff6b6b;
+  pointer-events: none;
+}
