@@ -80,6 +80,13 @@ export default function MusicHydraBg({ presetId }: { presetId: string }) {
       try {
         hydraRef.current?.hush();
         if (window.a) window.a.setBins(6);
+        // Hydra mouse global (used by flor.posterize); keep a safe fallback.
+        const w = window as Window & {
+          mouse?: { x: number; y: number };
+          speed?: number;
+        };
+        if (!w.mouse) w.mouse = { x: 0, y: 0 };
+        w.speed = 1;
         await runHydraCode(preset.code);
         if (!cancelled) setError(null);
       } catch (e) {

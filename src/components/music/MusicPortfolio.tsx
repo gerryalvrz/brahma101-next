@@ -9,6 +9,8 @@ import {
   MUSIC_VIZ_OFF,
   musicVizContent,
   musicVizPresets,
+  randomMusicVizDelayMs,
+  randomMusicVizId,
 } from "@/data/musicViz";
 import MusicHydraBg from "@/components/music/MusicHydraBg";
 import { useMusicPlayer } from "@/components/music/MusicPlayerContext";
@@ -195,6 +197,7 @@ export default function MusicPortfolio({ sets }: { sets: MusicSet[] }) {
   const [bgUrl, setBgUrl] = useState<string | undefined>();
   const [bgVisible, setBgVisible] = useState(false);
   const [vizId, setVizId] = useState(musicVizPresets[0]?.id ?? MUSIC_VIZ_OFF);
+  const [vizRandom, setVizRandom] = useState(true);
   const seeded = useRef(false);
 
   const bgRef = useRef<HTMLDivElement | null>(null);
@@ -224,10 +227,19 @@ export default function MusicPortfolio({ sets }: { sets: MusicSet[] }) {
   }, [sets]);
 
   function cycleViz(dir: 1 | -1) {
+    setVizRandom(false);
     const i = Math.max(0, VIZ_ORDER.indexOf(vizId));
     const next = (i + dir + VIZ_ORDER.length) % VIZ_ORDER.length;
     setVizId(VIZ_ORDER[next] ?? MUSIC_VIZ_OFF);
   }
+
+  useEffect(() => {
+    if (!vizRandom || vizId === MUSIC_VIZ_OFF) return;
+    const id = window.setTimeout(() => {
+      setVizId(randomMusicVizId(vizId));
+    }, randomMusicVizDelayMs());
+    return () => window.clearTimeout(id);
+  }, [vizRandom, vizId]);
 
   const vizLabel =
     vizId === MUSIC_VIZ_OFF
@@ -380,6 +392,29 @@ export default function MusicPortfolio({ sets }: { sets: MusicSet[] }) {
           aria-label="Next viz"
         >
           ▶
+        </button>
+        <button
+          type="button"
+          className={`${styles.vizBtn} ${vizRandom ? styles.vizBtnActive : ""}`}
+          onClick={() => {
+            setVizRandom((on) => {
+              const next = !on;
+              if (next && vizId === MUSIC_VIZ_OFF) {
+                setVizId(randomMusicVizId());
+              }
+              return next;
+            });
+          }}
+          aria-pressed={vizRandom}
+          title={
+            vizRandom
+              ? "Stop random psychedelic switching"
+              : "Randomly switch Hydra backgrounds"
+          }
+        >
+          {vizRandom
+            ? musicVizContent.randomOffLabel
+            : musicVizContent.randomOnLabel}
         </button>
       </div>
 

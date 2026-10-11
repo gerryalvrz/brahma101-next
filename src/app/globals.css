@@ -1,6 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 — full import + spacing token so scale utilities
+ * (w-20, h-20, gap-3, pl-24, …) generate. Old @tailwind directives
+ * and a v3 @config without --spacing silently drop them. */
+@import "tailwindcss";
+
+@theme {
+  --spacing: 0.25rem;
+  --font-mono: "Courier New", Courier, monospace;
+  --font-display: var(--font-display), monospace;
+  --color-neon: var(--color-primary);
+}
 
 :root {
   /*

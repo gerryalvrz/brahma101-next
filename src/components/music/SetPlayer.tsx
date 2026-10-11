@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+} from "react";
 import type { MusicSet } from "@/data/sets";
 import { formatSetDate } from "@/data/sets";
 import {
@@ -13,7 +19,6 @@ import styles from "./SetPlayer.module.css";
 
 const SEEK_BACK = 10;
 const SEEK_FWD = 30;
-const VOL_STEPS = 10;
 
 function formatTime(sec: number) {
   if (!Number.isFinite(sec) || sec < 0) return "00:00";
@@ -96,11 +101,12 @@ export default function SetPlayer({
     }
 
     const audio = new Audio();
+    // Prefer CORS so Hydra FFT can attach. If the bucket rejects this origin
+    // (e.g. localhost on a non-allowlisted port), fall back to plain playback.
     audio.crossOrigin = "anonymous";
     audio.preload = "auto";
     audio.src = set.audioUrl;
     audioRef.current = audio;
-    onAudioReadyRef.current?.(audio);
     appliedStart.current = false;
     setPlaying(false);
     setCurrent(Math.max(0, startAt));
@@ -108,6 +114,11 @@ export default function SetPlayer({
     setReady(true);
     setError(null);
     setDuration(set.durationSec);
+
+    let corsFallbackTried = false;
+    const tryAttachFft = () => {
+      onAudioReadyRef.current?.(audio);
+    };
 
     const applyStart = () => {
       if (appliedStart.current) return;
@@ -130,6 +141,7 @@ export default function SetPlayer({
         setDuration(audio.duration);
       }
       applyStart();
+      tryAttachFft();
     };
     const onTime = () => {
       setCurrent(audio.currentTime);
@@ -148,8 +160,18 @@ export default function SetPlayer({
       onPlayingChangeRef.current?.(false);
       onPositionRef.current?.(0);
     };
-    const onErr = () =>
+    const onErr = () => {
+      if (!corsFallbackTried && audio.crossOrigin) {
+        corsFallbackTried = true;
+        audio.crossOrigin = null;
+        // Reload without CORS so playback still works when the bucket
+        // allowlist doesn't include this origin (common on :3001/:3002).
+        audio.src = set.audioUrl!;
+        audio.load();
+        return;
+      }
       setError("Audio unavailable — check R2 CORS / URL.");
+    };
 
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("canplay", onLoaded);
@@ -347,7 +369,7 @@ export default function SetPlayer({
   }
 
   const progress = duration > 0 ? (current / duration) * 100 : 0;
-  const volLit = muted ? 0 : Math.round(volume * VOL_STEPS);
+  const volPct = Math.round(volume * 100);
   const status = !ready ? "LOAD" : playing ? "PLAY" : current > 0 ? "PAUSE" : "READY";
 
   return (
@@ -510,29 +532,22 @@ export default function SetPlayer({
 
         <div className={styles.volCol}>
           <span className={styles.volLabel}>VOL</span>
-          <div
-            className={styles.volLadder}
-            role="slider"
+          <input
+            type="range"
+            className={styles.volSlider}
+            min={0}
+            max={100}
+            step={1}
+            value={volPct}
+            onChange={(e) => setVolumeLevel(Number(e.target.value) / 100)}
+            aria-label="Volume"
             aria-valuemin={0}
             aria-valuemax={100}
-            aria-valuenow={Math.round(volume * 100)}
-            aria-label="Volume"
-          >
-            {Array.from({ length: VOL_STEPS }, (_, i) => {
-              const step = i + 1;
-              return (
-                <button
-                  key={step}
-                  type="button"
-                  className={`${styles.volStep} ${step <= volLit ? styles.volStepOn : ""}`}
-                  onClick={() => setVolumeLevel(step / VOL_STEPS)}
-                  aria-label={`Volume ${step * 10}%`}
-                />
-              );
-            })}
-          </div>
+            aria-valuenow={volPct}
+            style={{ "--vol": `${volPct}%` } as CSSProperties}
+          />
           <span className={styles.volPct}>
-            {muted ? "00" : String(Math.round(volume * 100)).padStart(2, "0")}
+            {String(volPct).padStart(2, "0")}
           </span>
         </div>
       </div>

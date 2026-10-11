@@ -10,7 +10,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { usePathname } from "next/navigation";
 import type { MusicSet } from "@/data/sets";
+import { musicSets } from "@/data/sets";
 import { AudioFftBridge } from "@/lib/music/audioFft";
 import { isAppleMobile } from "@/lib/music/mediaSession";
 import {
@@ -19,8 +21,28 @@ import {
   resolveSet,
   writePlayback,
 } from "@/lib/music/playbackStore";
+import {
+  MusicPlayer,
+  type MusicTrack,
+} from "@/components/ui/music-player";
 import SetPlayer from "@/components/music/SetPlayer";
 import styles from "./MusicPlayerDock.module.css";
+
+function setsToTracks(sets: MusicSet[]): MusicTrack[] {
+  return sets
+    .filter((s): s is MusicSet & { audioUrl: string } => Boolean(s.audioUrl))
+    .map((s) => ({
+      title: s.title,
+      artist: s.hoverArtist || s.artist,
+      src: s.audioUrl,
+      artwork: s.coverUrl,
+    }));
+}
+
+function isMusicRoute(pathname: string | null): boolean {
+  if (!pathname) return false;
+  return pathname === "/music" || pathname.startsWith("/music/");
+}
 
 type PlayOpts = {
   autoplay?: boolean;
@@ -60,6 +82,10 @@ export default function MusicPlayerProvider({
 }: {
   children: ReactNode;
 }) {
+  const pathname = usePathname();
+  const onMusicPage = isMusicRoute(pathname);
+  const tracks = useMemo(() => setsToTracks(musicSets), []);
+
   // Keep SSR and first client paint identical — hydrate from localStorage after mount.
   const [playbackReady, setPlaybackReady] = useState(false);
   const [current, setCurrent] = useState<MusicSet | null>(null);
@@ -71,6 +97,12 @@ export default function MusicPlayerProvider({
   const fftBridge = useRef<AudioFftBridge | null>(null);
   /** Avoid re-seeking when merely re-showing the dock. */
   const playerSession = useRef(0);
+
+  const startIndex = useMemo(() => {
+    if (!current?.audioUrl) return 0;
+    const i = tracks.findIndex((t) => t.src === current.audioUrl);
+    return i >= 0 ? i : 0;
+  }, [current, tracks]);
 
   useEffect(() => {
     const bridge = new AudioFftBridge();
@@ -155,6 +187,14 @@ export default function MusicPlayerProvider({
     await fftBridge.current?.resume();
   }, []);
 
+  const onSiteTrackChange = useCallback((track: MusicTrack) => {
+    const match = musicSets.find((s) => s.audioUrl === track.src);
+    if (match) {
+      setCurrent(match);
+      writePlayback({ setId: match.id, position: positionRef.current });
+    }
+  }, []);
+
   const value = useMemo(
     () => ({ current, dockOpen, playbackReady, playSet, openDock, close }),
     [current, dockOpen, playbackReady, playSet, openDock, close]
@@ -166,7 +206,22 @@ export default function MusicPlayerProvider({
     <MusicPlayerContext.Provider value={value}>
       {children}
 
-      {playbackReady && !dockOpen ? (
+      {/* Site-wide glass player (VengeanceUI) — everywhere except /music. */}
+      {playbackReady && !onMusicPage && tracks.length > 0 ? (
+        <div className={styles.sitePlayer}>
+          <MusicPlayer
+            tracks={tracks}
+            startIndex={startIndex}
+            autoPlay={isPlaying}
+            accentColor="#a6ff1f"
+            onTrackChange={onSiteTrackChange}
+            className={styles.sitePlayerGlass}
+          />
+        </div>
+      ) : null}
+
+      {/* Media Bay dock — /music only (Hydra FFT + resume). */}
+      {onMusicPage && playbackReady && !dockOpen ? (
         <button
           type="button"
           className={`${styles.fab} ${isPlaying ? styles.fabLive : ""}`}
@@ -179,7 +234,7 @@ export default function MusicPlayerProvider({
       ) : null}
 
       {/* Mount only after hydrate so SSR HTML matches the first client paint. */}
-      {playbackReady && hasAudio && current ? (
+      {onMusicPage && playbackReady && hasAudio && current ? (
         <div
           className={dockOpen ? styles.dock : styles.dockHidden}
           aria-hidden={!dockOpen}
@@ -198,7 +253,7 @@ export default function MusicPlayerProvider({
         </div>
       ) : null}
 
-      {playbackReady && dockOpen && current && !hasAudio ? (
+      {onMusicPage && playbackReady && dockOpen && current && !hasAudio ? (
         <div className={styles.dock}>
           <div className={styles.pending} role="status">
             <div className={styles.pendingChrome}>

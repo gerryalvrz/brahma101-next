@@ -209,6 +209,17 @@
   background: rgba(0, 255, 0, 0.1);
 }
 
+.vizBtnActive {
+  color: #000;
+  border-color: #00ff00;
+  background: rgba(0, 255, 0, 0.85);
+}
+
+.vizBtnActive:hover {
+  color: #000;
+  background: #00ff00;
+}
+
 .vizLabel {
   min-width: 7.5rem;
   text-align: center;
