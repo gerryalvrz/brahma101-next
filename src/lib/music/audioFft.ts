@@ -57,6 +57,11 @@ export class AudioFftBridge {
   }
 
   async attach(audio: HTMLAudioElement) {
+    // MediaElementSource requires CORS; without it the graph is silent and
+    // the element’s own output is permanently muted for this element.
+    if (!audio.crossOrigin) {
+      throw new Error("FFT attach skipped — audio has no crossOrigin");
+    }
     if (!this.ctx) {
       this.ctx = new AudioContext();
     }

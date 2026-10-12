@@ -1,0 +1,8 @@
+www.brahma101.cyou {
+	redir https://brahma101.cyou{uri} permanent
+}
+
+brahma101.cyou {
+	encode zstd gzip
+	reverse_proxy web:3000
+}

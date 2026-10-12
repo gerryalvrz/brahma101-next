@@ -1,0 +1,11 @@
+node_modules
+.next
+.git
+Games
+.env*
+*.zip
+.DS_Store
+npm-debug.log*
+coverage
+.vercel
+agent-transcripts

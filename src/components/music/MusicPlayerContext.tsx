@@ -21,11 +21,9 @@ import {
   resolveSet,
   writePlayback,
 } from "@/lib/music/playbackStore";
-import {
-  MusicPlayer,
-  type MusicTrack,
-} from "@/components/ui/music-player";
+import { type MusicTrack } from "@/components/ui/music-player";
 import SetPlayer from "@/components/music/SetPlayer";
+import SiteMusicPlayer from "@/components/music/SiteMusicPlayer";
 import styles from "./MusicPlayerDock.module.css";
 
 function setsToTracks(sets: MusicSet[]): MusicTrack[] {
@@ -206,18 +204,16 @@ export default function MusicPlayerProvider({
     <MusicPlayerContext.Provider value={value}>
       {children}
 
-      {/* Site-wide glass player (VengeanceUI) — everywhere except /music. */}
+      {/* Site-wide glass player — icon by default, draggable, expand on tap. */}
       {playbackReady && !onMusicPage && tracks.length > 0 ? (
-        <div className={styles.sitePlayer}>
-          <MusicPlayer
-            tracks={tracks}
-            startIndex={startIndex}
-            autoPlay={isPlaying}
-            accentColor="#a6ff1f"
-            onTrackChange={onSiteTrackChange}
-            className={styles.sitePlayerGlass}
-          />
-        </div>
+        <SiteMusicPlayer
+          tracks={tracks}
+          startIndex={startIndex}
+          autoPlay={isPlaying}
+          accentColor="#a6ff1f"
+          onTrackChange={onSiteTrackChange}
+          glassClassName={styles.sitePlayerGlass}
+        />
       ) : null}
 
       {/* Media Bay dock — /music only (Hydra FFT + resume). */}

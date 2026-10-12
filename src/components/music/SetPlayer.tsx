@@ -117,6 +117,10 @@ export default function SetPlayer({
 
     let corsFallbackTried = false;
     const tryAttachFft = () => {
+      // createMediaElementSource mutes the element’s direct output. Without
+      // CORS (crossOrigin cleared after a failed anonymous load), the Web
+      // Audio graph is silent — skip FFT and keep element playback.
+      if (!audio.crossOrigin) return;
       onAudioReadyRef.current?.(audio);
     };
 

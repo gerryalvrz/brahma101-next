@@ -216,7 +216,7 @@ export const homeContent: HomeContent = {
           {
             kind: "file",
             id: "des",
-            label: "D.E.S.",
+            label: "Dimension Explorer Service",
             href: "/locognitive",
           },
           {
@@ -305,11 +305,39 @@ export const homeContent: HomeContent = {
             external: true,
           },
           {
-            kind: "file",
+            kind: "folder",
             id: "motusdao-docs",
             label: "Docs",
-            href: "https://motusdao.gitbook.io/enter-motusdao",
-            external: true,
+            children: [
+              {
+                kind: "file",
+                id: "motusdao-manifiesto",
+                label: "Manifiesto",
+                href: "https://motusdao.gitbook.io/manifiesto",
+                external: true,
+              },
+              {
+                kind: "file",
+                id: "motusdao-enter",
+                label: "Enter MotusDAO",
+                href: "https://motusdao.gitbook.io/enter-motusdao",
+                external: true,
+              },
+              {
+                kind: "file",
+                id: "motusdao-psicologos",
+                label: "MotusDAO para psicólogos",
+                href: "https://motusdao.gitbook.io/motusdao-para-psicologos/",
+                external: true,
+              },
+              {
+                kind: "file",
+                id: "motusdao-regen-health",
+                label: "Regenerative Health & Staking",
+                href: "https://motusdao.gitbook.io/regenerative-health-fund-staking-platform/",
+                external: true,
+              },
+            ],
           },
           {
             kind: "file",
@@ -326,18 +354,25 @@ export const homeContent: HomeContent = {
         label: "Avril",
         children: [
           {
-            kind: "file",
+            kind: "folder",
             id: "avril-life",
             label: "avril.life",
-            href: "https://avril.life",
-            external: true,
-          },
-          {
-            kind: "file",
-            id: "avril-lab",
-            label: "lab.avril.life",
-            href: "https://lab.avril.life",
-            external: true,
+            children: [
+              {
+                kind: "file",
+                id: "avril-life-site",
+                label: "avril.life",
+                href: "https://avril.life",
+                external: true,
+              },
+              {
+                kind: "file",
+                id: "avril-lab",
+                label: "lab.avril.life",
+                href: "https://lab.avril.life",
+                external: true,
+              },
+            ],
           },
           {
             kind: "folder",
