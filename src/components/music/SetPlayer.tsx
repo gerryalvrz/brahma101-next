@@ -105,7 +105,6 @@ export default function SetPlayer({
     // (e.g. localhost on a non-allowlisted port), fall back to plain playback.
     audio.crossOrigin = "anonymous";
     audio.preload = "auto";
-    audio.src = set.audioUrl;
     audioRef.current = audio;
     appliedStart.current = false;
     setPlaying(false);
@@ -115,13 +114,25 @@ export default function SetPlayer({
     setError(null);
     setDuration(set.durationSec);
 
-    let corsFallbackTried = false;
+    /** 0 = first load, 1 = CORS+cache-bust retry, 2 = no-CORS last resort */
+    let loadAttempt = 0;
+    let fftAttached = false;
     const tryAttachFft = () => {
       // createMediaElementSource mutes the element’s direct output. Without
       // CORS (crossOrigin cleared after a failed anonymous load), the Web
       // Audio graph is silent — skip FFT and keep element playback.
-      if (!audio.crossOrigin) return;
+      if (fftAttached || !audio.crossOrigin) return;
+      fftAttached = true;
       onAudioReadyRef.current?.(audio);
+    };
+    const setAudioSrc = (withCors: boolean) => {
+      audio.crossOrigin = withCors ? "anonymous" : null;
+      // Bust HTTP cache — a prior no-CORS fetch of this URL can poison
+      // an anonymous reload and falsely trip the error path.
+      const bust = `cb=${Date.now()}`;
+      const base = set.audioUrl!;
+      audio.src = `${base}${base.includes("?") ? "&" : "?"}${bust}`;
+      audio.load();
     };
 
     const applyStart = () => {
@@ -165,23 +176,36 @@ export default function SetPlayer({
       onPositionRef.current?.(0);
     };
     const onErr = () => {
-      if (!corsFallbackTried && audio.crossOrigin) {
-        corsFallbackTried = true;
-        audio.crossOrigin = null;
-        // Reload without CORS so playback still works when the bucket
-        // allowlist doesn't include this origin (common on :3001/:3002).
-        audio.src = set.audioUrl!;
-        audio.load();
+      if (loadAttempt === 0) {
+        // Cached opaque/no-CORS response → retry anonymous with cache bust.
+        loadAttempt = 1;
+        fftAttached = false;
+        setAudioSrc(true);
+        return;
+      }
+      if (loadAttempt === 1) {
+        // Origin not on R2 allowlist (e.g. localhost:3002) → plain playback.
+        loadAttempt = 2;
+        fftAttached = false;
+        setAudioSrc(false);
         return;
       }
       setError("Audio unavailable — check R2 CORS / URL.");
     };
 
+    // Listeners BEFORE src — cached media can fire metadata/canplay
+    // synchronously (or before the next tick), skipping FFT attach.
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("canplay", onLoaded);
     audio.addEventListener("timeupdate", onTime);
     audio.addEventListener("ended", onEnded);
     audio.addEventListener("error", onErr);
+
+    audio.src = set.audioUrl;
+    audio.load();
+    if (audio.readyState >= HTMLMediaElement.HAVE_METADATA) {
+      onLoaded();
+    }
 
     return () => {
       onPositionRef.current?.(audio.currentTime);
@@ -222,6 +246,10 @@ export default function SetPlayer({
     setError(null);
     requestPlaybackAudioSession();
     try {
+      // Late FFT attach (user gesture) if metadata raced past the listener.
+      if (audio.crossOrigin) {
+        onAudioReadyRef.current?.(audio);
+      }
       // Prefer starting element playback first (user gesture / reliability),
       // then resume Web Audio for Hydra FFT if attached.
       const playPromise = audio.play();

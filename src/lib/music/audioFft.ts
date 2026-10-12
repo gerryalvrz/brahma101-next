@@ -62,8 +62,12 @@ export class AudioFftBridge {
     if (!audio.crossOrigin) {
       throw new Error("FFT attach skipped — audio has no crossOrigin");
     }
-    if (!this.ctx) {
+    if (!this.ctx || this.ctx.state === "closed") {
       this.ctx = new AudioContext();
+      this.analyser = null;
+      this.gain = null;
+      this.source = null;
+      this.sources = new WeakMap();
     }
     if (this.ctx.state === "suspended") {
       await this.ctx.resume();
@@ -82,22 +86,30 @@ export class AudioFftBridge {
       );
     }
 
-    try {
-      this.source?.disconnect();
-    } catch {
-      /* ignore */
-    }
-
     let source = this.sources.get(audio);
     if (!source) {
+      try {
+        this.source?.disconnect();
+      } catch {
+        /* ignore */
+      }
       source = this.ctx.createMediaElementSource(audio);
       this.sources.set(audio, source);
+      source.connect(this.analyser);
+      this.source = source;
+    } else if (this.source !== source) {
+      try {
+        this.source?.disconnect();
+      } catch {
+        /* ignore */
+      }
+      source.connect(this.analyser);
+      this.source = source;
     }
-    source.connect(this.analyser);
-    this.source = source;
 
+    // Reclaim `window.a` in case Hydra (makeGlobal) replaced the shim.
     this.ensureShim();
-    this.setBins(this.bins);
+    if (window.a) window.a.fft = this.fft;
     this.start();
   }
 

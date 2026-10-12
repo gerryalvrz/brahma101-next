@@ -106,6 +106,9 @@ export function MusicPlayer({
     const audio = audioRef.current;
     if (!audio || !track) return;
 
+    // Keep CORS mode consistent with /music Media Bay so a home-player
+    // prefetch doesn't poison the R2 cache for Hydra FFT attach.
+    audio.crossOrigin = "anonymous";
     audio.src = track.src;
     audio.load();
     setCurrentTime(0);
@@ -186,6 +189,7 @@ export function MusicPlayer({
       <audio
         ref={audioRef}
         preload="metadata"
+        crossOrigin="anonymous"
         onPlay={() => setIsPlaying(true)}
         onPause={() => setIsPlaying(false)}
         onTimeUpdate={(e) => setCurrentTime(e.currentTarget.currentTime)}
