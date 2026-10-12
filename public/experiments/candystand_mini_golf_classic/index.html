@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Candystand Mini Golf Classic — DirPlayer PoC</title>
+    <!--
+      Compatibility PoC: NabiscoWorld / Candystand Mini Mini Golf (Shockwave).
+      Original files: nwmm18main.dcr + nwmm18holes.cct (Director 8 Afterburner).
+      Emulator: DirPlayer polyfill v0.8.1 (WASM) — https://github.com/igorlira/dirplayer-rs
+      Vendored under ./dirplayer/ (same major as hackahobo Compatible build).
+      Critical: sw2=Copyright2002SkyworksTechnologiesInc unlocks hole clicks.
+      Do NOT CSS-transform/scale the stage — DirPlayer mouse coords break.
+    -->
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050505;
+        --fg: #b8ffb8;
+        --muted: #6a9a6a;
+        --line: #1c3a1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #000;
+        color: var(--fg);
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 0.75rem;
+      }
+
+      header {
+        width: min(100%, 624px);
+        text-align: left;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+        font-weight: normal;
+        letter-spacing: 0.04em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.35;
+      }
+
+      #stage {
+        width: 624px;
+        height: 350px;
+        max-width: 100%;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      #stage object,
+      #stage embed {
+        display: block;
+      }
+
+      #status {
+        width: min(100%, 624px);
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: pre-wrap;
+        border-top: 1px dashed var(--line);
+        padding-top: 0.5rem;
+      }
+
+      a {
+        color: var(--fg);
+      }
+    </style>
+    <script src="./dirplayer/dirplayer-polyfill.js" data-manual-init></script>
+  </head>
+  <body>
+    <header>
+      <h1>Candystand Mini Golf Classic (Shockwave PoC)</h1>
+      <p>
+        DirPlayer 0.8.1 + Skyworks unlock · native 624×350 (scale breaks clicks).
+        For bigger view use browser zoom (<kbd>Cmd</kbd>+<kbd>+</kbd>).
+        Known gap: Play All 18 can freeze after a hole — reload to exit.
+        <a href="/locognitive">Locognitive / D.E.S.</a>
+        ·
+        <a href="./index.html">Reload game</a>
+      </p>
+    </header>
+
+    <div id="stage">
+      <!--
+        Embed params mirrored from hackahobo (Compatible w/ DirPlayer).
+        sw2 copyright string unlocks hole clicks.
+      -->
+      <object
+        id="golf"
+        classid="clsid:166B1BCA-3F9C-11CF-8075-444553540000"
+        codebase="http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=8,5,0,0"
+        width="624"
+        height="350"
+      >
+        <param name="src" value="nwmm18main.dcr" />
+        <param name="swStretchStyle" value="fill" />
+        <param name="swStretchHAlign" value="center" />
+        <param name="swStretchVAlign" value="center" />
+        <param name="PlayerVersion" value="8" />
+        <param name="swVersion" value="8" />
+        <param name="bgColor" value="#000000" />
+        <param name="sw1" value="/games/" />
+        <param name="sw2" value="Copyright2002SkyworksTechnologiesInc" />
+        <param name="sw3" value="" />
+        <param name="sw4" value="/games/leader.aspx" />
+        <param name="sw5" value="" />
+        <param name="sw6" value="" />
+        <param name="sw7" value="" />
+        <param name="sw8" value="" />
+        <param name="sw9" value="" />
+        <param
+          name="swRemote"
+          value="swSaveEnabled='false' swVolume='false' swRestart='false' swPausePlay='false' swFastForward='false' swContextMenu='false'"
+        />
+        <embed
+          src="nwmm18main.dcr"
+          type="application/x-director"
+          width="624"
+          height="350"
+          bgcolor="#000000"
+          swStretchStyle="fill"
+          PlayerVersion="8"
+          swVersion="8"
+          sw1="/games/"
+          sw2="Copyright2002SkyworksTechnologiesInc"
+          sw3=""
+          sw4="/games/leader.aspx"
+          sw5=""
+          sw6=""
+          sw7=""
+          sw8=""
+          sw9=""
+          swRemote="swSaveEnabled='false' swVolume='false' swRestart='false' swPausePlay='false' swFastForward='false' swContextMenu='false'"
+          pluginspage="http://www.macromedia.com/shockwave/download/"
+        />
+      </object>
+    </div>
+
+    <div id="status">Initializing DirPlayer…</div>
+
+    <script>
+      (function () {
+        var statusEl = document.getElementById("status");
+        var lines = [];
+
+        function log(msg) {
+          lines.push(msg);
+          statusEl.textContent = lines.join("\n");
+          console.log("[minigolf-poc]", msg);
+        }
+
+        function summarizePlayer() {
+          var canvas = document.querySelector("#stage canvas");
+          log(
+            "DOM after init: canvas=" +
+              !!canvas +
+              " stageChildren=" +
+              document.getElementById("stage").children.length
+          );
+          if (canvas) {
+            log("canvas size: " + canvas.width + "x" + canvas.height);
+          }
+        }
+
+        window.addEventListener("error", function (e) {
+          log("window.error: " + (e.message || e.type));
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+          log(
+            "unhandledrejection: " +
+              (e.reason && (e.reason.message || String(e.reason)))
+          );
+        });
+
+        if (typeof DirPlayer === "undefined") {
+          log("FAIL: DirPlayer global missing (polyfill did not load).");
+          return;
+        }
+
+        log("DirPlayer present. Calling DirPlayer.init()…");
+        try {
+          var result = DirPlayer.init();
+          if (result && typeof result.then === "function") {
+            result
+              .then(function () {
+                log("DirPlayer.init() resolved.");
+                setTimeout(summarizePlayer, 500);
+                setTimeout(summarizePlayer, 2500);
+              })
+              .catch(function (err) {
+                log("DirPlayer.init() rejected: " + (err && err.message));
+              });
+          } else {
+            log("DirPlayer.init() returned synchronously.");
+            setTimeout(summarizePlayer, 500);
+            setTimeout(summarizePlayer, 2500);
+          }
+        } catch (err) {
+          log("DirPlayer.init() threw: " + (err && err.message));
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Candystand Life Savers Mini Golf — DirPlayer PoC</title>
+    <!--
+      CandyStand Miniature Golf (Life Savers–themed holes).
+      Source: hackahobo Compatible build — csmgmain.dcr + csmgholes.cct
+      Emulator: DirPlayer 0.8.1 (shared polyfill from mini-golf classic folder)
+      Unlock: sw2=Copyright2000NabiscoInc
+      Do NOT CSS-transform/scale the stage — DirPlayer mouse coords break.
+    -->
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #050505;
+        --fg: #b8ffb8;
+        --muted: #6a9a6a;
+        --line: #1c3a1c;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #000;
+        color: var(--fg);
+        font-family: "Courier New", Courier, monospace;
+      }
+
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        gap: 0.75rem;
+      }
+
+      header {
+        width: min(100%, 624px);
+        text-align: left;
+      }
+
+      h1 {
+        margin: 0 0 0.25rem;
+        font-size: 1rem;
+        font-weight: normal;
+        letter-spacing: 0.04em;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.35;
+      }
+
+      #stage {
+        width: 624px;
+        height: 350px;
+        max-width: 100%;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+      }
+
+      #stage object,
+      #stage embed {
+        display: block;
+      }
+
+      #status {
+        width: min(100%, 624px);
+        font-size: 0.75rem;
+        color: var(--muted);
+        white-space: pre-wrap;
+        border-top: 1px dashed var(--line);
+        padding-top: 0.5rem;
+      }
+
+      a {
+        color: var(--fg);
+      }
+    </style>
+    <script
+      src="../candystand_mini_golf_classic/dirplayer/dirplayer-polyfill.js"
+      data-manual-init
+    ></script>
+  </head>
+  <body>
+    <header>
+      <h1>Candystand Life Savers Mini Golf (Shockwave PoC)</h1>
+      <p>
+        CandyStand Miniature Golf · Life Savers–themed 18 holes · DirPlayer 0.8.1.
+        Native 624×350 (use browser zoom to enlarge).
+        <a href="/locognitive">Locognitive / D.E.S.</a>
+        ·
+        <a href="../candystand_mini_golf_classic/index.html">Nabisco Mini Mini Golf</a>
+        ·
+        <a href="./index.html">Reload</a>
+      </p>
+    </header>
+
+    <div id="stage">
+      <!-- Embed params from hackahobo Compatible page -->
+      <object
+        id="golf"
+        classid="clsid:166B1BCA-3F9C-11CF-8075-444553540000"
+        codebase="http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=8,5,0,0"
+        width="624"
+        height="350"
+      >
+        <param name="src" value="csmgmain.dcr" />
+        <param name="swStretchStyle" value="fill" />
+        <param name="swStretchStretch" value="true" />
+        <param name="bgColor" value="#000000" />
+        <!-- Quit uses sw1; point back at this page (title menu), not legacy /back.asp -->
+        <param name="sw1" value="/experiments/candystand_lifesavers_minigolf/index.html" />
+        <param name="sw2" value="Copyright2000NabiscoInc" />
+        <param name="sw3" value="#Link18" />
+        <param name="sw4" value="0" />
+        <embed
+          src="csmgmain.dcr"
+          type="application/x-director"
+          width="624"
+          height="350"
+          bgcolor="#000000"
+          swStretchStyle="fill"
+          swStretchStretch="true"
+          sw1="/experiments/candystand_lifesavers_minigolf/index.html"
+          sw2="Copyright2000NabiscoInc"
+          sw3="#Link18"
+          sw4="0"
+          pluginspage="http://www.macromedia.com/shockwave/download/"
+        />
+      </object>
+    </div>
+
+    <div id="status">Initializing DirPlayer…</div>
+
+    <script>
+      (function () {
+        var statusEl = document.getElementById("status");
+        var lines = [];
+
+        function log(msg) {
+          lines.push(msg);
+          statusEl.textContent = lines.join("\n");
+          console.log("[lifesavers-minigolf]", msg);
+        }
+
+        function summarizePlayer() {
+          var canvas = document.querySelector("#stage canvas");
+          log(
+            "DOM after init: canvas=" +
+              !!canvas +
+              " stageChildren=" +
+              document.getElementById("stage").children.length
+          );
+          if (canvas) {
+            log("canvas size: " + canvas.width + "x" + canvas.height);
+          }
+        }
+
+        window.addEventListener("error", function (e) {
+          log("window.error: " + (e.message || e.type));
+        });
+        window.addEventListener("unhandledrejection", function (e) {
+          log(
+            "unhandledrejection: " +
+              (e.reason && (e.reason.message || String(e.reason)))
+          );
+        });
+
+        if (typeof DirPlayer === "undefined") {
+          log("FAIL: DirPlayer global missing (polyfill did not load).");
+          return;
+        }
+
+        log("DirPlayer present. Calling DirPlayer.init()…");
+        try {
+          var result = DirPlayer.init();
+          if (result && typeof result.then === "function") {
+            result
+              .then(function () {
+                log("DirPlayer.init() resolved.");
+                setTimeout(summarizePlayer, 500);
+                setTimeout(summarizePlayer, 2500);
+              })
+              .catch(function (err) {
+                log("DirPlayer.init() rejected: " + (err && err.message));
+              });
+          } else {
+            log("DirPlayer.init() returned synchronously.");
+            setTimeout(summarizePlayer, 500);
+            setTimeout(summarizePlayer, 2500);
+          }
+        } catch (err) {
+          log("DirPlayer.init() threw: " + (err && err.message));
+        }
+      })();
+    </script>
+  </body>
+</html>

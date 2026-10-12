@@ -38,6 +38,14 @@ export const locognitiveContent = {
       label: "Mario",
       href: "/experiments/super_mario_64_speed_run_edition_by_Monkey_man/index.html",
     },
+    {
+      label: "Candystand Mini Golf Classic",
+      href: "/experiments/candystand_mini_golf_classic/index.html",
+    },
+    {
+      label: "Candystand Life Savers Mini Golf",
+      href: "/experiments/candystand_lifesavers_minigolf/index.html",
+    },
   ] satisfies LocognitiveLink[],
   drivePreview:
     "https://drive.google.com/file/d/1rpa77ZHDyOwN5h4tx2UpOQiaYwgZ2xI4/preview",
