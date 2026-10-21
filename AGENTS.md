@@ -48,11 +48,11 @@ Personal site of Gerry Alvarez / **brahma101.eth** — [brahma101.cyou](https://
 | `/research` | Quiet gateway to rabbit holes | `research/page.tsx` |
 | `/locognitive` | React hub of experiment links | `src/data/locognitive.ts` |
 | `/e8sel` | E8 S.E.L. | nested `layout.tsx` |
-| `/music` | Metacognitive Music | — |
+| `/metacognitive-music` | Metacognitive Music (`/music` redirects here) | `src/data/sets.ts` + `MusicPortfolio` |
 | `/hack` | Hack | nested `layout.tsx` |
 | `/prophet-and-the-fool` | Book | — |
 
-Homepage LIVE **Locognitive** → D.E.S. (`/locognitive`) + Images + Generative art + Create music + Metacognitive Music. **Thinking** opens ARCHIVE. `/research`, `/e8sel`, `/hack`, `/prophet-and-the-fool` stay as routes (contact `pages/` and `/research`), not LIVE blades.
+Homepage LIVE **Locognitive** → D.E.S. (`/locognitive`) + Images + Generative art + Create music + Metacognitive Music (`/metacognitive-music`). **Thinking** opens ARCHIVE. `/research`, `/e8sel`, `/hack`, `/prophet-and-the-fool` stay as routes (contact `pages/` and `/research`), not LIVE blades.
 
 **Generative art** for this rebuild is `/art` (hydra-synth sketches in `src/data/art.ts`). Do **not** open, rewrite, or summarize `public/experiments/` or DES HTML — those are large static blobs served as-is from the Locognitive hub.
 

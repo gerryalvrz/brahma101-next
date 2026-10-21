@@ -83,7 +83,7 @@ const SITE_PAGES = [
   { id: "research", label: "research", href: "/research" },
   { id: "create-music", label: "create-music", href: "/create-music" },
   { id: "art", label: "generative-art", href: "/art" },
-  { id: "music", label: "music", href: "/music" },
+  { id: "music", label: "metacognitive-music", href: "/metacognitive-music" },
   { id: "locognitive", label: "locognitive", href: "/locognitive" },
   { id: "e8sel", label: "e8sel", href: "/e8sel" },
   { id: "hack", label: "hack", href: "/hack" },

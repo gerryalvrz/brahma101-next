@@ -33,13 +33,13 @@ const SOUNDCLOUD_TRACKS = [
 export default function MusicArchivePage() {
   return (
     <main className={styles.page}>
-      <Link href="/music" className={styles.back}>
+      <Link href="/metacognitive-music" className={styles.back}>
         ← sets
       </Link>
       <h1 className={styles.title}>Archive</h1>
       <p className={styles.lede}>
         Older SoundCloud drops and video — the live self-hosted sets live on{" "}
-        <Link href="/music">/music</Link>.
+        <Link href="/metacognitive-music">/metacognitive-music</Link>.
       </p>
 
       <section className={styles.section} aria-labelledby="yt-heading">

@@ -1,10 +1,9 @@
 /**
- * Self-hosted DJ sets / recordings for /music.
+ * Self-hosted DJ sets / recordings for /metacognitive-music.
  * Audio lives on Cloudflare R2. Covers can be local (/public) or R2.
  *
  * List pattern (all sets):
- *   resting artist → "Locognitive"
- *   hover scramble → hoverArtist (e.g. "RadioShow #1")
+ *   artist → "Locognitive"
  *   category → "DJ SET"
  *   label → "Metacognitive Music"
  */
@@ -14,8 +13,8 @@ export interface MusicSet {
   title: string;
   /** Resting list label — always Locognitive for the brand row. */
   artist: string;
-  /** Revealed on hover scramble (e.g. RadioShow #1). */
-  hoverArtist: string;
+  /** Optional hover scramble; omit to keep the artist name. */
+  hoverArtist?: string;
   date: string; // YYYY-MM-DD
   durationSec: number;
   /** Public R2 URL — omit until the set is uploaded */
@@ -30,9 +29,6 @@ export interface MusicSet {
 const R2_PUBLIC =
   "https://pub-6541e7ac56104137814cf8b35968fc3c.r2.dev";
 
-const COVER_HIDDEN_TRANSMISSIONS =
-  "/music/covers/hidden-transmissions.jpg";
-
 /** Defaults applied to every set row. */
 export const SET_ROW_DEFAULTS = {
   artist: "Locognitive",
@@ -44,7 +40,7 @@ export const setsContent = {
   title: "Metacognitive Music",
   lede: "Self-hosted sets. Hover a row — click to play.",
   archiveLabel: "archive",
-  archiveHref: "/music/archive",
+  archiveHref: "/metacognitive-music/archive",
   backLabel: "← home",
   location: "19.43° N, 99.13° W",
   timeZone: "America/Mexico_City",
@@ -52,17 +48,28 @@ export const setsContent = {
 
 export const musicSets: MusicSet[] = [
   {
-    id: "radioshow-1-hidden-transmissions",
+    id: "radioshow-1-pixalated-rythms",
+    title: "Pixalated Rythms",
+    artist: SET_ROW_DEFAULTS.artist,
+    date: "2026-04-04",
+    durationSec: 6706,
+    audioUrl: `${R2_PUBLIC}/TDJ2-Recording_2026-04-04.mp3`,
+    coverUrl: "/music/covers/pixalated-rythms.jpg",
+    category: SET_ROW_DEFAULTS.category,
+    label: SET_ROW_DEFAULTS.label,
+    blurb: "live session",
+  },
+  {
+    id: "radioshow-2-hidden-transmissions",
     title: "Hidden Transmissions",
     artist: SET_ROW_DEFAULTS.artist,
-    hoverArtist: "RadioShow #1",
     date: "2026-10-09",
     durationSec: 6715,
     audioUrl: `${R2_PUBLIC}/tdj2-2026-10-09.mp3`,
-    coverUrl: COVER_HIDDEN_TRANSMISSIONS,
+    coverUrl: "/music/covers/hidden-transmissions.jpg",
     category: SET_ROW_DEFAULTS.category,
     label: SET_ROW_DEFAULTS.label,
-    blurb: "Radioshow #1 · live session",
+    blurb: "live session",
   },
 ];
 

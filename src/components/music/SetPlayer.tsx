@@ -457,7 +457,9 @@ export default function SetPlayer({
           <div className={styles.meta}>
             <span className={styles.artist}>
               {set.artist}
-              {set.hoverArtist ? ` · ${set.hoverArtist}` : ""}
+              {set.hoverArtist && set.hoverArtist !== set.artist
+                ? ` · ${set.hoverArtist}`
+                : ""}
             </span>
             <h2 className={styles.title}>{set.title}</h2>
             <div className={styles.tags}>

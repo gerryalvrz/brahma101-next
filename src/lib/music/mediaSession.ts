@@ -64,7 +64,7 @@ export function bindMediaSession(
 
   navigator.mediaSession.metadata = new MediaMetadata({
     title: set.title,
-    artist: set.hoverArtist || set.artist,
+    artist: set.artist,
     album: set.label ?? "Metacognitive Music",
     artwork,
   });

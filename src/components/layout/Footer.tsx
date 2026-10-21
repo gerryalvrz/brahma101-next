@@ -23,7 +23,7 @@ export default function Footer({ className }: FooterProps) {
             Lunarpunk
           </span>{" "}
           ☥ |{" "}
-          <Link href="/music" className="footerLink">
+          <Link href="/metacognitive-music" className="footerLink">
             Dance
           </Link>{" "}
           |{" "}

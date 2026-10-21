@@ -260,7 +260,7 @@ export const homeContent: HomeContent = {
             kind: "file",
             id: "music",
             label: "Metacognitive Music",
-            href: "/music",
+            href: "/metacognitive-music",
           },
         ],
       },

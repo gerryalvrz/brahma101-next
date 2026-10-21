@@ -31,7 +31,7 @@ function setsToTracks(sets: MusicSet[]): MusicTrack[] {
     .filter((s): s is MusicSet & { audioUrl: string } => Boolean(s.audioUrl))
     .map((s) => ({
       title: s.title,
-      artist: s.hoverArtist || s.artist,
+      artist: s.artist,
       src: s.audioUrl,
       artwork: s.coverUrl,
     }));
@@ -39,7 +39,10 @@ function setsToTracks(sets: MusicSet[]): MusicTrack[] {
 
 function isMusicRoute(pathname: string | null): boolean {
   if (!pathname) return false;
-  return pathname === "/music" || pathname.startsWith("/music/");
+  return (
+    pathname === "/metacognitive-music" ||
+    pathname.startsWith("/metacognitive-music/")
+  );
 }
 
 type PlayOpts = {

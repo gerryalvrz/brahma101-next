@@ -87,7 +87,7 @@ function ProjectRow({
   });
   const cancelScramble = useRef<Array<() => void>>([]);
 
-  /** Resting row vs hover-reveal (artist → hoverArtist). */
+  /** Resting row vs hover-reveal (artist stays Locognitive unless hoverArtist is set). */
   const resting = {
     artist: set.artist,
     album: set.title,
@@ -97,7 +97,7 @@ function ProjectRow({
   };
   const revealed = {
     ...resting,
-    artist: set.hoverArtist,
+    artist: set.hoverArtist ?? set.artist,
   };
 
   useEffect(() => {
@@ -139,7 +139,7 @@ function ProjectRow({
       }}
       tabIndex={0}
       role="button"
-      aria-label={`${set.audioUrl ? "Play" : "Preview"} ${set.hoverArtist} — ${set.title}`}
+      aria-label={`${set.audioUrl ? "Play" : "Preview"} ${set.artist} — ${set.title}`}
     >
       <span
         ref={(el) => {
