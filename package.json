@@ -6,6 +6,7 @@
     "copy:strudel": "node scripts/copy-strudel.mjs",
     "postinstall": "node scripts/copy-strudel.mjs",
     "dev": "next dev",
+    "deploy": "bash scripts/deploy-vps.sh",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

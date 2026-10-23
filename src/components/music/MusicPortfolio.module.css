@@ -22,11 +22,11 @@
   pointer-events: none;
   z-index: 1;
   filter: saturate(1.05) contrast(1.05);
-  mask-image: radial-gradient(ellipse at center, #000 35%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, #000 46%, transparent 85%);
   -webkit-mask-image: radial-gradient(
     ellipse at center,
-    #000 35%,
-    transparent 78%
+    #000 46%,
+    transparent 85%
   );
 }
 
@@ -46,8 +46,8 @@
   pointer-events: none;
   background: radial-gradient(
     ellipse at center,
-    transparent 20%,
-    rgba(0, 0, 0, 0.55) 75%
+    transparent 26%,
+    rgba(0, 0, 0, 0.38) 85%
   );
 }
 
