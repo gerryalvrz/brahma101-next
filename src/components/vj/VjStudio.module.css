@@ -1,0 +1,232 @@
+.root {
+  width: 100%;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1.25rem;
+  padding: 1.5rem 1.25rem 8rem;
+  background: #000;
+  color: var(--color-primary);
+}
+
+.header {
+  width: min(100%, 110rem);
+  margin: 0 auto;
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+}
+
+.kicker a {
+  color: var(--neon);
+  text-decoration: none;
+}
+
+.kicker a:hover {
+  color: #000;
+  background: var(--neon);
+}
+
+.title {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display, "VT323", monospace);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  color: #fff;
+  text-shadow: 0 0 18px rgba(0, 255, 0, 0.4);
+}
+
+.subtitle {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: rgba(0, 255, 0, 0.75);
+}
+
+.stage {
+  position: relative;
+  width: min(100%, 110rem);
+  margin: 0 auto;
+  aspect-ratio: 32 / 9;
+  background: #000;
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sourceVideo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0.02;
+  pointer-events: none;
+}
+
+.controls {
+  width: min(100%, 110rem);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  font-family: var(--font-mono);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.fileName {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.counter {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.counterLive {
+  color: #ff5a5a;
+}
+
+.btn,
+.fileBtn {
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--neon);
+  background: rgba(0, 0, 0, 0.72);
+  border: 1px solid var(--neon-dim);
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled),
+.fileBtn:hover {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btnActive {
+  background: var(--neon);
+  color: #000;
+  border-color: var(--neon);
+}
+
+.fileBtn input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.slider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 28rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.slider input {
+  flex: 1;
+  accent-color: var(--neon);
+}
+
+.sliderValue {
+  min-width: 2ch;
+  font-variant-numeric: tabular-nums;
+}
+
+.error {
+  margin: 0;
+  color: #ffb4b4;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+
+.errorHint {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.status {
+  margin: 0;
+  color: rgba(0, 255, 0, 0.8);
+  font-size: 0.85rem;
+}
+
+.editorLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.editor {
+  width: 100%;
+  min-height: 9rem;
+  box-sizing: border-box;
+  resize: vertical;
+  background: rgba(0, 0, 0, 0.82);
+  color: var(--neon);
+  border: 1px solid rgba(0, 255, 0, 0.35);
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  padding: 0.75rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.hint {
+  margin: 0;
+  max-width: 46rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.field {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--neon);
+  background: #000;
+  border: 1px solid var(--neon-dim);
+  padding: 0.45rem 0.6rem;
+}

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { hydraAssistDocs } from "@/data/hydraAssistDocs";
+import { vjAssistRules } from "@/lib/vj/assist-prompt";
 
 export const runtime = "nodejs";
 
@@ -10,6 +11,7 @@ type AssistBody = {
   code?: string;
   error?: string | null;
   history?: ChatTurn[];
+  dialect?: string;
 };
 
 const VENICE_URL = "https://api.venice.ai/api/v1/chat/completions";
@@ -24,7 +26,15 @@ function extractSuggestedCode(reply: string): string | undefined {
   return last || undefined;
 }
 
-function buildSystemPrompt(): string {
+function buildSystemPrompt(dialect?: string): string {
+  if (dialect === "vj") {
+    return [
+      vjAssistRules,
+      "",
+      "General Hydra reference (webcam, microphone, and loadScript do not apply on /vj):",
+      hydraAssistDocs,
+    ].join("\n");
+  }
   return [
     "You are Hydra Assist on brahma101.cyou/art — a concise tutor for hydra-synth livecoding.",
     "Help the user fix sketches, explain syntax, and suggest working hydra code.",
@@ -98,7 +108,7 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         model,
         messages: [
-          { role: "system", content: buildSystemPrompt() },
+          { role: "system", content: buildSystemPrompt(body.dialect === "vj" ? "vj" : undefined) },
           ...history,
           { role: "user", content: contextBlock },
         ],

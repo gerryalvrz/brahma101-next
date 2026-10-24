@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 const links = [
   { href: "/create-music", label: "Create music · Strudel" },
   { href: "/art", label: "Generative art · Hydra" },
+  { href: "/vj", label: "VJ Studio · video + Hydra" },
   { href: "/metacognitive-music", label: "Metacognitive Music" },
   { href: "/locognitive", label: "Locognitive" },
   { href: "/e8sel", label: "E8 S.E.L." },

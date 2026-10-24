@@ -7,7 +7,11 @@ import {
   type FormEvent,
   type PointerEvent,
 } from "react";
-import { localQuickFix } from "@/lib/hydra/quick-fix";
+import {
+  localQuickFix,
+  type QuickFixContext,
+  type QuickFixResult,
+} from "@/lib/hydra/quick-fix";
 import styles from "./HydraAssistChat.module.css";
 
 export type AssistMessage = {
@@ -21,9 +25,15 @@ export type AssistMessage = {
 type Props = {
   code: string;
   error: string | null;
-  audioOn: boolean;
-  uiVisible: boolean;
+  audioOn?: boolean;
+  uiVisible?: boolean;
   onApply: (code: string) => void;
+  welcome?: string;
+  placeholder?: string;
+  zIndex?: number;
+  assistExtra?: Record<string, string>;
+  quickFix?: (ctx: QuickFixContext) => QuickFixResult;
+  fixQuestion?: (error: string | null) => string;
 };
 
 type Size = { w: number; h: number };
@@ -63,9 +73,15 @@ const RESIZE_STYLE: Record<ResizeEdge, string> = {
 export default function HydraAssistChat({
   code,
   error,
-  audioOn,
-  uiVisible,
+  audioOn = false,
+  uiVisible = true,
   onApply,
+  welcome = "brahma101 · your helper. welcome to hydra.",
+  placeholder = "Ask about Hydra…",
+  zIndex,
+  assistExtra,
+  quickFix = localQuickFix,
+  fixQuestion,
 }: Props) {
   const [minimized, setMinimized] = useState(false);
   const [input, setInput] = useState("");
@@ -91,7 +107,7 @@ export default function HydraAssistChat({
     {
       id: "welcome",
       role: "system",
-      content: "brahma101 · your helper. welcome to hydra.",
+      content: welcome,
     },
   ]);
   const listRef = useRef<HTMLDivElement>(null);
@@ -227,6 +243,7 @@ export default function HydraAssistChat({
         code,
         error,
         history,
+        ...assistExtra,
       }),
     });
 
@@ -263,7 +280,7 @@ export default function HydraAssistChat({
     ]);
 
     try {
-      const local = localQuickFix({ code, error, audioOn });
+      const local = quickFix({ code, error, audioOn });
       const hasLocal = Boolean(local.fixedCode) || local.tips.length > 0;
 
       if (hasLocal && (mode === "fix" || Boolean(local.fixedCode))) {
@@ -320,12 +337,12 @@ export default function HydraAssistChat({
   }
 
   function onFix() {
-    void submit(
-      error
+    const question = fixQuestion
+      ? fixQuestion(error)
+      : error
         ? `Fix this Hydra sketch. Runtime error: ${error}`
-        : "Fix or improve this Hydra sketch so it runs and shows something on screen.",
-      "fix"
-    );
+        : "Fix or improve this Hydra sketch so it runs and shows something on screen.";
+    void submit(question, "fix");
   }
 
   function openHelper() {
@@ -353,12 +370,15 @@ export default function HydraAssistChat({
       }
       style={
         minimized
-          ? undefined
+          ? zIndex
+            ? { zIndex }
+            : undefined
           : {
               left: pos.x,
               top: pos.y,
               width: size.w,
               height: size.h,
+              ...(zIndex ? { zIndex } : {}),
             }
       }
       aria-label="brahma101 hydra helper"
@@ -448,7 +468,7 @@ export default function HydraAssistChat({
                 className={styles.input}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about Hydra…"
+                placeholder={placeholder}
                 disabled={busy}
                 aria-label="Helper question"
               />
